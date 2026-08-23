@@ -59,9 +59,6 @@ export function Header() {
                   Funerals
                 </span>
               </div>
-              <span className="text-[10px] text-muted-foreground font-sans tracking-wide mt-0.5">
-                Garden of Peace™ Memorial Park
-              </span>
             </div>
           </Link>
 

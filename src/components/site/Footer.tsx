@@ -16,7 +16,7 @@ export function Footer() {
             />
             <div>
               <p className="font-serif text-2xl font-bold tracking-tight">Capetrust</p>
-              <p className="eyebrow text-gold text-[0.6rem]">Funeral Services &amp; Memorial Park</p>
+              <p className="eyebrow text-gold text-[0.6rem]">Funeral Services</p>
             </div>
           </div>
           <p className="max-w-sm text-xs leading-relaxed text-primary-foreground/80">
