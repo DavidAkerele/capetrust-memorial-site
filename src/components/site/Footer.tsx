@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Mail, MapPin, Phone, MessageSquare, Calculator, Flame } from "lucide-react";
+import { Mail, MapPin, Phone, Calculator, Flame } from "lucide-react";
 import { site } from "@/lib/site";
 
 export function Footer() {
@@ -8,14 +8,12 @@ export function Footer() {
       <div className="container-page grid gap-10 py-16 md:grid-cols-12">
         {/* Brand & Mission Column */}
         <div className="md:col-span-4 space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="size-12 rounded-full bg-white/10 p-1 border border-white/20 flex items-center justify-center">
-              <img
-                src="/logo.png"
-                alt="Capetrust Logo"
-                className="size-full object-contain"
-              />
-            </div>
+          <div className="flex items-center gap-3.5">
+            <img
+              src="/logo.png"
+              alt="Capetrust Logo"
+              className="h-12 w-auto object-contain shrink-0"
+            />
             <div>
               <p className="font-serif text-2xl font-bold tracking-tight">Capetrust</p>
               <p className="eyebrow text-gold text-[0.6rem]">Funeral Services &amp; Memorial Park</p>
@@ -25,9 +23,8 @@ export function Footer() {
             {site.tagline} Providing compassionate funeral planning, dignified burials, and serene resting grounds at Garden of Peace™ Memorial Park, Agbowa, Lagos.
           </p>
           <div className="pt-2">
-            <span className="inline-flex items-center gap-2 text-xs font-semibold text-gold">
-              <span className="size-2 rounded-full bg-green-400 animate-pulse" />
-              24/7 Immediate Need: <a href={site.phoneHref} className="hover:underline text-white font-bold">{site.phone}</a>
+            <span className="inline-flex items-center text-xs font-semibold text-gold">
+              24/7 Immediate Need: <a href={site.phoneHref} className="ml-1 hover:underline text-white font-bold">{site.phone}</a>
             </span>
           </div>
         </div>

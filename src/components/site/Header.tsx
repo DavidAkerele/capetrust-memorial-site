@@ -9,16 +9,15 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 shadow-xs">
-      {/* Top Notification / Contact Bar */}
+      {/* Top Utility Ribbon */}
       <div className="bg-primary text-primary-foreground">
-        <div className="container-page flex h-10 items-center justify-between text-xs font-sans">
-          <div className="flex items-center gap-3">
-            <span className="hidden sm:inline tracking-wide font-medium">
+        <div className="container-page flex h-9 items-center justify-between text-xs font-sans">
+          <div className="flex items-center gap-4">
+            <span className="hidden sm:inline tracking-wide text-primary-foreground/90 font-medium">
               Garden of Peace™ Memorial Park • Agbowa, Lagos
             </span>
-            <span className="inline-flex items-center gap-1.5 font-semibold text-gold">
-              <span className="size-2 rounded-full bg-green-400 animate-pulse" />
-              24/7 Immediate Support
+            <span className="inline-flex items-center font-semibold text-gold">
+              24/7 Immediate Assistance
             </span>
           </div>
 
@@ -27,7 +26,7 @@ export function Header() {
               href={site.parkMap}
               target="_blank"
               rel="noreferrer"
-              className="hidden items-center gap-1.5 hover:underline md:flex"
+              className="hidden items-center gap-1.5 hover:underline md:flex text-primary-foreground/90"
             >
               <MapPin className="size-3.5 text-gold" /> Our Locations
             </a>
@@ -44,17 +43,15 @@ export function Header() {
       {/* Main Navbar */}
       <div className="border-b border-border bg-background/95 backdrop-blur-md">
         <div className="container-page flex h-20 items-center justify-between gap-4">
-          {/* Brand Logo & Name */}
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="relative size-12 shrink-0 overflow-hidden rounded-full bg-primary/10 p-1 border border-border flex items-center justify-center">
-              <img
-                src="/logo.png"
-                alt="Capetrust Logo"
-                className="size-full object-contain"
-              />
-            </div>
+          {/* Brand Logo & Name (Clean, without circle frame) */}
+          <Link to="/" className="flex items-center gap-3.5 group shrink-0">
+            <img
+              src="/logo.png"
+              alt="Capetrust Logo"
+              className="h-12 w-auto object-contain"
+            />
             <div className="flex flex-col leading-none">
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-baseline gap-1.5">
                 <span className="font-serif text-2xl font-bold tracking-tight text-primary">
                   Capetrust
                 </span>
@@ -69,7 +66,7 @@ export function Header() {
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden items-center gap-4 xl:gap-5 lg:flex">
+          <nav className="hidden items-center gap-3.5 xl:gap-5 lg:flex">
             {nav.map((item) => (
               <Link
                 key={item.to}
@@ -83,7 +80,7 @@ export function Header() {
           </nav>
 
           {/* Right Action CTA Buttons */}
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2.5 shrink-0">
             <Button asChild variant="outlineDark" size="sm" className="hidden sm:inline-flex text-xs">
               <Link to="/estimator" className="flex items-center gap-1.5">
                 <Calculator className="size-3.5 text-gold" />
@@ -94,7 +91,7 @@ export function Header() {
             <Button asChild variant="gold" size="sm" className="hidden sm:inline-flex text-xs">
               <a href={site.whatsapp} target="_blank" rel="noreferrer" className="flex items-center gap-1.5">
                 <MessageSquare className="size-3.5" />
-                WhatsApp Us
+                WhatsApp
               </a>
             </Button>
 
