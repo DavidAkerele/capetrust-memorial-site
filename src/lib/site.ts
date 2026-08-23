@@ -52,13 +52,8 @@ export const navItems: NavItem[] = [
     ],
   },
   {
-    label: "Planning & Pricing",
+    label: "Pre-Planning",
     children: [
-      {
-        label: "Price Estimator",
-        to: "/estimator",
-        description: "Interactive vault pricing and instant cost breakdown",
-      },
       {
         label: "Pre-Planning Guide",
         to: "/pre-planning",
