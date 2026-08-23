@@ -17,15 +17,88 @@ export const site = {
   ] as const,
 };
 
+export interface NavChild {
+  label: string;
+  to: string;
+  description: string;
+}
+
+export interface NavItem {
+  label: string;
+  to?: string;
+  children?: NavChild[];
+}
+
+export const navItems: NavItem[] = [
+  { label: "About", to: "/about" },
+  {
+    label: "Services & Park",
+    children: [
+      {
+        label: "Funeral & Burial Services",
+        to: "/services",
+        description: "Full funeral planning, burial coordination, and family care",
+      },
+      {
+        label: "Garden of Peace™ Memorial Park",
+        to: "/garden-of-peace",
+        description: "10+ acres private cemetery in Agbowa-Ikosi, Lagos",
+      },
+      {
+        label: "Memorial Products & Caskets",
+        to: "/memorial-products",
+        description: "Caskets, headstones, and memorial finishes",
+      },
+    ],
+  },
+  {
+    label: "Planning & Pricing",
+    children: [
+      {
+        label: "Price Estimator",
+        to: "/estimator",
+        description: "Interactive vault pricing and instant cost breakdown",
+      },
+      {
+        label: "Pre-Planning Guide",
+        to: "/pre-planning",
+        description: "Plan ahead to protect and support your family",
+      },
+      {
+        label: "Family Estates & Investment",
+        to: "/investment",
+        description: "Private family mausoleums and inflation-hedged plots",
+      },
+    ],
+  },
+  {
+    label: "Obituaries",
+    children: [
+      {
+        label: "Memorial Tributes & Directory",
+        to: "/obituaries",
+        description: "Search obituaries, light memorial candles, and share condolences",
+      },
+      {
+        label: "Publish a Memorial",
+        to: "/obituaries/create",
+        description: "Create a dedicated online tribute page for a loved one",
+      },
+    ],
+  },
+  { label: "FAQ", to: "/faq" },
+  { label: "Contact", to: "/contact" },
+];
+
 export const nav = [
   { label: "About", to: "/about" },
-  { label: "Park", to: "/garden-of-peace" },
   { label: "Services", to: "/services" },
-  { label: "Estimator", to: "/estimator" },
-  { label: "Obituaries", to: "/obituaries" },
-  { label: "Estates", to: "/investment" },
-  { label: "Products", to: "/memorial-products" },
-  { label: "Planning", to: "/pre-planning" },
+  { label: "Garden of Peace™ Park", to: "/garden-of-peace" },
+  { label: "Price Estimator", to: "/estimator" },
+  { label: "Obituaries & Tributes", to: "/obituaries" },
+  { label: "Family Estates", to: "/investment" },
+  { label: "Memorial Products", to: "/memorial-products" },
+  { label: "Pre-Planning", to: "/pre-planning" },
   { label: "FAQ", to: "/faq" },
   { label: "Contact", to: "/contact" },
 ];
