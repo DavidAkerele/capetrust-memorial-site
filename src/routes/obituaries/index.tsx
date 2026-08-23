@@ -21,6 +21,15 @@ export const Route = createFileRoute("/obituaries/")({
         property: "og:description",
         content: "A sacred space where cherished lives are honoured and legacies celebrated.",
       },
+      { property: "og:image", content: "/images/og-capetrust.png" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Obituaries & Memorial Tributes | Capetrust" },
+      {
+        name: "twitter:description",
+        content:
+          "Search memorial tributes, light virtual candles, and share condolences with families in Nigeria and diaspora.",
+      },
+      { name: "twitter:image", content: "/images/og-capetrust.png" },
     ],
   }),
 });

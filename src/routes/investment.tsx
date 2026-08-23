@@ -33,6 +33,15 @@ export const Route = createFileRoute("/investment")({
         content:
           "Secure family memorial plots and capital appreciation in Lagos State's fastest growing serene memorial corridor.",
       },
+      { property: "og:image", content: "/images/og-capetrust.png" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Family Estates & Cemetery Investment | Garden of Peace™" },
+      {
+        name: "twitter:description",
+        content:
+          "Protect against inflation and secure multi-generational family plots in Lagos.",
+      },
+      { name: "twitter:image", content: "/images/og-capetrust.png" },
     ],
   }),
 });

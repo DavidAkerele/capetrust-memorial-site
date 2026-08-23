@@ -18,6 +18,14 @@ export const Route = createFileRoute("/pre-planning")({
         property: "og:description",
         content: "Plan ahead. Give your loved ones clarity and peace of mind.",
       },
+      { property: "og:image", content: "/images/og-capetrust.png" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Funeral Pre-Planning in Lagos | Capetrust" },
+      {
+        name: "twitter:description",
+        content: "Document wishes, protect from inflation, and relieve future burdens on your family.",
+      },
+      { name: "twitter:image", content: "/images/og-capetrust.png" },
     ],
   }),
 });

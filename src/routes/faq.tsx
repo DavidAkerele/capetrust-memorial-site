@@ -21,8 +21,16 @@ export const Route = createFileRoute("/faq")({
       { property: "og:title", content: "Frequently Asked Questions | Capetrust" },
       {
         property: "og:description",
-        content: "13 answers across 7 sections to help you plan with confidence.",
+        content: "Answers to common questions about funerals, cemetery vaults, and services in Lagos.",
       },
+      { property: "og:image", content: "/images/og-capetrust.png" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Funeral FAQs | Capetrust Funeral Services" },
+      {
+        name: "twitter:description",
+        content: "Answers to common questions regarding funerals, cemetery vaults, and burial logistics in Lagos.",
+      },
+      { name: "twitter:image", content: "/images/og-capetrust.png" },
     ],
   }),
 });

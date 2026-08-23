@@ -31,8 +31,21 @@ export const Route = createFileRoute("/obituaries/$slug")({
       { title: "Memorial Tribute & Life Celebration | Capetrust" },
       {
         name: "description",
-        content: "Celebrating an iconic life with honor, dignity, and lasting remembrance.",
+        content: "Celebrating a cherished life with honor, dignity, and eternal remembrance at Capetrust Funeral Services.",
       },
+      { property: "og:title", content: "Memorial Tribute & Life Celebration | Capetrust" },
+      {
+        property: "og:description",
+        content: "Light a virtual candle, view service arrangements, and share condolences with the bereaved family.",
+      },
+      { property: "og:image", content: "/images/og-capetrust.png" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Memorial Tribute & Life Celebration | Capetrust" },
+      {
+        name: "twitter:description",
+        content: "Light a virtual candle and share heartfelt condolences for this celebrated life.",
+      },
+      { name: "twitter:image", content: "/images/og-capetrust.png" },
     ],
   }),
 });

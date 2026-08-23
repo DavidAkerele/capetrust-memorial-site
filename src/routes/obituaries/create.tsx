@@ -25,6 +25,19 @@ export const Route = createFileRoute("/obituaries/create")({
         content:
           "Create and publish a lasting online memorial tribute for your loved one with service schedules, biography, photo gallery, and condolence guestbook.",
       },
+      { property: "og:title", content: "Publish a Memorial Tribute | Capetrust" },
+      {
+        property: "og:description",
+        content: "Create a lasting online tribute, memorial photo gallery, and condolence guestbook.",
+      },
+      { property: "og:image", content: "/images/og-capetrust.png" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Publish a Memorial Tribute | Capetrust" },
+      {
+        name: "twitter:description",
+        content: "Create an online memorial with celebration of life and condolences.",
+      },
+      { name: "twitter:image", content: "/images/og-capetrust.png" },
     ],
   }),
 });

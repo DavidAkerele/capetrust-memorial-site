@@ -38,6 +38,15 @@ export const Route = createFileRoute("/")({
         content:
           "Honouring every life with dignity, care and excellence. Funeral services, memorial gardens, cost estimator and online tributes.",
       },
+      { property: "og:image", content: "/images/og-capetrust.png" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Capetrust Funeral Services | Lagos, Nigeria" },
+      {
+        name: "twitter:description",
+        content:
+          "Professional funeral planning, burial coordination, cemetery vaults, and memorial services in Lagos, Nigeria.",
+      },
+      { name: "twitter:image", content: "/images/og-capetrust.png" },
     ],
   }),
 });

@@ -13,11 +13,19 @@ export const Route = createFileRoute("/about")({
         content:
           "Learn about Capetrust Funeral Services: professional funeral, cemetery and memorial care in Lagos, guided by empathy, integrity and attention to detail.",
       },
-      { property: "og:title", content: "About Capetrust Funeral Services" },
+      { property: "og:title", content: "About Capetrust Funeral Services | Lagos, Nigeria" },
       {
         property: "og:description",
         content: "Honouring every life with dignity, care and excellence in Lagos, Nigeria.",
       },
+      { property: "og:image", content: "/images/og-capetrust.png" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "About Capetrust Funeral Services" },
+      {
+        name: "twitter:description",
+        content: "Professional funeral and memorial services across Lagos State and Nigeria.",
+      },
+      { name: "twitter:image", content: "/images/og-capetrust.png" },
     ],
   }),
 });

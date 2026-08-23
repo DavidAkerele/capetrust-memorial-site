@@ -15,12 +15,20 @@ export const Route = createFileRoute("/garden-of-peace")({
         content:
           "Garden of Peace Memorial Park in Odo-Ayandelu, Agbowa, Lagos: single, double and triple vaults, mausoleums, private family estates and memorialisation options.",
       },
-      { property: "og:title", content: "Garden of Peace™ Memorial Park, Agbowa, Lagos" },
+      { property: "og:title", content: "Garden of Peace™ Memorial Park | Agbowa, Lagos" },
       {
         property: "og:description",
         content:
           "A place of lasting remembrance: over 10 acres of thoughtfully planned memorial grounds.",
       },
+      { property: "og:image", content: "/images/og-capetrust.png" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Garden of Peace™ Memorial Park | Lagos" },
+      {
+        name: "twitter:description",
+        content: "Over 10 acres of serene memorial parkland, private family vaults, and memorial gardens.",
+      },
+      { name: "twitter:image", content: "/images/og-capetrust.png" },
     ],
   }),
 });

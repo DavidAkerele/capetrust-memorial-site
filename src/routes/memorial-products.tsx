@@ -11,13 +11,21 @@ export const Route = createFileRoute("/memorial-products")({
       {
         name: "description",
         content:
-          "Capetrust memorial products: funeral stationery available now, plus caskets, floral tributes, keepsakes and memorial accessories joining our collection.",
+          "Capetrust memorial products: funeral stationery, caskets, floral tributes, keepsakes and memorial accessories joining our collection.",
       },
       { property: "og:title", content: "Memorial Products | Capetrust Funeral Services" },
       {
         property: "og:description",
         content: "Quality, thoughtful design and lasting craftsmanship for a meaningful farewell.",
       },
+      { property: "og:image", content: "/images/og-capetrust.png" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Memorial Products | Capetrust" },
+      {
+        name: "twitter:description",
+        content: "Premium caskets, headstones, and memorial keepsakes in Lagos.",
+      },
+      { name: "twitter:image", content: "/images/og-capetrust.png" },
     ],
   }),
 });

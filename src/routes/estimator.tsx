@@ -19,6 +19,15 @@ export const Route = createFileRoute("/estimator")({
         content:
           "Transparent pricing and instant itemized quotes for cemetery vaults, headstones, and memorial services in Lagos.",
       },
+      { property: "og:image", content: "/images/og-capetrust.png" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Price Estimator | Garden of Peace™ Memorial Park" },
+      {
+        name: "twitter:description",
+        content:
+          "Instant cost calculation for cemetery vaults, surface finishes, and memorial services in Lagos.",
+      },
+      { name: "twitter:image", content: "/images/og-capetrust.png" },
     ],
   }),
 });

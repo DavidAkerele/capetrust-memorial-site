@@ -19,11 +19,19 @@ export const Route = createFileRoute("/contact")({
         content:
           "Contact Capetrust Funeral Services in Lagos: call +234 802 6666 655, WhatsApp us, or complete our enquiry form. Immediate funeral assistance 24/7.",
       },
-      { property: "og:title", content: "Contact Capetrust Funeral Services" },
+      { property: "og:title", content: "Contact Capetrust Funeral Services | Lagos, Nigeria" },
       {
         property: "og:description",
         content: "Head Office in Ikorodu and Garden of Peace Memorial Park in Agbowa, Lagos.",
       },
+      { property: "og:image", content: "/images/og-capetrust.png" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Contact Capetrust Funeral Services" },
+      {
+        name: "twitter:description",
+        content: "24/7 immediate assistance, head office in Ikorodu, and cemetery tours at Agbowa, Lagos.",
+      },
+      { name: "twitter:image", content: "/images/og-capetrust.png" },
     ],
   }),
 });

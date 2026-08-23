@@ -18,6 +18,14 @@ export const Route = createFileRoute("/services")({
         property: "og:description",
         content: "Professional support at every stage, from the first conversation to the final farewell.",
       },
+      { property: "og:image", content: "/images/og-capetrust.png" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Funeral Services in Lagos | Capetrust" },
+      {
+        name: "twitter:description",
+        content: "Complete funeral coordination, hearse fleets, burial vaults, and dignified support in Lagos.",
+      },
+      { name: "twitter:image", content: "/images/og-capetrust.png" },
     ],
   }),
 });

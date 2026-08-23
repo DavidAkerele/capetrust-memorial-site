@@ -19,17 +19,17 @@ function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
+        <h1 className="text-7xl font-serif font-bold text-primary">404</h1>
         <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
+          The page you are looking for does not exist or has been moved.
         </p>
         <div className="mt-6">
           <Link
             to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="inline-flex items-center justify-center rounded-md bg-primary px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Go home
+            Return to Home
           </Link>
         </div>
       </div>
@@ -79,21 +79,48 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Capetrust Funeral Services | Lagos, Nigeria" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, maximum-scale=5" },
+      { name: "theme-color", content: "#1E3D82" },
+      { name: "msapplication-TileColor", content: "#1E3D82" },
+      { title: "Capetrust Funeral Services | Dignified Funerals & Memorial Park in Lagos" },
       {
         name: "description",
         content:
-          "Capetrust Funeral Services provides professional funeral, burial and memorial care in Lagos, Nigeria, and Garden of Peace Memorial Park in Agbowa.",
+          "Professional funeral planning, burial coordination, cemetery vaults, and memorial services in Lagos, Nigeria. Home of Garden of Peace™ Memorial Park, Agbowa.",
       },
-      { name: "author", content: "Capetrust Funeral Services" },
+      {
+        name: "keywords",
+        content:
+          "funeral services Lagos, cemetery Lagos, Garden of Peace Agbowa, burial vaults Lagos, caskets Nigeria, repatriation services Lagos, funeral planning Nigeria, obituaries Lagos",
+      },
+      { name: "author", content: "Capetrust Funeral Services Ltd" },
+      { name: "robots", content: "index, follow" },
+
+      // Open Graph / Facebook / WhatsApp / LinkedIn / iMessage Unfurl
+      { property: "og:site_name", content: "Capetrust Funeral Services" },
+      { property: "og:type", content: "website" },
+      { property: "og:locale", content: "en_NG" },
       { property: "og:title", content: "Capetrust Funeral Services | Lagos, Nigeria" },
       {
         property: "og:description",
-        content: "Honouring every life with dignity, care and excellence.",
+        content:
+          "Honouring every life with dignity, care and excellence. Comprehensive funeral planning, private memorial gardens, vault estimation, and 24/7 immediate assistance in Lagos.",
       },
-      { property: "og:type", content: "website" },
+      { property: "og:image", content: "/images/og-capetrust.png" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: "Capetrust Funeral Services & Garden of Peace Memorial Park" },
+
+      // Twitter Card Unfurl
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Capetrust Funeral Services | Lagos, Nigeria" },
+      {
+        name: "twitter:description",
+        content:
+          "Compassionate funeral care, burial coordination, and Garden of Peace™ Memorial Park in Agbowa, Lagos.",
+      },
+      { name: "twitter:image", content: "/images/og-capetrust.png" },
+      { name: "twitter:image:alt", content: "Capetrust Funeral Services & Garden of Peace Memorial Park" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -101,9 +128,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Karla:wght@400;500;600;700&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Karla:wght@400;500;600;700&display=swap",
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: "/favicon.ico", sizes: "any" },
+      { rel: "icon", href: "/logo.png", type: "image/png" },
+      { rel: "apple-touch-icon", href: "/logo.png" },
     ],
   }),
   shellComponent: RootShell,
