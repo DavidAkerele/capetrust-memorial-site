@@ -7,7 +7,7 @@
 /*
  * Design system definition.
  * Incorporating Capetrust Royal Navy Blue (#1E3D82), Midnight Blue (#0E0E44),
- * Logo Accent Blue (#0071BC), Warm Gold (#D4AF37), and Soft Ivory Cream.
+ * Logo Accent Blue (#0071BC), Warm Gold (#D4AF37), and Botanical Pine Green (#1E3F20).
  */
 
 @theme inline {
@@ -45,7 +45,13 @@
   --color-ink: var(--ink);
   --color-ink-foreground: var(--ink-foreground);
   --color-cream: var(--cream);
+  --color-forest: var(--forest);
+  --color-forest-dark: var(--forest-dark);
+  --color-pine: var(--pine);
+  --color-peace-green: var(--forest);
   --shadow-soft: 0 18px 40px -24px oklch(0.25 0.08 255 / 0.35);
+  --shadow-glow-gold: 0 0 30px -5px rgba(212, 175, 55, 0.25);
+  --shadow-glow-pine: 0 0 30px -5px rgba(30, 63, 32, 0.3);
 }
 
 :root {
@@ -74,6 +80,11 @@
   --navy: oklch(0.32 0.12 255);
   --navy-dark: oklch(0.2 0.07 265);
   --blue-accent: oklch(0.54 0.18 245);
+  --forest: #415825; /* Capetrust Botanical Forest Green */
+  --forest-dark: #32441d;
+  --pine: #1e3f20; /* Deep Memorial Pine Green */
+  --pine-hover: #2d5a27;
+  --peace-green: #415825;
   --ink: oklch(0.2 0.06 265);
   --ink-foreground: oklch(0.96 0.01 95);
   --cream: oklch(0.97 0.01 95);
@@ -111,6 +122,107 @@
 @utility container-page {
   margin-inline: auto;
   width: 100%;
-  max-width: 78rem;
+  max-width: 100%;
   padding-inline: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .container-page {
+    padding-inline: 2.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-page {
+    padding-inline: 4rem;
+  }
+}
+
+@media (min-width: 1440px) {
+  .container-page {
+    padding-inline: 5rem;
+  }
+}
+
+@media (min-width: 1920px) {
+  .container-page {
+    padding-inline: 6rem;
+  }
+}
+
+/* ==========================================================================
+   Textures, Animations & Visual Micro-Motions
+   ========================================================================== */
+
+/* Subtle background textures */
+.bg-texture-dots {
+  background-image: radial-gradient(rgba(30, 61, 130, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.bg-texture-grid {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(212, 175, 55, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(212, 175, 55, 0.06) 1px, transparent 1px);
+}
+
+.bg-texture-mesh {
+  background-image: radial-gradient(at 0% 0%, rgba(30, 63, 32, 0.08) 0px, transparent 50%),
+                    radial-gradient(at 100% 100%, rgba(212, 175, 55, 0.08) 0px, transparent 50%);
+}
+
+/* Interactive Card Hover Motions */
+.card-interactive {
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card-interactive:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 35px -10px rgba(14, 14, 68, 0.12), 0 0 20px -5px rgba(212, 175, 55, 0.2);
+  border-color: rgba(212, 175, 55, 0.5);
+}
+
+/* Keyframe Animations */
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes shimmerSweep {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-float-slow {
+  animation: floatSlow 6s ease-in-out infinite;
+}
+
+.animate-glow-pulse {
+  animation: glowPulse 4s ease-in-out infinite;
+}
+
+.animate-shimmer-sweep {
+  background: linear-gradient(90deg, rgba(212,175,55,0) 0%, rgba(212,175,55,0.25) 50%, rgba(212,175,55,0) 100%);
+  background-size: 200% 100%;
+  animation: shimmerSweep 3s infinite;
 }

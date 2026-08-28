@@ -71,9 +71,9 @@ function PrePlanning() {
         <SectionHeading eyebrow="How it works" title="A simple four-step process" />
         <ol className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {steps.map(([title, body], i) => (
-            <li key={title} className="rounded-lg border border-border bg-card p-7 shadow-soft">
-              <span className="font-serif text-4xl text-gold">{i + 1}</span>
-              <h3 className="mt-3 text-xl">{title}</h3>
+            <li key={title} className="rounded-xl border border-border bg-card p-7 shadow-soft transition-all hover:border-[#415825]/40">
+              <span className="font-serif text-4xl font-bold text-[#415825]/40">0{i + 1}</span>
+              <h3 className="mt-3 text-xl font-serif text-foreground">{title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{body}</p>
             </li>
           ))}
@@ -95,8 +95,9 @@ function PrePlanning() {
               options and plan with confidence.
             </p>
           </div>
-          <div className="rounded-lg border border-border bg-card p-8 shadow-soft">
-            <h3 className="text-2xl">Estate Settlement Guidance</h3>
+          <div className="rounded-xl border border-border bg-card p-8 shadow-soft transition-all hover:border-[#415825]/40">
+            <span className="inline-block rounded-full bg-[#415825]/10 px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-[#415825]">Support Services</span>
+            <h3 className="mt-3 text-2xl font-serif">Estate Settlement Guidance</h3>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
               Planning ahead often extends beyond funeral arrangements. As part of our pre-planning
               services, we can guide families on important estate planning considerations to help
@@ -106,7 +107,7 @@ function PrePlanning() {
               Where required, we can facilitate access to trusted professionals for estate
               administration, wills, probate guidance and other related matters.
             </p>
-            <Button asChild variant="outlineDark" size="lg" className="mt-6">
+            <Button asChild variant="forest" size="lg" className="mt-6">
               <Link to="/contact">Speak with a Pre-Planning Advisor</Link>
             </Button>
           </div>

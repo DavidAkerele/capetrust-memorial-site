@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import hearse from "@/assets/hearse.jpg";
+import chapel from "@/assets/chapel.jpg";
 import { Button } from "@/components/ui/button";
-import { CTABand, InfoCard, PageHero, Section, SectionHeading } from "@/components/site/Sections";
+import { CTABand, PageHero, Section, SectionHeading } from "@/components/site/Sections";
 
 export const Route = createFileRoute("/services")({
   component: Services,
@@ -32,32 +33,37 @@ export const Route = createFileRoute("/services")({
 
 const services = [
   {
-    title: "Funeral Planning",
+    title: "Funeral Planning & Coordination",
     body: "Our experienced team works closely with you to coordinate every aspect of the service, ensuring your loved one's wishes, family traditions and personal preferences are carefully reflected. Whether a simple service or a larger celebration of life, we guide you through every decision.",
+    image: "https://images.unsplash.com/photo-1548625361-16eb16ce3998?q=80&w=800&auto=format&fit=crop",
     cta: "Speak with an Advisor",
     href: "/contact",
   },
   {
     title: "Repatriation Services",
     body: "When a loved one passes away from home, arranging transportation across states or international borders can feel overwhelming. We coordinate documentation, transportation logistics and regulatory requirements to ensure a smooth and respectful journey home.",
+    image: "/images/diego-lozano-wuCHIyWheSo-unsplash.jpg",
     cta: "Request Repatriation Assistance",
     href: "/contact",
   },
   {
-    title: "Burial Services",
-    body: "From cemetery arrangements and graveside coordination to vault preparation and burial scheduling, we work alongside families to create a seamless experience during an important moment of remembrance.",
-    cta: "Explore Our Cemetery",
+    title: "Burial & Vault Interments",
+    body: "From cemetery arrangements and graveside coordination to vault preparation and burial scheduling at Garden of Peace™, we create a seamless experience during an important moment of remembrance.",
+    image: "https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?q=80&w=800&auto=format&fit=crop",
+    cta: "Explore Memorial Park",
     href: "/garden-of-peace",
   },
   {
     title: "Chapel & Reception Venue",
-    body: "Our private chapel and reception venue provide a welcoming setting for funeral services, prayer gatherings, memorial receptions, viewing services and intimate family gatherings. Availability is subject to advance booking.",
+    body: "Our private on-site chapel and reception venue provide a welcoming, air-conditioned setting for funeral services, prayer gatherings, memorial receptions, viewing services and intimate family gatherings.",
+    image: "/chapel.jpg",
     cta: "Enquire About Availability",
     href: "/contact",
   },
   {
-    title: "Reception & Catering",
+    title: "Reception & Catering Coordination",
     body: "Gathering together after a funeral offers family and friends an opportunity to share memories and celebrate a life well lived. We coordinate reception arrangements and catering tailored to the size and style of your gathering.",
+    image: "/images/adrianna-geo-JWlZS708L1Y-unsplash.jpg",
     cta: "Plan Your Reception",
     href: "/contact",
   },
@@ -65,10 +71,10 @@ const services = [
 
 const additional = [
   "Professional Pallbearers",
-  "Funeral Livestreaming",
+  "Funeral Livestreaming & Recording",
   "Tribute Video Production",
   "Obituary Design & Printing",
-  "Memorial Stationery",
+  "Memorial Stationery & Booklets",
   "Funeral Coordination & Event Management",
 ];
 
@@ -77,14 +83,14 @@ function Services() {
     <>
       <PageHero
         eyebrow="Offerings"
-        title="Services & memorial products"
+        title="Services &amp; Memorial Solutions"
         intro="At Capetrust Funeral Services, we provide a comprehensive range of funeral, burial and memorial services designed to support families before, during and after a loss."
         image={hearse}
       >
         <Button asChild variant="gold" size="xl">
           <Link to="/contact">Speak with an Advisor</Link>
         </Button>
-        <Button asChild variant="onDark" size="xl">
+        <Button asChild variant="pine" size="xl">
           <Link to="/memorial-products">View Memorial Products</Link>
         </Button>
       </PageHero>
@@ -95,11 +101,33 @@ function Services() {
           title="Professional support at every stage"
           intro="From the first conversation to the final farewell, our services are designed to simplify the planning process while ensuring every detail is managed with care and professionalism."
         />
-        <div className="mt-12 grid gap-6 md:grid-cols-2">
+        <div className="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {services.map((s) => (
-            <InfoCard key={s.title} title={s.title} cta={s.cta} href={s.href}>
-              {s.body}
-            </InfoCard>
+            <article
+              key={s.title}
+              className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-soft transition-all duration-300 hover:border-[#415825]/50 hover:shadow-md"
+            >
+              <div className="relative h-48 w-full overflow-hidden bg-muted">
+                <img
+                  src={s.image}
+                  alt={s.title}
+                  className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
+              </div>
+              <div className="flex flex-1 flex-col p-6">
+                <h3 className="text-xl font-serif font-bold text-foreground transition-colors group-hover:text-[#415825]">
+                  {s.title}
+                </h3>
+                <p className="mt-3 flex-1 text-xs leading-relaxed text-muted-foreground">{s.body}</p>
+                <div className="mt-6 pt-4 border-t border-border">
+                  <Button asChild variant="outlineForest" size="sm">
+                    <Link to={s.href}>{s.cta}</Link>
+                  </Button>
+                </div>
+              </div>
+            </article>
           ))}
         </div>
       </Section>
@@ -109,28 +137,36 @@ function Services() {
           <img
             src={hearse}
             alt="Capetrust premium hearse service"
-            className="rounded-lg object-cover shadow-soft"
+            className="rounded-2xl object-cover shadow-soft border border-[#D4AF37]/30"
             loading="lazy"
             width={1200}
             height={900}
           />
           <div>
             <SectionHeading
-              eyebrow="Transportation"
-              title="Reliable funeral transportation"
-              intro="Capetrust offers well-maintained hearses for the dignified transportation of your loved one, together with comfortable family buses that allow relatives and guests to travel together with ease."
+              eyebrow="Transportation & Logistics"
+              title="Reliable, dignified funeral transportation"
+              intro="Capetrust offers customized hearses for the dignified transportation of your loved one, together with comfortable Hiace family buses that allow relatives and guests to travel together with ease and peace of mind."
             />
-            <ul className="mt-6 space-y-2 text-sm text-muted-foreground">
-              <li>· Hearse Rental</li>
-              <li>· Family Bus Rental</li>
-              <li>· Funeral Procession Coordination</li>
+            <ul className="mt-6 space-y-2 text-sm text-foreground/80 font-medium">
+              <li className="flex items-center gap-2">
+                <span className="size-2 rounded-full bg-[#415825]" />
+                Executive Hearse Rental &amp; Chauffeur
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="size-2 rounded-full bg-[#415825]" />
+                Air-Conditioned Family Hiace Bus Rental
+              </li>
+              <li className="flex items-center gap-2">
+                <span className="size-2 rounded-full bg-[#415825]" />
+                Full Funeral Motorcade &amp; Procession Escort
+              </li>
             </ul>
-            <p className="mt-4 text-sm text-muted-foreground">
-              Pricing varies depending on distance, destination, duration and any special
-              requirements.
+            <p className="mt-4 text-xs text-muted-foreground">
+              Pricing varies depending on distance, destination, duration and any special requirements.
             </p>
-            <Button asChild variant="outlineDark" size="lg" className="mt-7">
-              <Link to="/contact">Discuss Rental Options</Link>
+            <Button asChild variant="forest" size="lg" className="mt-7">
+              <Link to="/contact">Discuss Rental &amp; Logistics Options</Link>
             </Button>
           </div>
         </div>
@@ -144,17 +180,23 @@ function Services() {
         />
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {additional.map((item) => (
-            <div key={item} className="rounded-lg border border-border bg-card px-6 py-5 text-sm">
+            <div
+              key={item}
+              className="flex items-center gap-3 rounded-xl border border-border bg-card px-6 py-5 text-sm font-medium shadow-xs transition-all hover:border-[#415825]/40"
+            >
+              <span className="size-2.5 rounded-full bg-[#415825]" />
               {item}
             </div>
           ))}
         </div>
-        <p className="mt-6 text-sm text-muted-foreground">
-          If you require a service not listed, our team will be happy to discuss your requirements.
-        </p>
-        <Button asChild variant="gold" size="lg" className="mt-6">
-          <Link to="/contact">Personalise Your Service</Link>
-        </Button>
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Button asChild variant="forest" size="lg">
+            <Link to="/contact">Personalise Your Service</Link>
+          </Button>
+          <Button asChild variant="pine" size="lg">
+            <Link to="/estimator">Calculate Vault Price</Link>
+          </Button>
+        </div>
       </Section>
 
       <CTABand

@@ -4,7 +4,7 @@ import { site } from "@/lib/site";
 
 export function Footer() {
   return (
-    <footer className="bg-primary text-primary-foreground">
+    <footer className="bg-[#0A192F] text-white border-t border-[#415825]/40">
       <div className="container-page grid gap-10 py-16 md:grid-cols-12">
         {/* Brand & Mission Column */}
         <div className="md:col-span-4 space-y-4">
@@ -15,16 +15,16 @@ export function Footer() {
               className="h-12 w-auto object-contain shrink-0"
             />
             <div>
-              <p className="font-serif text-2xl font-bold tracking-tight">Capetrust</p>
+              <p className="font-serif text-2xl font-bold tracking-tight text-white">Capetrust</p>
               <p className="eyebrow text-gold text-[0.6rem]">Funeral Services</p>
             </div>
           </div>
-          <p className="max-w-sm text-xs leading-relaxed text-primary-foreground/80">
+          <p className="max-w-sm text-xs leading-relaxed text-white/80">
             {site.tagline} Providing compassionate funeral planning, dignified burials, and serene resting grounds at Garden of Peace™ Memorial Park, Agbowa, Lagos.
           </p>
           <div className="pt-2">
-            <span className="inline-flex items-center text-xs font-semibold text-gold">
-              24/7 Immediate Need: <a href={site.phoneHref} className="ml-1 hover:underline text-white font-bold">{site.phone}</a>
+            <span className="inline-flex items-center rounded-full bg-[#1E3F20] px-3 py-1 text-xs font-semibold text-white border border-[#D4AF37]/30">
+              24/7 Immediate Need: <a href={site.phoneHref} className="ml-1 hover:underline text-gold font-bold">{site.phone}</a>
             </span>
           </div>
         </div>

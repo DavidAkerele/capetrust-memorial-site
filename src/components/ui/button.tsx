@@ -17,6 +17,9 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         gold: "bg-gold text-gold-foreground shadow-sm hover:bg-gold/90",
+        forest: "bg-[#415825] text-white shadow-sm hover:bg-[#32441D] border border-[#D4AF37]/30",
+        pine: "bg-[#1E3F20] text-white shadow-sm hover:bg-[#2D5A27] border border-[#D4AF37]/30",
+        outlineForest: "border border-[#415825]/40 text-[#415825] hover:bg-[#415825] hover:text-white",
         onDark:
           "border border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10",
         outlineDark:

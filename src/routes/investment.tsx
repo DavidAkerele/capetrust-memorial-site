@@ -127,9 +127,9 @@ function InvestmentPage() {
           {investmentBenefits.map((b) => {
             const Icon = b.icon;
             return (
-              <div key={b.title} className="rounded-2xl border border-border bg-card p-6 shadow-sm flex flex-col justify-between">
+              <div key={b.title} className="rounded-2xl border border-border bg-card p-6 shadow-sm flex flex-col justify-between transition-all hover:border-[#415825]/50">
                 <div>
-                  <div className="flex size-12 items-center justify-center rounded-xl bg-gold/15 text-gold">
+                  <div className="flex size-12 items-center justify-center rounded-xl bg-[#415825]/10 text-[#415825]">
                     <Icon className="size-6" />
                   </div>
                   <h3 className="mt-5 font-serif text-xl font-bold text-foreground">{b.title}</h3>
@@ -153,10 +153,10 @@ function InvestmentPage() {
           {steps.map((s) => {
             const Icon = s.icon;
             return (
-              <div key={s.num} className="relative rounded-2xl border border-border bg-background p-6 shadow-sm">
-                <span className="text-3xl font-serif font-bold text-gold/40">{s.num}</span>
+              <div key={s.num} className="relative rounded-2xl border border-border bg-background p-6 shadow-sm transition-all hover:border-[#415825]/40">
+                <span className="text-3xl font-serif font-bold text-[#415825]/40">{s.num}</span>
                 <div className="mt-2 flex items-center gap-2">
-                  <Icon className="size-5 text-primary" />
+                  <Icon className="size-5 text-[#415825]" />
                   <h3 className="font-serif text-lg font-bold text-foreground">{s.title}</h3>
                 </div>
                 <p className="mt-3 text-xs leading-relaxed text-muted-foreground">{s.desc}</p>
@@ -172,7 +172,7 @@ function InvestmentPage() {
           <img
             src={chapel}
             alt="Garden of Peace Memorial Park Chapel and grounds"
-            className="rounded-2xl object-cover shadow-soft"
+            className="rounded-2xl object-cover shadow-soft border border-[#D4AF37]/30"
             width={1200}
             height={900}
           />
@@ -184,28 +184,28 @@ function InvestmentPage() {
             />
             <ul className="mt-6 space-y-3 text-sm text-foreground/80">
               <li className="flex items-start gap-2">
-                <CheckCircle2 className="mt-0.5 size-4 text-gold shrink-0" />
+                <CheckCircle2 className="mt-0.5 size-4 text-[#415825] shrink-0" />
                 <span>Custom architecture, ornamental gates, and personalized family crest plaques</span>
               </li>
               <li className="flex items-start gap-2">
-                <CheckCircle2 className="mt-0.5 size-4 text-gold shrink-0" />
+                <CheckCircle2 className="mt-0.5 size-4 text-[#415825] shrink-0" />
                 <span>Exclusive multi-generational vaults (4, 6, 8 or 12 chamber configurations)</span>
               </li>
               <li className="flex items-start gap-2">
-                <CheckCircle2 className="mt-0.5 size-4 text-gold shrink-0" />
+                <CheckCircle2 className="mt-0.5 size-4 text-[#415825] shrink-0" />
                 <span>Priority access to the on-site memorial chapel and private reception gardens</span>
               </li>
               <li className="flex items-start gap-2">
-                <CheckCircle2 className="mt-0.5 size-4 text-gold shrink-0" />
+                <CheckCircle2 className="mt-0.5 size-4 text-[#415825] shrink-0" />
                 <span>Flexible installment plans with 0% interest during pre-planning reservation</span>
               </li>
             </ul>
 
             <div className="mt-8 flex flex-wrap gap-3">
-              <Button asChild variant="gold" size="lg">
+              <Button asChild variant="forest" size="lg">
                 <Link to="/contact">Request Estate Brochure</Link>
               </Button>
-              <Button asChild variant="outlineDark" size="lg">
+              <Button asChild variant="pine" size="lg">
                 <a href={site.whatsapp} target="_blank" rel="noreferrer">
                   WhatsApp Private Inquiry
                 </a>

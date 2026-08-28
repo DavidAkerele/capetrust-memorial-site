@@ -208,19 +208,19 @@ export function Header() {
           <div className="flex items-center gap-2.5 shrink-0">
             <Button
               asChild
-              variant="outlineDark"
+              variant="outlineForest"
               size="sm"
               className="hidden sm:inline-flex text-xs"
             >
               <Link to="/estimator" className="flex items-center gap-1.5">
-                <Calculator className="size-3.5 text-gold" />
+                <Calculator className="size-3.5 text-[#415825]" />
                 Estimator
               </Link>
             </Button>
 
             <Button
               asChild
-              variant="gold"
+              variant="pine"
               size="sm"
               className="hidden sm:inline-flex text-xs"
             >
@@ -230,7 +230,7 @@ export function Header() {
                 rel="noreferrer"
                 className="flex items-center gap-1.5"
               >
-                <MessageSquare className="size-3.5" />
+                <MessageSquare className="size-3.5 text-gold" />
                 WhatsApp
               </a>
             </Button>
@@ -310,13 +310,13 @@ export function Header() {
                 return null;
               })}
 
-              <div className="mt-4 grid grid-cols-2 gap-3 pt-2 pb-2">
-                <Button asChild variant="outlineDark" size="sm">
+              <div className="mt-4 grid grid-cols-2 gap-3 pt-3 pb-3">
+                <Button asChild variant="outlineForest" size="default" className="w-full text-xs font-bold">
                   <Link to="/estimator" onClick={() => setMobileOpen(false)}>
                     Price Estimator
                   </Link>
                 </Button>
-                <Button asChild variant="gold" size="sm">
+                <Button asChild variant="pine" size="default" className="w-full text-xs font-bold">
                   <a href={site.whatsapp} target="_blank" rel="noreferrer">
                     WhatsApp Us
                   </a>

@@ -72,7 +72,7 @@ function Contact() {
         eyebrow="Contact us"
         title="We're here whenever you need us"
         intro="Please get in touch using the contact details below or complete our enquiry form, and we'll respond as soon as possible."
-        image={familyComfort}
+        image="https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?q=80&w=1920&auto=format&fit=crop"
       />
 
       <Section tone="cream" className="py-12 md:py-14">
@@ -151,7 +151,7 @@ function Contact() {
                 <Textarea id="message" name="message" rows={5} required />
               </div>
               <div className="flex flex-wrap items-center gap-4">
-                <Button type="submit" variant="gold" size="xl">
+                <Button type="submit" variant="forest" size="xl">
                   Submit Enquiry
                 </Button>
                 {sent && (
@@ -164,17 +164,17 @@ function Contact() {
           </div>
 
           <aside className="space-y-8">
-            <div className="rounded-lg border border-border bg-card p-7">
-              <h3 className="text-xl">Contact information</h3>
+            <div className="rounded-xl border border-border bg-card p-7 shadow-xs">
+              <h3 className="font-serif text-xl font-bold">Contact information</h3>
               <ul className="mt-4 space-y-3 text-sm">
                 <li className="flex gap-3">
-                  <Phone className="mt-0.5 size-4 text-gold" />
-                  <a href={site.phoneHref} className="hover:underline">
+                  <Phone className="mt-0.5 size-4 text-[#415825]" />
+                  <a href={site.phoneHref} className="hover:underline font-semibold">
                     {site.phone}
                   </a>
                 </li>
                 <li className="flex gap-3">
-                  <Mail className="mt-0.5 size-4 text-gold" />
+                  <Mail className="mt-0.5 size-4 text-[#415825]" />
                   <a href={`mailto:${site.email}`} className="hover:underline">
                     {site.email}
                   </a>
@@ -182,34 +182,34 @@ function Contact() {
               </ul>
             </div>
 
-            <div className="rounded-lg border border-border bg-card p-7">
-              <h3 className="text-xl">Head Office</h3>
+            <div className="rounded-xl border border-border bg-card p-7 shadow-xs">
+              <h3 className="font-serif text-xl font-bold">Head Office</h3>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                 The best place to discuss funeral arrangements, pre-planning, billing enquiries and
                 general consultations.
               </p>
               <p className="mt-3 flex gap-3 text-sm">
-                <MapPin className="mt-0.5 size-4 shrink-0 text-gold" />
+                <MapPin className="mt-0.5 size-4 shrink-0 text-[#415825]" />
                 {site.headOffice}
               </p>
-              <Button asChild variant="outlineDark" size="sm" className="mt-5">
+              <Button asChild variant="outlineForest" size="sm" className="mt-5">
                 <a href={site.headOfficeMap} target="_blank" rel="noreferrer">
                   Get Directions
                 </a>
               </Button>
             </div>
 
-            <div className="rounded-lg border border-border bg-card p-7">
-              <h3 className="text-xl">Garden of Peace Memorial Park</h3>
+            <div className="rounded-xl border border-border bg-card p-7 shadow-xs">
+              <h3 className="font-serif text-xl font-bold">Garden of Peace Memorial Park</h3>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
                 We welcome families, prospective buyers and visitors to tour our memorial park.
                 Appointments are recommended so an advisor is available to assist you.
               </p>
               <p className="mt-3 flex gap-3 text-sm">
-                <MapPin className="mt-0.5 size-4 shrink-0 text-gold" />
+                <MapPin className="mt-0.5 size-4 shrink-0 text-[#415825]" />
                 {site.park}
               </p>
-              <Button asChild variant="outlineDark" size="sm" className="mt-5">
+              <Button asChild variant="forest" size="sm" className="mt-5">
                 <a href={site.parkMap} target="_blank" rel="noreferrer">
                   Visit the Memorial Park
                 </a>
@@ -237,22 +237,8 @@ function Contact() {
       </Section>
 
       <Section tone="cream">
-        <div className="grid gap-10 md:grid-cols-2">
-          <iframe
-            title="Capetrust Head Office location map"
-            src="https://www.google.com/maps?q=194%20Elepe%20Road%20Ikorodu%20Lagos&output=embed"
-            className="h-80 w-full rounded-lg border border-border"
-            loading="lazy"
-          />
-          <iframe
-            title="Garden of Peace Memorial Park location map"
-            src="https://www.google.com/maps?q=Odo-Ayandelu%20Agbowa%20Lagos&output=embed"
-            className="h-80 w-full rounded-lg border border-border"
-            loading="lazy"
-          />
-        </div>
-        <div className="mx-auto mt-14 max-w-2xl text-center">
-          <h2 className="text-3xl">Before you visit</h2>
+        <div className="mx-auto max-w-2xl text-center">
+          <h2 className="text-3xl">Before You Visit</h2>
           <p className="mt-4 leading-relaxed text-muted-foreground">
             To provide you with the best possible service, we recommend booking an appointment for
             consultations, cemetery tours and investment enquiries. This allows our advisors to
