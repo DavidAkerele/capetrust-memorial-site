@@ -30,11 +30,29 @@ export const Route = createFileRoute("/pre-planning")({
   }),
 });
 
+import { Users, FileText, CheckCircle2, ShieldCheck, HeartHandshake, Sparkles } from "lucide-react";
+
 const steps = [
-  ["Start the Conversation", "Meet with one of our Pre-Planning Advisors to discuss your wishes, answer your questions and explain the options available."],
-  ["Create Your Personal Plan", "Together, we'll document your preferences, including burial arrangements, cemetery options and any personal requests you would like your family to know."],
-  ["Review Your Choices", "Take time to review your plan, make any adjustments and ensure every detail reflects your wishes before it's finalised."],
-  ["Keep Your Plan Secure", "Your plan is safely documented with Capetrust and can be updated if your circumstances or preferences change in the future."],
+  {
+    title: "Start the Conversation",
+    body: "Meet with one of our Pre-Planning Advisors in person, over the phone, or via video to discuss your wishes, ask questions, and explore options without pressure.",
+    icon: Users,
+  },
+  {
+    title: "Create Your Personal Plan",
+    body: "Together, we document your exact preferences, including resting plots at Garden of Peace™, service structure, transport logistics, and personal tributes.",
+    icon: FileText,
+  },
+  {
+    title: "Review & Customize Choices",
+    body: "Take time to review your itemized estimate and memorial plan, make adjustments at your pace, and ensure every detail honors your legacy perfectly.",
+    icon: CheckCircle2,
+  },
+  {
+    title: "Keep Your Plan Secured",
+    body: "Your plan is permanently recorded in Capetrust's secure registry, protecting your family against future inflation and eliminating uncertainty.",
+    icon: ShieldCheck,
+  },
 ];
 
 function PrePlanning() {
@@ -67,17 +85,39 @@ function PrePlanning() {
         </p>
       </Section>
 
-      <Section tone="cream">
-        <SectionHeading eyebrow="How it works" title="A simple four-step process" />
-        <ol className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {steps.map(([title, body], i) => (
-            <li key={title} className="rounded-xl border border-border bg-card p-7 shadow-soft transition-all hover:border-[#415825]/40">
-              <span className="font-serif text-4xl font-bold text-[#415825]/40">0{i + 1}</span>
-              <h3 className="mt-3 text-xl font-serif text-foreground">{title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{body}</p>
-            </li>
-          ))}
-        </ol>
+      <Section tone="cream" className="bg-texture-dots">
+        <SectionHeading center eyebrow="How it works" title="A simple, thoughtful four-step process" intro="Structured step-by-step guidance to ensure complete clarity, legal certainty, and family peace of mind." />
+        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {steps.map((s, i) => {
+            const Icon = s.icon;
+            return (
+              <div
+                key={s.title}
+                className="group relative rounded-2xl border border-border bg-card p-6 sm:p-7 shadow-soft transition-all duration-300 hover:border-[#D4AF37]/60 hover:shadow-md flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between">
+                    <span className="font-serif text-3xl font-bold text-[#415825]/40 group-hover:text-[#D4AF37] transition-colors">
+                      0{i + 1}
+                    </span>
+                    <div className="flex size-10 items-center justify-center rounded-xl bg-[#415825]/10 text-[#415825] group-hover:bg-[#415825] group-hover:text-white transition-colors">
+                      <Icon className="size-5" />
+                    </div>
+                  </div>
+                  <h3 className="mt-4 font-serif text-lg font-bold text-foreground group-hover:text-primary transition-colors">
+                    {s.title}
+                  </h3>
+                  <p className="mt-2.5 text-xs leading-relaxed text-muted-foreground">{s.body}</p>
+                </div>
+
+                <div className="mt-6 pt-4 border-t border-border/60 flex items-center justify-between text-[11px] font-semibold text-[#415825]">
+                  <span>Milestone {i + 1}</span>
+                  <span className="size-1.5 rounded-full bg-[#415825]" />
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </Section>
 
       <Section>

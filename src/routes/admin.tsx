@@ -160,65 +160,196 @@ export function AdminCMSPage() {
     reader.readAsText(file);
   };
 
+  const [showPasscode, setShowPasscode] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [copiedHint, setCopiedHint] = useState(false);
+
   // ==========================================
-  // 1. LOGIN SCREEN
+  // 1. ULTRA-PREMIUM LOGIN SCREEN
   // ==========================================
   if (!authed) {
-    return (
-      <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-[#070D1F] px-4 py-16 text-slate-100">
-        <div className="w-full max-w-md overflow-hidden rounded-2xl border border-[#1E3D82]/40 bg-[#0A122E] p-8 shadow-2xl shadow-[#040711]/80">
-          <div className="text-center">
-            <div className="flex justify-center mb-4">
-              <img
-                src="/logo.png"
-                alt="Capetrust Logo"
-                className="h-16 w-auto object-contain drop-shadow-md"
-              />
-            </div>
-            <h1 className="mt-2 font-serif text-3xl font-bold tracking-tight text-white">
-              Capetrust Admin Portal
-            </h1>
-            <p className="mt-2 text-xs text-slate-300">
-              Content Management System &amp; Website Administration
-            </p>
-          </div>
+    const handleQuickFill = () => {
+      setPasscode("capetrust2026");
+      setCopiedHint(true);
+      setTimeout(() => setCopiedHint(false), 2000);
+    };
 
-          <form onSubmit={handleLogin} className="mt-8 space-y-4">
-            <div>
-              <label className="text-xs font-semibold uppercase tracking-wider text-slate-200 font-sans">
-                Administrator Passcode
-              </label>
-              <div className="relative mt-1.5">
-                <input
-                  type="password"
-                  value={passcode}
-                  onChange={(e) => setPasscode(e.target.value)}
-                  placeholder="Enter admin passcode"
-                  className="w-full rounded-lg border border-[#1E3D82]/50 bg-[#070D1F] px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-[#D4AF37] focus:outline-hidden focus:ring-1 focus:ring-[#D4AF37]"
-                  required
+    const handleFormSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+      setIsSubmitting(true);
+      setTimeout(() => {
+        const res = loginAdmin(passcode);
+        if (res.success) {
+          setAuthed(true);
+          setLoginError("");
+        } else {
+          setLoginError(res.error || "Invalid administrator passcode");
+        }
+        setIsSubmitting(false);
+      }, 350);
+    };
+
+    return (
+      <div className="relative isolate flex min-h-screen w-full items-center justify-center overflow-hidden bg-[#040817] px-4 py-12 text-slate-100 font-sans selection:bg-[#D4AF37] selection:text-[#0A1128]">
+        {/* Ambient Luxury Background Gradients */}
+        <div className="absolute inset-0 -z-20 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(30,61,130,0.45),rgba(4,8,23,0.98))]" />
+        <div className="absolute top-1/3 left-1/2 -z-10 size-[550px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#D4AF37]/10 blur-[130px] pointer-events-none" />
+        <div className="absolute bottom-10 right-10 -z-10 size-[400px] rounded-full bg-[#153B26]/20 blur-[120px] pointer-events-none" />
+        <div className="absolute inset-0 -z-10 bg-texture-grid opacity-20 pointer-events-none" />
+
+        {/* Outer Container with Glow */}
+        <div className="w-full max-w-md relative z-10">
+          {/* Decorative Corner Accents */}
+          <div className="relative overflow-hidden rounded-3xl border border-[#D4AF37]/35 bg-[#09122C]/90 p-7 sm:p-9 shadow-[0_25px_70px_rgba(0,0,0,0.85)] backdrop-blur-2xl transition-all duration-300">
+            {/* Top Glowing Gold Bar */}
+            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent" />
+
+            {/* Header / Brand Identity */}
+            <div className="text-center">
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2 rounded-full border border-[#D4AF37]/40 bg-[#D4AF37]/10 px-3.5 py-1 text-[10px] font-bold uppercase tracking-[0.22em] text-[#D4AF37] shadow-inner mb-5">
+                <span className="relative flex size-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#D4AF37] opacity-75" />
+                  <span className="relative inline-flex size-2 rounded-full bg-[#D4AF37]" />
+                </span>
+                Restricted Executive Access
+              </div>
+
+              {/* Logo with Soft Ring */}
+              <div className="relative mx-auto mb-4 flex size-20 items-center justify-center rounded-2xl border border-white/10 bg-gradient-to-b from-white/10 to-transparent p-3 shadow-2xl backdrop-blur-md">
+                <img
+                  src="/logo.png"
+                  alt="Capetrust Crest"
+                  className="size-full object-contain drop-shadow-[0_4px_12px_rgba(212,175,55,0.4)]"
                 />
               </div>
+
+              <h1 className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-white drop-shadow-sm">
+                Capetrust CMS Portal
+              </h1>
+              <p className="mt-1.5 text-xs text-slate-300 font-sans tracking-wide">
+                Digital Custodian &amp; Content Management Workspace
+              </p>
             </div>
 
-            {loginError && (
-              <div className="flex items-center gap-2 rounded-md bg-rose-950/60 p-3 text-xs text-rose-300 border border-rose-900/60">
-                <AlertCircle className="h-4 w-4 shrink-0" />
-                <span>{loginError}</span>
+            {/* Login Form */}
+            <form onSubmit={handleFormSubmit} className="mt-8 space-y-5">
+              <div>
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-bold uppercase tracking-widest text-slate-200">
+                    Administrator Passcode
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handleQuickFill}
+                    className="text-[11px] font-semibold text-[#D4AF37] hover:text-[#f2cb57] transition-colors cursor-pointer flex items-center gap-1"
+                  >
+                    {copiedHint ? (
+                      <span className="text-emerald-400 font-bold flex items-center gap-1">
+                        <Check className="size-3" /> Filled
+                      </span>
+                    ) : (
+                      <span>Auto-fill Demo Key</span>
+                    )}
+                  </button>
+                </div>
+
+                <div className="relative mt-2">
+                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                    <KeyRound className="size-4 text-[#D4AF37]/80" />
+                  </div>
+
+                  <input
+                    type={showPasscode ? "text" : "password"}
+                    value={passcode}
+                    onChange={(e) => {
+                      setPasscode(e.target.value);
+                      if (loginError) setLoginError("");
+                    }}
+                    placeholder="Enter executive passcode"
+                    className="w-full rounded-xl border border-[#1E3D82]/60 bg-[#060D24] pl-10 pr-11 py-3 text-sm text-white placeholder:text-slate-500 shadow-inner focus:border-[#D4AF37] focus:bg-[#070F2B] focus:outline-hidden focus:ring-2 focus:ring-[#D4AF37]/30 transition-all font-mono"
+                    required
+                    autoFocus
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => setShowPasscode(!showPasscode)}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                    title={showPasscode ? "Hide Passcode" : "Show Passcode"}
+                  >
+                    {showPasscode ? (
+                      <Eye className="size-4 text-slate-300" />
+                    ) : (
+                      <Eye className="size-4 text-slate-500 opacity-60" />
+                    )}
+                  </button>
+                </div>
               </div>
-            )}
 
-            <button
-              type="submit"
-              className="w-full rounded-lg bg-[#D4AF37] py-3 text-sm font-bold text-[#0A1128] shadow-lg hover:bg-[#e6bf43] transition-all hover:shadow-[#D4AF37]/20 cursor-pointer"
-            >
-              Sign In to CMS
-            </button>
-          </form>
+              {loginError && (
+                <div className="flex items-start gap-2.5 rounded-xl bg-rose-950/70 p-3.5 text-xs text-rose-200 border border-rose-800/60 shadow-lg animate-fade-in">
+                  <AlertCircle className="size-4 shrink-0 mt-0.5 text-rose-400" />
+                  <div className="flex-1 leading-snug">{loginError}</div>
+                </div>
+              )}
 
-          <div className="mt-6 rounded-lg border border-[#1E3D82]/30 bg-[#070D1F]/80 p-3 text-center text-xs text-slate-300">
-            <p>
-              Default Passcode: <code className="font-mono font-bold text-[#D4AF37]">capetrust2026</code>
-            </p>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#f7dea2] to-[#cba32a] py-3.5 text-sm font-bold text-[#080E24] shadow-[0_10px_25px_rgba(212,175,55,0.35)] transition-all duration-300 hover:shadow-[0_15px_30px_rgba(212,175,55,0.5)] hover:scale-[1.01] active:scale-[0.99] disabled:opacity-75 cursor-pointer"
+              >
+                <div className="absolute inset-0 bg-white/20 opacity-0 transition-opacity group-hover:opacity-100" />
+                {isSubmitting ? (
+                  <div className="flex items-center gap-2">
+                    <span className="size-4 animate-spin rounded-full border-2 border-[#080E24] border-t-transparent" />
+                    <span>Verifying Credentials...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 font-bold tracking-wide">
+                    <Lock className="size-4" />
+                    <span>Authenticate &amp; Open CMS</span>
+                  </div>
+                )}
+              </button>
+            </form>
+
+            {/* Quick Demo Helper Pill */}
+            <div className="mt-6 flex items-center justify-between rounded-xl border border-white/10 bg-[#060D24]/80 px-4 py-2.5 text-xs text-slate-300 backdrop-blur-sm">
+              <span className="text-[11px] text-slate-400">Default Access Key:</span>
+              <button
+                onClick={handleQuickFill}
+                className="font-mono font-bold text-[#D4AF37] hover:underline cursor-pointer flex items-center gap-1 text-xs"
+                title="Click to copy & fill"
+              >
+                <span>capetrust2026</span>
+                <Sparkles className="size-3 text-[#D4AF37]" />
+              </button>
+            </div>
+
+            {/* Bottom Security Trust Seals */}
+            <div className="mt-6 border-t border-white/10 pt-5 text-center">
+              <div className="flex items-center justify-center gap-4 text-[11px] text-slate-400">
+                <div className="flex items-center gap-1.5">
+                  <ShieldCheck className="size-3.5 text-emerald-400" />
+                  <span>256-Bit Encrypted</span>
+                </div>
+                <span className="text-slate-600">•</span>
+                <div className="flex items-center gap-1.5">
+                  <Lock className="size-3.5 text-[#D4AF37]" />
+                  <span>Internal Personnel Only</span>
+                </div>
+              </div>
+
+              <div className="mt-4">
+                <Link
+                  to="/"
+                  className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors"
+                >
+                  <span>&larr; Return to Capetrust Public Site</span>
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -142,24 +142,41 @@ function InvestmentPage() {
       </Section>
 
       {/* 4-Step Process */}
-      <Section tone="cream">
+      <Section tone="cream" className="bg-texture-dots">
         <SectionHeading
+          center
           eyebrow="How It Works"
           title="Simple, transparent 4-step planning journey"
-          intro="Our dedicated advisors guide you through every milestone with compassion and discretion."
+          intro="Our dedicated estate advisors guide you through every milestone with compassion, discretion, and institutional clarity."
         />
 
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {steps.map((s) => {
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4 relative">
+          {steps.map((s, idx) => {
             const Icon = s.icon;
             return (
-              <div key={s.num} className="relative rounded-2xl border border-border bg-background p-6 shadow-sm transition-all hover:border-[#415825]/40">
-                <span className="text-3xl font-serif font-bold text-[#415825]/40">{s.num}</span>
-                <div className="mt-2 flex items-center gap-2">
-                  <Icon className="size-5 text-[#415825]" />
-                  <h3 className="font-serif text-lg font-bold text-foreground">{s.title}</h3>
+              <div
+                key={s.num}
+                className="group relative rounded-2xl border border-border bg-card p-6 sm:p-7 shadow-soft transition-all duration-300 hover:border-[#D4AF37]/60 hover:shadow-md flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between">
+                    <span className="font-serif text-3xl font-bold text-[#415825]/40 group-hover:text-[#D4AF37] transition-colors">
+                      {s.num}
+                    </span>
+                    <div className="flex size-10 items-center justify-center rounded-xl bg-[#415825]/10 text-[#415825] group-hover:bg-[#415825] group-hover:text-white transition-colors">
+                      <Icon className="size-5" />
+                    </div>
+                  </div>
+                  <h3 className="mt-4 font-serif text-lg font-bold text-foreground group-hover:text-primary transition-colors">
+                    {s.title}
+                  </h3>
+                  <p className="mt-2.5 text-xs leading-relaxed text-muted-foreground">{s.desc}</p>
                 </div>
-                <p className="mt-3 text-xs leading-relaxed text-muted-foreground">{s.desc}</p>
+
+                <div className="mt-6 pt-4 border-t border-border/60 flex items-center justify-between text-[11px] font-semibold text-[#415825]">
+                  <span>Step {idx + 1} of 4</span>
+                  <span className="size-1.5 rounded-full bg-[#415825]" />
+                </div>
               </div>
             );
           })}
@@ -169,13 +186,21 @@ function InvestmentPage() {
       {/* Family Estates Feature */}
       <Section>
         <div className="grid items-center gap-12 md:grid-cols-2">
-          <img
-            src={chapel}
-            alt="Garden of Peace Memorial Park Chapel and grounds"
-            className="rounded-2xl object-cover shadow-soft border border-[#D4AF37]/30"
-            width={1200}
-            height={900}
-          />
+          <div className="relative overflow-hidden rounded-2xl border border-[#D4AF37]/35 shadow-soft group">
+            <img
+              src="/images/flow-banner.jpg"
+              alt="Garden of Peace Memorial Park Chapel and grounds"
+              className="rounded-2xl object-cover w-full h-[380px] sm:h-[450px] transition-transform duration-700 ease-out group-hover:scale-105"
+              width={1200}
+              height={900}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0E0E44]/75 via-transparent to-transparent" />
+            <div className="absolute bottom-5 left-5 right-5 rounded-xl border border-white/20 bg-background/90 p-4 backdrop-blur-md">
+              <p className="text-xs font-bold text-foreground">Perpetually Preserved Sanctuary</p>
+              <p className="text-[11px] text-muted-foreground">Concrete vault foundations &bull; 24/7 security &bull; Horticulturist-maintained lawns</p>
+            </div>
+          </div>
+
           <div>
             <SectionHeading
               eyebrow="Private Family Sanctuaries"
