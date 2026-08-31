@@ -262,8 +262,8 @@ function FAQ() {
             </div>
           </div>
 
-          {/* Category Chips */}
-          <div className="flex flex-wrap gap-2 pt-2 border-b border-border pb-6 overflow-x-auto">
+          {/* Category Chips - Responsive swipe on mobile */}
+          <div className="flex items-center gap-2 pt-2 border-b border-border pb-4 overflow-x-auto no-scrollbar sm:flex-wrap">
             {categories.map((cat) => {
               const isSelected = selectedCategory === cat;
               return (
@@ -271,9 +271,9 @@ function FAQ() {
                   key={cat}
                   type="button"
                   onClick={() => setSelectedCategory(cat)}
-                  className={`rounded-full px-4 py-2 text-xs font-bold transition-all ${
+                  className={`shrink-0 rounded-xs px-3.5 py-1.5 text-xs font-bold transition-all whitespace-nowrap ${
                     isSelected
-                      ? "bg-[#1E3F20] text-white shadow-sm border border-[#D4AF37]/40"
+                      ? "bg-[#1E3F20] text-white shadow-sm border-l-2 border-[#D4AF37]"
                       : "bg-muted/70 text-muted-foreground hover:bg-muted hover:text-foreground border border-border"
                   }`}
                 >
@@ -349,7 +349,7 @@ function FAQ() {
             <div className="sticky top-28 space-y-6">
               {/* Direct Advisor Assistance Card */}
               <div className="rounded-2xl border border-[#D4AF37]/40 bg-gradient-to-br from-[#0E0E44] via-[#1E3D82] to-[#1E3F20] p-6 sm:p-8 text-white shadow-soft">
-                <span className="inline-block rounded-full bg-[#D4AF37]/20 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-gold border border-gold/30">
+                <span className="inline-block rounded-xs bg-[#D4AF37]/20 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-gold border-l-2 border-[#D4AF37]">
                   24/7 Support
                 </span>
                 <h3 className="mt-3 font-serif text-2xl font-bold text-white">Have a specific question?</h3>

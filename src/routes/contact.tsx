@@ -46,7 +46,11 @@ const interests = [
   "Directions to Our Locations",
 ];
 
+import { useCMS } from "@/lib/cms/cms-store";
+
 function Contact() {
+  const { content } = useCMS();
+  const currentSettings = content.settings || site;
   const [sent, setSent] = useState(false);
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -60,7 +64,7 @@ function Contact() {
       "",
       String(data.get("message") ?? ""),
     ].join("\n");
-    window.location.href = `mailto:${site.email}?subject=${encodeURIComponent(
+    window.location.href = `mailto:${currentSettings.email || site.email}?subject=${encodeURIComponent(
       `Website enquiry — ${data.get("interest")}`,
     )}&body=${encodeURIComponent(body)}`;
     setSent(true);

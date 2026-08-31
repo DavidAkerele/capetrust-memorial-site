@@ -96,7 +96,7 @@ function PrePlanning() {
             </p>
           </div>
           <div className="rounded-xl border border-border bg-card p-8 shadow-soft transition-all hover:border-[#415825]/40">
-            <span className="inline-block rounded-full bg-[#415825]/10 px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-[#415825]">Support Services</span>
+            <span className="inline-block rounded-xs bg-[#415825]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-[#415825] border-l-2 border-[#415825]">Support Services</span>
             <h3 className="mt-3 text-2xl font-serif">Estate Settlement Guidance</h3>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
               Planning ahead often extends beyond funeral arrangements. As part of our pre-planning

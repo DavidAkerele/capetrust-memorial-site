@@ -275,9 +275,12 @@ export function addCondolence(
     }),
   };
 
-  const updatedObituary = {
-    ...all[index],
-    condolences: [newMessage, ...all[index].condolences],
+  const target = all[index];
+  if (!target) return undefined;
+
+  const updatedObituary: Obituary = {
+    ...target,
+    condolences: [newMessage, ...(target.condolences || [])],
   };
 
   all[index] = updatedObituary;
@@ -291,9 +294,12 @@ export function incrementCandle(slug: string): number {
   const index = all.findIndex((o) => o.slug === slug);
   if (index === -1) return 0;
 
-  const newCount = (all[index].candlesCount || 0) + 1;
+  const target = all[index];
+  if (!target) return 0;
+
+  const newCount = (target.candlesCount || 0) + 1;
   all[index] = {
-    ...all[index],
+    ...target,
     candlesCount: newCount,
   };
   localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(all));

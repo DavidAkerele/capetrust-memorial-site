@@ -13,7 +13,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { navItems, site } from "@/lib/site";
 
+import { useCMS } from "@/lib/cms/cms-store";
+
 export function Header() {
+  const { content } = useCMS();
+  const currentSettings = content?.settings || site;
+  const emergency = currentSettings.emergencyBanner;
+
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [mobileExpandedGroup, setMobileExpandedGroup] = useState<string | null>(null);
@@ -43,13 +49,13 @@ export function Header() {
               Garden of Peace™ Memorial Park • Agbowa, Lagos
             </span>
             <span className="inline-flex items-center font-semibold text-gold">
-              24/7 Immediate Assistance
+              {emergency?.enabled ? emergency.badge : "24/7 Immediate Assistance"}
             </span>
           </div>
 
           <div className="flex items-center gap-5">
             <a
-              href={site.parkMap}
+              href={currentSettings.parkMap || site.parkMap}
               target="_blank"
               rel="noreferrer"
               className="hidden items-center gap-1.5 hover:underline md:flex text-primary-foreground/90"
@@ -57,10 +63,10 @@ export function Header() {
               <MapPin className="size-3.5 text-gold" /> Our Locations
             </a>
             <a
-              href={site.phoneHref}
+              href={currentSettings.phoneHref || site.phoneHref}
               className="flex items-center gap-1.5 hover:underline font-semibold"
             >
-              <Phone className="size-3.5 text-gold" /> {site.phone}
+              <Phone className="size-3.5 text-gold" /> {currentSettings.phone || site.phone}
             </a>
           </div>
         </div>

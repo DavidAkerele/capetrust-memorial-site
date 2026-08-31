@@ -90,14 +90,19 @@ const reasons = [
   { icon: Award, text: "Clear, transparent pricing in Nigerian Naira with no hidden fees", tag: "Transparent" },
 ];
 
+import { useCMS } from "@/lib/cms/cms-store";
+
 function Home() {
+  const { content } = useCMS();
+  const home = content.home;
+
   return (
     <>
       {/* 100vh Full Screen Hero Banner with Ambient Motion & Dynamic Textures */}
       <section className="relative isolate flex min-h-[calc(100vh-5rem)] items-center overflow-hidden">
         {/* Background Image with Slow Ambient Scale Effect */}
         <img
-          src="https://images.pexels.com/photos/7317677/pexels-photo-7317677.jpeg"
+          src={home.heroImage || "https://images.pexels.com/photos/7317677/pexels-photo-7317677.jpeg"}
           alt="Capetrust Memorial & Funeral Care"
           className="absolute inset-0 -z-20 size-full object-cover scale-105 transition-transform duration-1000 ease-out"
           width={1920}
@@ -116,30 +121,28 @@ function Home() {
           {/* Main Transparent Hero Content */}
           <div className="max-w-3xl space-y-6">
             {/* Live Indicator Badge */}
-            <div className="inline-flex items-center gap-2 rounded-full bg-[#D4AF37]/20 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-gold border border-gold/40 backdrop-blur-md shadow-xs animate-float-slow">
-              <span className="flex size-2 rounded-full bg-[#415825] animate-pulse" />
-              <span>Every life. Honoured.™</span>
+            <div className="inline-flex items-center gap-2 rounded-xs bg-[#D4AF37]/20 px-3.5 py-1 text-xs font-bold uppercase tracking-[0.2em] text-gold border-l-2 border-[#D4AF37] backdrop-blur-md shadow-xs animate-float-slow">
+              <span className="flex size-2 rounded-xs bg-[#415825] animate-pulse" />
+              <span>{home.heroTag || "Every life. Honoured.™"}</span>
             </div>
 
             <h1 className="text-4xl font-serif font-bold text-white leading-tight sm:text-5xl lg:text-6xl drop-shadow-md">
-              When words are difficult to find, compassionate care matters most.
+              {home.heroTitle}
             </h1>
 
             <p className="text-base sm:text-lg leading-relaxed text-white/90 max-w-2xl drop-shadow-xs">
-              Capetrust Funeral Services provides professional funeral, cemetery and memorial care
-              in Lagos, designed to bring comfort, clarity and peace of mind during life's most
-              challenging moments.
+              {home.heroSubtitle}
             </p>
 
             {/* Action Buttons with Dynamic Hover Micro-Motions */}
             <div className="pt-4 flex flex-wrap items-center gap-3 sm:gap-4">
               <Button asChild variant="gold" size="xl" className="w-full sm:w-auto shadow-lg hover:shadow-gold/25 transition-all duration-300 hover:scale-105">
-                <Link to="/contact">Speak with an Advisor</Link>
+                <Link to={home.heroPrimaryCtaLink || "/contact"}>{home.heroPrimaryCtaText || "Speak with an Advisor"}</Link>
               </Button>
               <Button asChild variant="pine" size="xl" className="w-full sm:w-auto shadow-lg hover:shadow-pine/30 transition-all duration-300 hover:scale-105">
-                <Link to="/estimator" className="flex items-center justify-center gap-2">
+                <Link to={home.heroSecondaryCtaLink || "/estimator"} className="flex items-center justify-center gap-2">
                   <Calculator className="size-4" />
-                  Calculate Vault Price
+                  {home.heroSecondaryCtaText || "Calculate Vault Price"}
                 </Link>
               </Button>
               <Button asChild variant="onDark" size="xl" className="w-full sm:w-auto backdrop-blur-md transition-all duration-300 hover:bg-white/20">
@@ -148,19 +151,13 @@ function Home() {
             </div>
 
             {/* Quick Live Stats Ribbon */}
-            <div className="pt-6 grid grid-cols-2 sm:grid-cols-3 gap-3 border-t border-white/15 max-w-xl">
-              <div className="flex items-center gap-2 text-xs text-white/80">
-                <CheckCircle2 className="size-4 text-gold shrink-0" />
-                <span>10+ Acre Sanctuary</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-white/80">
-                <CheckCircle2 className="size-4 text-gold shrink-0" />
-                <span>24/7 Lagos Response</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-white/80 col-span-2 sm:col-span-1">
-                <CheckCircle2 className="size-4 text-gold shrink-0" />
-                <span>Perpetual Upkeep</span>
-              </div>
+            <div className="pt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 border-t border-white/15 max-w-2xl">
+              {home.stats.map((st, i) => (
+                <div key={i} className="flex flex-col text-xs text-white/90">
+                  <span className="font-serif text-lg font-bold text-gold">{st.value}</span>
+                  <span className="text-[11px] text-white/70">{st.label}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -327,7 +324,7 @@ function Home() {
 
           <div className="relative grid items-center gap-8 lg:grid-cols-12">
             <div className="lg:col-span-8 space-y-4">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#D4AF37]/20 px-3.5 py-1 text-xs font-bold text-gold border border-gold/30 backdrop-blur-xs">
+              <span className="inline-flex items-center gap-1.5 rounded-xs bg-[#D4AF37]/20 px-3 py-1 text-xs font-bold text-gold border-l-2 border-[#D4AF37] backdrop-blur-xs">
                 <Calculator className="size-3.5" />
                 Transparent Pricing Tool
               </span>
@@ -340,13 +337,13 @@ function Home() {
 
               {/* Price Chips */}
               <div className="flex flex-wrap gap-2 pt-2">
-                <span className="rounded-lg bg-white/10 px-3 py-1 text-xs font-semibold text-white/90 border border-white/15">
+                <span className="rounded-sm bg-white/10 px-3 py-1 text-xs font-semibold text-white/90 border border-white/15">
                   Single Vault: ₦4,000,000
                 </span>
-                <span className="rounded-lg bg-white/10 px-3 py-1 text-xs font-semibold text-white/90 border border-white/15">
+                <span className="rounded-sm bg-white/10 px-3 py-1 text-xs font-semibold text-white/90 border border-white/15">
                   Double Vault: ₦7,000,000
                 </span>
-                <span className="rounded-lg bg-white/10 px-3 py-1 text-xs font-semibold text-white/90 border border-white/15">
+                <span className="rounded-sm bg-white/10 px-3 py-1 text-xs font-semibold text-white/90 border border-white/15">
                   Triple Vault: ₦9,800,000
                 </span>
               </div>
@@ -416,7 +413,7 @@ function Home() {
       <Section className="bg-texture-mesh">
         <div className="w-full rounded-2xl border border-[#D4AF37]/40 bg-card p-6 sm:p-10 lg:p-12 shadow-soft">
           <div className="text-center">
-            <span className="inline-block rounded-full bg-[#415825]/10 px-3.5 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-[#415825] border border-[#415825]/20">
+            <span className="inline-block rounded-xs bg-[#415825]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-[#415825] border-l-2 border-[#415825]">
               Eternal Remembrance
             </span>
             <h2 className="mt-2 font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">

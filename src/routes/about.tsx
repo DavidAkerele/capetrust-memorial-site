@@ -21,6 +21,8 @@ import heroPark from "@/assets/hero-park.jpg";
 import chapel from "@/assets/chapel.jpg";
 import { Button } from "@/components/ui/button";
 import { CTABand, PageHero, Section, SectionHeading } from "@/components/site/Sections";
+import { useCMS } from "@/lib/cms/cms-store";
+import type { TeamMember } from "@/lib/cms/types";
 
 export const Route = createFileRoute("/about")({
   component: About,
@@ -106,12 +108,15 @@ const pillars = [
 ];
 
 function About() {
+  const { content } = useCMS();
+  const aboutData = content.about;
+
   return (
     <>
       <PageHero
-        eyebrow="About Capetrust"
-        title="Dignity, Care &amp; Foresight in Every Farewell"
-        intro="Welcome to Capetrust Funeral Services, a family-owned funeral home founded on the belief that every life leaves a unique mark, and every departure deserves to be handled with utmost dignity, care, and foresight."
+        eyebrow={aboutData?.hero?.eyebrow || "About Capetrust"}
+        title={aboutData?.hero?.title || "Dignity, Care & Foresight in Every Farewell"}
+        intro={aboutData?.hero?.intro || "Welcome to Capetrust Funeral Services, a family-owned funeral home founded on the belief that every life leaves a unique mark, and every departure deserves to be handled with utmost dignity, care, and foresight."}
         image={advisor}
       >
         <Button asChild variant="gold" size="xl">
@@ -213,14 +218,15 @@ function About() {
           {/* Vision */}
           <div className="flex flex-col justify-between rounded-2xl border border-[#D4AF37]/40 bg-gradient-to-br from-[#0E0E44] via-[#1E3D82] to-[#0A192F] p-8 text-white shadow-soft sm:p-10">
             <div>
-              <span className="inline-block rounded-full bg-[#D4AF37]/20 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-gold border border-gold/30">
+              <span className="inline-block rounded-xs bg-[#D4AF37]/20 px-3 py-1 text-xs font-bold uppercase tracking-wider text-gold border-l-2 border-[#D4AF37]">
                 Our Vision
               </span>
               <h2 className="mt-4 font-serif text-2xl font-bold sm:text-3xl text-white">
-                Redefining Memorial Care Across Africa
+                {aboutData?.vision?.title || "Redefining Memorial Care Across Africa"}
               </h2>
               <p className="mt-4 text-sm leading-relaxed text-white/90">
-                To redefine funeral, cemetery, and memorial services across Africa by building trusted institutions where every family finds comfort, every life is honoured, and every legacy is preserved.
+                {aboutData?.vision?.body ||
+                  "To redefine funeral, cemetery, and memorial services across Africa by building trusted institutions where every family finds comfort, every life is honoured, and every legacy is preserved."}
               </p>
             </div>
             <div className="mt-8 flex items-center gap-2 text-xs font-semibold text-gold">
@@ -232,14 +238,15 @@ function About() {
           {/* Mission */}
           <div className="flex flex-col justify-between rounded-2xl border border-[#D4AF37]/40 bg-gradient-to-br from-[#0E0E44] via-[#1E3D82] to-[#1E3F20] p-8 text-white shadow-soft sm:p-10">
             <div>
-              <span className="inline-block rounded-full bg-[#415825]/30 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-gold border border-gold/30">
+              <span className="inline-block rounded-xs bg-[#415825]/30 px-3 py-1 text-xs font-bold uppercase tracking-wider text-gold border-l-2 border-[#D4AF37]">
                 Our Mission
               </span>
               <h2 className="mt-4 font-serif text-2xl font-bold sm:text-3xl text-white">
-                Complete, Compassionate &amp; Innovative Solutions
+                {aboutData?.mission?.title || "Complete, Compassionate & Innovative Solutions"}
               </h2>
               <p className="mt-4 text-sm leading-relaxed text-white/90">
-                To provide complete funeral, cemetery, and memorial solutions, delivered with care, in a professional and compassionate manner, while embracing innovation to give families peace of mind and create meaningful experiences that honour every life.
+                {aboutData?.mission?.body ||
+                  "To provide complete funeral, cemetery, and memorial solutions, delivered with care, in a professional and compassionate manner, while embracing innovation to give families peace of mind and create meaningful experiences that honour every life."}
               </p>
             </div>
             <div className="mt-8 flex items-center gap-2 text-xs font-semibold text-gold">
@@ -249,6 +256,43 @@ function About() {
           </div>
         </div>
       </Section>
+
+      {/* Leadership & Advisory Team from CMS */}
+      {aboutData?.team && aboutData.team.length > 0 && (
+        <Section>
+          <SectionHeading
+            center
+            eyebrow={aboutData.teamHeading?.eyebrow || "Leadership & Advisory"}
+            title={aboutData.teamHeading?.title || "Dedicated Professionals Committed to Your Peace of Mind"}
+            intro={aboutData.teamHeading?.description || "Our leadership brings decades of experience in healthcare, funeral logistics, and memorial care."}
+          />
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {aboutData.team.map((member: TeamMember) => (
+              <div
+                key={member.id}
+                className="group overflow-hidden rounded-2xl border border-border bg-card shadow-soft transition-all duration-300 hover:border-[#D4AF37]/50 hover:shadow-md"
+              >
+                <div className="relative aspect-4/3 w-full overflow-hidden bg-muted">
+                  <img
+                    src={member.image}
+                    alt={member.name}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                  <div className="absolute bottom-3 left-4 right-4 text-white">
+                    <h3 className="font-serif text-lg font-bold">{member.name}</h3>
+                    <p className="text-xs text-gold font-medium">{member.role}</p>
+                  </div>
+                </div>
+                <div className="p-5">
+                  <p className="text-xs leading-relaxed text-muted-foreground">{member.bio}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Section>
+      )}
 
       {/* Community Development */}
       <Section tone="cream">

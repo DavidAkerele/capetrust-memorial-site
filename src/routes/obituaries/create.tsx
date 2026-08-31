@@ -107,8 +107,10 @@ function CreateObituaryPage() {
     value: string
   ) => {
     const updated = [...services];
-    updated[index][field] = value;
-    setServices(updated);
+    if (updated[index]) {
+      updated[index] = { ...updated[index], [field]: value };
+      setServices(updated);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {

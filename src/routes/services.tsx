@@ -78,13 +78,20 @@ const additional = [
   "Funeral Coordination & Event Management",
 ];
 
+import { useCMS } from "@/lib/cms/cms-store";
+
 function Services() {
+  const { content } = useCMS();
+  const servicesContent = content.services;
+  const servicesList = servicesContent?.servicesList || services;
+  const hero = servicesContent?.hero;
+
   return (
     <>
       <PageHero
-        eyebrow="Offerings"
-        title="Services &amp; Memorial Solutions"
-        intro="At Capetrust Funeral Services, we provide a comprehensive range of funeral, burial and memorial services designed to support families before, during and after a loss."
+        eyebrow={hero?.eyebrow || "Offerings"}
+        title={hero?.title || "Services & Memorial Solutions"}
+        intro={hero?.intro || "At Capetrust Funeral Services, we provide a comprehensive range of funeral, burial and memorial services designed to support families before, during and after a loss."}
         image={hearse}
       >
         <Button asChild variant="gold" size="xl">
@@ -102,7 +109,7 @@ function Services() {
           intro="From the first conversation to the final farewell, our services are designed to simplify the planning process while ensuring every detail is managed with care and professionalism."
         />
         <div className="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {services.map((s) => (
+          {servicesList.map((s) => (
             <article
               key={s.title}
               className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-soft transition-all duration-300 hover:border-[#415825]/50 hover:shadow-md"

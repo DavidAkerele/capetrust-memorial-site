@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -156,20 +157,26 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+import { CMSProvider } from "@/lib/cms/cms-store";
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const routerState = useRouterState();
+  const isAdmin = routerState?.location?.pathname?.startsWith("/admin");
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="flex min-h-screen flex-col">
-        <Header />
-        <main className="flex-1">
-          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-          <Outlet />
-        </main>
-        <Footer />
-        <WhatsAppButton />
-      </div>
+      <CMSProvider>
+        <div className="flex min-h-screen flex-col">
+          {!isAdmin && <Header />}
+          <main className="flex-1">
+            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+            <Outlet />
+          </main>
+          {!isAdmin && <Footer />}
+          {!isAdmin && <WhatsAppButton />}
+        </div>
+      </CMSProvider>
     </QueryClientProvider>
   );
 }

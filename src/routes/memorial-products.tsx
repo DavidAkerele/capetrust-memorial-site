@@ -68,13 +68,20 @@ const collections = [
   },
 ];
 
+import { useCMS } from "@/lib/cms/cms-store";
+
 function MemorialProducts() {
+  const { content } = useCMS();
+  const productsContent = content.memorialProducts;
+  const productCollections = productsContent?.collections || collections;
+  const hero = productsContent?.hero;
+
   return (
     <>
       <PageHero
-        eyebrow="Offerings"
-        title="Memorial Products &amp; Craftsmanship"
-        intro="Alongside our professional funeral services, Capetrust offers a growing collection of memorial products designed to help families honour their loved ones with quality, thoughtful design and lasting craftsmanship."
+        eyebrow={hero?.eyebrow || "Offerings"}
+        title={hero?.title || "Memorial Products & Craftsmanship"}
+        intro={hero?.intro || "Alongside our professional funeral services, Capetrust offers a growing collection of memorial products designed to help families honour their loved ones with quality, thoughtful design and lasting craftsmanship."}
         image={flowers}
       >
         <Button asChild variant="gold" size="xl">
@@ -126,7 +133,7 @@ function MemorialProducts() {
           intro="Explore our quality selection of caskets, floral arrangements, and permanent memorial accessories."
         />
         <div className="mt-12 grid gap-8 md:grid-cols-2">
-          {collections.map((p) => (
+          {productCollections.map((p) => (
             <article
               key={p.title}
               className="group overflow-hidden rounded-2xl border border-border bg-card shadow-soft transition-all duration-300 hover:border-[#415825]/50 hover:shadow-md flex flex-col justify-between"
