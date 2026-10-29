@@ -96,7 +96,7 @@ type TabKey =
   | "obituaries"
   | "backup";
 
-export function AdminCMSPage() {
+function AdminCMSPage() {
   const cms = useCMS();
   const [authed, setAuthed] = useState(false);
   const [adminEmail, setAdminEmail] = useState("");
