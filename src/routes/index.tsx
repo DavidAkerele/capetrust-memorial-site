@@ -71,7 +71,7 @@ const services = [
     title: "Estate Pre-Planning",
     body: "Plan ahead with confidence. Secure resting spaces, protect your family from future costs, and ensure your wishes are documented with absolute clarity.",
     href: "/investment",
-    badge: "0% Installments",
+    badge: "0% Interest",
   },
   {
     icon: Sparkles,
@@ -186,14 +186,6 @@ function Home() {
                   <Calculator className="size-4" />
                   {home.heroSecondaryCtaText || "Calculate Vault Price"}
                 </Link>
-              </Button>
-              <Button
-                asChild
-                variant="onDark"
-                size="xl"
-                className="w-full sm:w-auto backdrop-blur-md transition-all duration-300 hover:bg-white/20"
-              >
-                <Link to="/garden-of-peace">Explore Memorial Park</Link>
               </Button>
             </div>
 

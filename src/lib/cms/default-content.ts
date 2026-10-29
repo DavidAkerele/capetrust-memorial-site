@@ -67,7 +67,7 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
       },
       {
         value: "0%",
-        label: "Flexible Installments",
+        label: "Installment Interest",
         description: "Inflation-hedged pre-planning with up to 12-month terms.",
       },
     ],
@@ -94,7 +94,7 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
         title: "Estate Pre-Planning",
         body: "Plan ahead with confidence. Secure resting spaces, protect your family from future costs, and ensure your wishes are documented with absolute clarity.",
         href: "/investment",
-        badge: "0% Installments",
+        badge: "0% Interest",
       },
       {
         title: "Memorialisation & Monuments",
