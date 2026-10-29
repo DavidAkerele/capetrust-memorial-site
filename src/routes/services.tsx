@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import hearse from "@/assets/hearse.jpg";
 import chapel from "@/assets/chapel.jpg";
 import { Button } from "@/components/ui/button";
+import { SafeImage } from "@/components/ui/SafeImage";
 import { CTABand, PageHero, Section, SectionHeading } from "@/components/site/Sections";
 
 export const Route = createFileRoute("/services")({
@@ -17,14 +18,16 @@ export const Route = createFileRoute("/services")({
       { property: "og:title", content: "Our Funeral Services | Capetrust" },
       {
         property: "og:description",
-        content: "Professional support at every stage, from the first conversation to the final farewell.",
+        content:
+          "Professional support at every stage, from the first conversation to the final farewell.",
       },
       { property: "og:image", content: "/images/og-capetrust.png" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Funeral Services in Lagos | Capetrust" },
       {
         name: "twitter:description",
-        content: "Complete funeral coordination, hearse fleets, burial vaults, and dignified support in Lagos.",
+        content:
+          "Complete funeral coordination, hearse fleets, burial vaults, and dignified support in Lagos.",
       },
       { name: "twitter:image", content: "/images/og-capetrust.png" },
     ],
@@ -35,7 +38,7 @@ const services = [
   {
     title: "Funeral Planning & Coordination",
     body: "Our experienced team works closely with you to coordinate every aspect of the service, ensuring your loved one's wishes, family traditions and personal preferences are carefully reflected. Whether a simple service or a larger celebration of life, we guide you through every decision.",
-    image: "https://images.unsplash.com/photo-1548625361-16eb16ce3998?q=80&w=800&auto=format&fit=crop",
+    image: "/images/family-comfort.jpg",
     cta: "Speak with an Advisor",
     href: "/contact",
   },
@@ -49,7 +52,8 @@ const services = [
   {
     title: "Burial & Vault Interments",
     body: "From cemetery arrangements and graveside coordination to vault preparation and burial scheduling at Garden of Peace™, we create a seamless experience during an important moment of remembrance.",
-    image: "https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?q=80&w=800&auto=format&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?q=80&w=800&auto=format&fit=crop",
     cta: "Explore Memorial Park",
     href: "/garden-of-peace",
   },
@@ -91,7 +95,10 @@ function Services() {
       <PageHero
         eyebrow={hero?.eyebrow || "Offerings"}
         title={hero?.title || "Services & Memorial Solutions"}
-        intro={hero?.intro || "At Capetrust Funeral Services, we provide a comprehensive range of funeral, burial and memorial services designed to support families before, during and after a loss."}
+        intro={
+          hero?.intro ||
+          "At Capetrust Funeral Services, we provide a comprehensive range of funeral, burial and memorial services designed to support families before, during and after a loss."
+        }
         image={hearse}
       >
         <Button asChild variant="gold" size="xl">
@@ -115,9 +122,10 @@ function Services() {
               className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-soft transition-all duration-300 hover:border-[#415825]/50 hover:shadow-md"
             >
               <div className="relative h-48 w-full overflow-hidden bg-muted">
-                <img
+                <SafeImage
                   src={s.image}
                   alt={s.title}
+                  context="service"
                   className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
                   loading="lazy"
                 />
@@ -127,7 +135,9 @@ function Services() {
                 <h3 className="text-xl font-serif font-bold text-foreground transition-colors group-hover:text-[#415825]">
                   {s.title}
                 </h3>
-                <p className="mt-3 flex-1 text-xs leading-relaxed text-muted-foreground">{s.body}</p>
+                <p className="mt-3 flex-1 text-xs leading-relaxed text-muted-foreground">
+                  {s.body}
+                </p>
                 <div className="mt-6 pt-4 border-t border-border">
                   <Button asChild variant="outlineForest" size="sm">
                     <Link to={s.href}>{s.cta}</Link>
@@ -170,7 +180,8 @@ function Services() {
               </li>
             </ul>
             <p className="mt-4 text-xs text-muted-foreground">
-              Pricing varies depending on distance, destination, duration and any special requirements.
+              Pricing varies depending on distance, destination, duration and any special
+              requirements.
             </p>
             <Button asChild variant="forest" size="lg" className="mt-7">
               <Link to="/contact">Discuss Rental &amp; Logistics Options</Link>

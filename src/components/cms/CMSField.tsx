@@ -3,17 +3,28 @@ import { Link as LinkIcon, Lock, Code2, ExternalLink } from "lucide-react";
 
 interface CMSFieldProps {
   label: string;
+  htmlFor?: string;
   description?: string | undefined;
   badge?: string | undefined;
   children: React.ReactNode;
   className?: string | undefined;
 }
 
-export function CMSField({ label, description, badge, children, className = "" }: CMSFieldProps) {
+export function CMSField({
+  label,
+  htmlFor,
+  description,
+  badge,
+  children,
+  className = "",
+}: CMSFieldProps) {
   return (
     <div className={`space-y-1.5 ${className}`}>
       <div className="flex items-center justify-between">
-        <label className="text-xs font-semibold uppercase tracking-wider text-slate-200 font-sans">
+        <label
+          htmlFor={htmlFor}
+          className="text-xs font-semibold tracking-wide text-slate-200 font-sans"
+        >
           {label}
         </label>
         {badge && (
@@ -43,17 +54,18 @@ export function CMSTextInput({
   className = "",
   ...props
 }: CMSTextInputProps) {
+  const generatedId = React.useId();
+  const fieldId = props.id || generatedId;
   return (
-    <CMSField label={label} description={description} badge={badge}>
+    <CMSField label={label} htmlFor={fieldId} description={description} badge={badge}>
       <div className="relative flex items-center">
         {leftIcon && (
-          <div className="pointer-events-none absolute left-3 text-slate-400">
-            {leftIcon}
-          </div>
+          <div className="pointer-events-none absolute left-3 text-slate-400">{leftIcon}</div>
         )}
         <input
           {...props}
-          className={`w-full rounded-lg border border-[#1E3D82]/50 bg-[#070D1F] px-4 py-2.5 text-sm text-white shadow-inner transition-all placeholder:text-slate-500 focus:border-[#D4AF37] focus:outline-hidden focus:ring-1 focus:ring-[#D4AF37] ${
+          id={fieldId}
+          className={`w-full rounded-lg border border-white/15 bg-[#0c172d] px-4 py-2.5 text-sm text-white transition-all placeholder:text-slate-500 focus:border-[#e0bd65] focus:outline-hidden focus:ring-2 focus:ring-[#e0bd65]/25 ${
             leftIcon ? "pl-9" : ""
           } ${className}`}
         />
@@ -79,22 +91,23 @@ export function CMSTextArea({
   value,
   ...props
 }: CMSTextAreaProps) {
+  const generatedId = React.useId();
+  const fieldId = props.id || generatedId;
   const currentLength = typeof value === "string" ? value.length : 0;
 
   return (
-    <CMSField label={label} description={description} badge={badge}>
+    <CMSField label={label} htmlFor={fieldId} description={description} badge={badge}>
       <div className="relative">
         <textarea
           rows={rows}
           value={value}
           {...props}
-          className={`w-full rounded-lg border border-[#1E3D82]/50 bg-[#070D1F] p-4 text-sm leading-relaxed text-white shadow-inner transition-all placeholder:text-slate-500 focus:border-[#D4AF37] focus:outline-hidden focus:ring-1 focus:ring-[#D4AF37] ${className}`}
+          id={fieldId}
+          className={`w-full rounded-lg border border-white/15 bg-[#0c172d] p-4 text-sm leading-relaxed text-white transition-all placeholder:text-slate-500 focus:border-[#e0bd65] focus:outline-hidden focus:ring-2 focus:ring-[#e0bd65]/25 ${className}`}
         />
         {showCharCount && (
           <div className="mt-1 flex justify-end">
-            <span className="text-[11px] text-slate-300">
-              {currentLength} characters
-            </span>
+            <span className="text-[11px] text-slate-300">{currentLength} characters</span>
           </div>
         )}
       </div>
@@ -119,6 +132,7 @@ export function CMSLinkField({
   description = "Target destination URL / Route path",
   placeholder = "/services",
 }: CMSLinkFieldProps) {
+  const fieldId = React.useId();
   if (!isDevMode) {
     return (
       <div className="space-y-1.5 rounded-lg border border-[#1E3D82]/30 bg-[#0A122E]/80 p-3">
@@ -133,7 +147,9 @@ export function CMSLinkField({
           </span>
         </div>
         <div className="flex items-center justify-between pt-1">
-          <code className="text-xs font-mono text-[#D4AF37] truncate">{value || "(No link set)"}</code>
+          <code className="text-xs font-mono text-[#D4AF37] truncate">
+            {value || "(No link set)"}
+          </code>
           <span className="text-[10px] text-slate-300">Enable Dev Mode in top bar to edit</span>
         </div>
       </div>
@@ -141,16 +157,13 @@ export function CMSLinkField({
   }
 
   return (
-    <CMSField
-      label={label}
-      description={description}
-      badge="Dev Mode Active"
-    >
+    <CMSField label={label} htmlFor={fieldId} description={description} badge="Dev Mode Active">
       <div className="relative flex items-center">
         <div className="pointer-events-none absolute left-3 text-[#D4AF37]">
           <Code2 className="h-4 w-4" />
         </div>
         <input
+          id={fieldId}
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
@@ -192,6 +205,7 @@ export function CMSSwitch({ label, description, checked, onChange }: CMSSwitchPr
       <button
         type="button"
         role="switch"
+        aria-label={label}
         aria-checked={checked}
         onClick={() => onChange(!checked)}
         className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden focus:ring-2 focus:ring-[#D4AF37] focus:ring-offset-2 focus:ring-offset-[#0A122E] ${

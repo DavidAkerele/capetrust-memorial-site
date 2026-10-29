@@ -45,11 +45,29 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useCMS } from "@/lib/cms/cms-store";
-import { isAuthenticated, loginAdmin, logoutAdmin, getAuthConfig, updateAuthConfig } from "@/lib/cms/cms-auth";
-import { getStoredObituaries, saveObituary, INITIAL_OBITUARIES, type Obituary } from "@/lib/obituaries-data";
-import { CMSTextInput, CMSTextArea, CMSSwitch, CMSField, CMSLinkField } from "@/components/cms/CMSField";
+import { isAuthenticated, loginAdmin, logoutAdmin, updateAdminPassword } from "@/lib/cms/cms-auth";
+import { isBackendConfigured } from "@/lib/supabase";
+import {
+  getStoredObituaries,
+  saveObituary,
+  deleteObituary,
+  getPendingCondolences,
+  approveCondolence,
+  deleteCondolence,
+  type PendingCondolence,
+  type Obituary,
+} from "@/lib/obituaries-data";
+import {
+  CMSTextInput,
+  CMSTextArea,
+  CMSSwitch,
+  CMSField,
+  CMSLinkField,
+} from "@/components/cms/CMSField";
 import { CMSImagePicker } from "@/components/cms/CMSImagePicker";
 import { CMSSectionCard } from "@/components/cms/CMSSectionCard";
+import { CMSOverview } from "@/components/cms/CMSOverview";
+import { MemorialEditor } from "@/components/cms/MemorialEditor";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/admin")({
@@ -71,6 +89,7 @@ type TabKey =
   | "gardenOfPeace"
   | "memorialProducts"
   | "prePlanning"
+  | "investment"
   | "estimator"
   | "faq"
   | "contact"
@@ -80,12 +99,14 @@ type TabKey =
 export function AdminCMSPage() {
   const cms = useCMS();
   const [authed, setAuthed] = useState(false);
-  const [passcode, setPasscode] = useState("");
+  const [adminEmail, setAdminEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const [loginError, setLoginError] = useState("");
   const [activeTab, setActiveTab] = useState<TabKey>("dashboard");
   const [globalSavedToast, setGlobalSavedToast] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [newPasscode, setNewPasscode] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [isDevMode, setIsDevMode] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
     return localStorage.getItem("capetrust_dev_mode_v1") === "true";
@@ -95,39 +116,43 @@ export function AdminCMSPage() {
     const next = !isDevMode;
     setIsDevMode(next);
     localStorage.setItem("capetrust_dev_mode_v1", String(next));
-    triggerGlobalToast();
   };
 
   // Obituaries local state
   const [obituaries, setObituaries] = useState<Obituary[]>([]);
+  const [pendingCondolences, setPendingCondolences] = useState<PendingCondolence[]>([]);
   const [selectedObituary, setSelectedObituary] = useState<Obituary | null>(null);
+  const [showMemorialEditor, setShowMemorialEditor] = useState(false);
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    setAuthed(isAuthenticated());
-    if (typeof window !== "undefined") {
-      setObituaries(getStoredObituaries());
-    }
+    void isAuthenticated()
+      .then(setAuthed)
+      .finally(() => setCheckingAuth(false));
+    void getStoredObituaries()
+      .then(setObituaries)
+      .catch((error) => {
+        console.error("Failed to load memorials:", error);
+      });
   }, []);
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    const res = loginAdmin(passcode);
-    if (res.success) {
-      setAuthed(true);
-      setLoginError("");
-    } else {
-      setLoginError(res.error || "Invalid passcode");
-    }
-  };
+  useEffect(() => {
+    if (!authed) return;
+    void getPendingCondolences().then(setPendingCondolences).catch(console.error);
+  }, [authed]);
 
-  const handleLogout = () => {
-    logoutAdmin();
+  const handleLogout = async () => {
+    await logoutAdmin();
     setAuthed(false);
-    setPasscode("");
+    setPassword("");
   };
 
-  const triggerGlobalToast = () => {
+  const triggerGlobalToast = async () => {
+    const success = await cms.flushSave();
+    if (!success) {
+      alert("The change could not be saved. Please try again.");
+      return;
+    }
     setGlobalSavedToast(true);
     setTimeout(() => setGlobalSavedToast(false), 2500);
   };
@@ -151,8 +176,7 @@ export function AdminCMSPage() {
       const content = event.target?.result as string;
       const res = cms.importJSON(content);
       if (res.success) {
-        alert("CMS content successfully imported and restored!");
-        triggerGlobalToast();
+        void triggerGlobalToast();
       } else {
         alert(`Failed to import backup: ${res.error}`);
       }
@@ -162,31 +186,23 @@ export function AdminCMSPage() {
 
   const [showPasscode, setShowPasscode] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [copiedHint, setCopiedHint] = useState(false);
 
   // ==========================================
   // 1. ULTRA-PREMIUM LOGIN SCREEN
   // ==========================================
   if (!authed) {
-    const handleQuickFill = () => {
-      setPasscode("capetrust2026");
-      setCopiedHint(true);
-      setTimeout(() => setCopiedHint(false), 2000);
-    };
-
-    const handleFormSubmit = (e: React.FormEvent) => {
+    const handleFormSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
       setIsSubmitting(true);
-      setTimeout(() => {
-        const res = loginAdmin(passcode);
-        if (res.success) {
-          setAuthed(true);
-          setLoginError("");
-        } else {
-          setLoginError(res.error || "Invalid administrator passcode");
-        }
-        setIsSubmitting(false);
-      }, 350);
+      const res = await loginAdmin(adminEmail.trim(), password);
+      if (res.success) {
+        setAuthed(true);
+        setLoginError("");
+        setPassword("");
+      } else {
+        setLoginError(res.error || "Could not sign in");
+      }
+      setIsSubmitting(false);
     };
 
     return (
@@ -212,7 +228,7 @@ export function AdminCMSPage() {
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#D4AF37] opacity-75" />
                   <span className="relative inline-flex size-2 rounded-full bg-[#D4AF37]" />
                 </span>
-                Restricted Executive Access
+                Content workspace
               </div>
 
               {/* Logo with Soft Ring */}
@@ -225,33 +241,42 @@ export function AdminCMSPage() {
               </div>
 
               <h1 className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-white drop-shadow-sm">
-                Capetrust CMS Portal
+                Capetrust content studio
               </h1>
               <p className="mt-1.5 text-xs text-slate-300 font-sans tracking-wide">
-                Digital Custodian &amp; Content Management Workspace
+                Sign in to manage CapeTrust content across devices.
               </p>
             </div>
 
             {/* Login Form */}
             <form onSubmit={handleFormSubmit} className="mt-8 space-y-5">
               <div>
+                <label
+                  htmlFor="admin-email"
+                  className="text-[11px] font-bold uppercase tracking-widest text-slate-200"
+                >
+                  Administrator email
+                </label>
+                <input
+                  id="admin-email"
+                  type="email"
+                  autoComplete="username"
+                  value={adminEmail}
+                  onChange={(e) => setAdminEmail(e.target.value)}
+                  placeholder="name@example.com"
+                  className="mt-2 w-full rounded-xl border border-[#1E3D82]/60 bg-[#060D24] px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-[#D4AF37] focus:outline-hidden"
+                  required
+                  autoFocus
+                />
+              </div>
+              <div>
                 <div className="flex items-center justify-between">
-                  <label className="text-[11px] font-bold uppercase tracking-widest text-slate-200">
-                    Administrator Passcode
-                  </label>
-                  <button
-                    type="button"
-                    onClick={handleQuickFill}
-                    className="text-[11px] font-semibold text-[#D4AF37] hover:text-[#f2cb57] transition-colors cursor-pointer flex items-center gap-1"
+                  <label
+                    htmlFor="admin-password"
+                    className="text-[11px] font-bold uppercase tracking-widest text-slate-200"
                   >
-                    {copiedHint ? (
-                      <span className="text-emerald-400 font-bold flex items-center gap-1">
-                        <Check className="size-3" /> Filled
-                      </span>
-                    ) : (
-                      <span>Auto-fill Demo Key</span>
-                    )}
-                  </button>
+                    Administrator password
+                  </label>
                 </div>
 
                 <div className="relative mt-2">
@@ -260,23 +285,24 @@ export function AdminCMSPage() {
                   </div>
 
                   <input
+                    id="admin-password"
                     type={showPasscode ? "text" : "password"}
-                    value={passcode}
+                    autoComplete="current-password"
+                    value={password}
                     onChange={(e) => {
-                      setPasscode(e.target.value);
+                      setPassword(e.target.value);
                       if (loginError) setLoginError("");
                     }}
-                    placeholder="Enter executive passcode"
+                    placeholder="Enter password"
                     className="w-full rounded-xl border border-[#1E3D82]/60 bg-[#060D24] pl-10 pr-11 py-3 text-sm text-white placeholder:text-slate-500 shadow-inner focus:border-[#D4AF37] focus:bg-[#070F2B] focus:outline-hidden focus:ring-2 focus:ring-[#D4AF37]/30 transition-all font-mono"
                     required
-                    autoFocus
                   />
 
                   <button
                     type="button"
                     onClick={() => setShowPasscode(!showPasscode)}
                     className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-white transition-colors cursor-pointer"
-                    title={showPasscode ? "Hide Passcode" : "Show Passcode"}
+                    title={showPasscode ? "Hide password" : "Show password"}
                   >
                     {showPasscode ? (
                       <Eye className="size-4 text-slate-300" />
@@ -287,6 +313,11 @@ export function AdminCMSPage() {
                 </div>
               </div>
 
+              {!isBackendConfigured && (
+                <p className="text-xs text-amber-200">
+                  The shared backend has not been connected yet. Admin sign-in is unavailable.
+                </p>
+              )}
               {loginError && (
                 <div className="flex items-start gap-2.5 rounded-xl bg-rose-950/70 p-3.5 text-xs text-rose-200 border border-rose-800/60 shadow-lg animate-fade-in">
                   <AlertCircle className="size-4 shrink-0 mt-0.5 text-rose-400" />
@@ -296,50 +327,29 @@ export function AdminCMSPage() {
 
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || checkingAuth || !isBackendConfigured}
                 className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#D4AF37] via-[#f7dea2] to-[#cba32a] py-3.5 text-sm font-bold text-[#080E24] shadow-[0_10px_25px_rgba(212,175,55,0.35)] transition-all duration-300 hover:shadow-[0_15px_30px_rgba(212,175,55,0.5)] hover:scale-[1.01] active:scale-[0.99] disabled:opacity-75 cursor-pointer"
               >
                 <div className="absolute inset-0 bg-white/20 opacity-0 transition-opacity group-hover:opacity-100" />
                 {isSubmitting ? (
                   <div className="flex items-center gap-2">
                     <span className="size-4 animate-spin rounded-full border-2 border-[#080E24] border-t-transparent" />
-                    <span>Verifying Credentials...</span>
+                    <span>Verifying credentials...</span>
                   </div>
                 ) : (
                   <div className="flex items-center gap-2 font-bold tracking-wide">
                     <Lock className="size-4" />
-                    <span>Authenticate &amp; Open CMS</span>
+                    <span>Open content studio</span>
                   </div>
                 )}
               </button>
             </form>
 
-            {/* Quick Demo Helper Pill */}
-            <div className="mt-6 flex items-center justify-between rounded-xl border border-white/10 bg-[#060D24]/80 px-4 py-2.5 text-xs text-slate-300 backdrop-blur-sm">
-              <span className="text-[11px] text-slate-400">Default Access Key:</span>
-              <button
-                onClick={handleQuickFill}
-                className="font-mono font-bold text-[#D4AF37] hover:underline cursor-pointer flex items-center gap-1 text-xs"
-                title="Click to copy & fill"
-              >
-                <span>capetrust2026</span>
-                <Sparkles className="size-3 text-[#D4AF37]" />
-              </button>
-            </div>
-
-            {/* Bottom Security Trust Seals */}
+            {/* Storage guidance */}
             <div className="mt-6 border-t border-white/10 pt-5 text-center">
-              <div className="flex items-center justify-center gap-4 text-[11px] text-slate-400">
-                <div className="flex items-center gap-1.5">
-                  <ShieldCheck className="size-3.5 text-emerald-400" />
-                  <span>256-Bit Encrypted</span>
-                </div>
-                <span className="text-slate-600">•</span>
-                <div className="flex items-center gap-1.5">
-                  <Lock className="size-3.5 text-[#D4AF37]" />
-                  <span>Internal Personnel Only</span>
-                </div>
-              </div>
+              <p className="text-[11px] leading-5 text-slate-400">
+                Your account and published content are managed through CapeTrust’s shared backend.
+              </p>
 
               <div className="mt-4">
                 <Link
@@ -368,6 +378,7 @@ export function AdminCMSPage() {
     { key: "gardenOfPeace", label: "Garden of Peace™", icon: <TreePine className="h-4 w-4" /> },
     { key: "memorialProducts", label: "Memorial Products", icon: <Package className="h-4 w-4" /> },
     { key: "prePlanning", label: "Pre-Planning", icon: <CalendarDays className="h-4 w-4" /> },
+    { key: "investment", label: "Family Estates", icon: <Coins className="h-4 w-4" /> },
     { key: "estimator", label: "Price Estimator Matrix", icon: <Calculator className="h-4 w-4" /> },
     { key: "faq", label: "FAQ Manager", icon: <HelpCircle className="h-4 w-4" /> },
     { key: "contact", label: "Contact & Branches", icon: <PhoneCall className="h-4 w-4" /> },
@@ -383,10 +394,10 @@ export function AdminCMSPage() {
   const currentTabObj = navItems.find((n) => n.key === activeTab) || navItems[0]!;
 
   return (
-    <div className="min-h-screen bg-[#070D1F] text-slate-100 font-sans">
+    <div className="min-h-screen bg-[#091426] text-slate-100 font-sans">
       {/* Top Header Bar */}
-      <header className="sticky top-0 z-40 border-b border-[#1E3D82]/40 bg-[#0A122E]/95 backdrop-blur-md">
-        <div className="mx-auto flex h-14 w-full max-w-[1680px] items-center justify-between px-3 sm:px-6 lg:px-8">
+      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#0b1930]/95 backdrop-blur-md">
+        <div className="mx-auto flex h-16 w-full max-w-[1680px] items-center justify-between px-3 sm:px-6 lg:px-8">
           {/* Left: Hamburger (Mobile) + Logo & Brand */}
           <div className="flex items-center gap-2.5 sm:gap-3">
             {/* Mobile Hamburger Toggle Button */}
@@ -408,10 +419,10 @@ export function AdminCMSPage() {
               />
               <div className="flex items-center gap-2">
                 <span className="font-serif text-sm sm:text-base font-bold tracking-tight text-white">
-                  Capetrust CMS
+                  Capetrust Studio
                 </span>
-                <span className="rounded bg-emerald-950 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-400 border border-emerald-800/50 hidden sm:inline">
-                  Live
+                <span className="hidden rounded-md border border-[#d8bd75]/30 bg-[#d8bd75]/10 px-2 py-0.5 text-[10px] font-semibold text-[#e6cc88] sm:inline">
+                  Shared workspace
                 </span>
                 {isDevMode && (
                   <span className="rounded bg-[#D4AF37]/20 px-1.5 py-0.5 text-[9px] font-bold text-[#D4AF37] border border-[#D4AF37]/40 animate-pulse hidden md:inline">
@@ -424,6 +435,18 @@ export function AdminCMSPage() {
 
           {/* Right: Actions & Badges */}
           <div className="flex items-center gap-1.5 sm:gap-2">
+            <span
+              role="status"
+              className={`hidden text-xs font-semibold sm:inline ${cms.saveStatus === "error" ? "text-rose-300" : "text-slate-300"}`}
+            >
+              {cms.saveStatus === "saving"
+                ? "Saving…"
+                : cms.saveStatus === "saved"
+                  ? "All changes saved"
+                  : cms.saveStatus === "error"
+                    ? "Save failed"
+                    : ""}
+            </span>
             {/* Current Section Chip on Mobile */}
             <div className="flex items-center gap-1 rounded border border-[#1E3D82]/60 bg-[#070D1F] px-2 py-1 text-[11px] font-semibold text-[#D4AF37] lg:hidden max-w-[130px] sm:max-w-[200px]">
               <span className="shrink-0">{currentTabObj.icon}</span>
@@ -450,10 +473,10 @@ export function AdminCMSPage() {
               to="/"
               target="_blank"
               className="inline-flex h-9 items-center justify-center gap-1.5 rounded border border-[#1E3D82]/50 bg-[#0E1A3D] px-2.5 text-xs font-semibold text-slate-200 hover:bg-[#162659] hover:text-[#D4AF37] transition-colors"
-              title="Preview Live Site"
+              title="View website"
             >
               <Eye className="h-3.5 w-3.5 text-[#D4AF37]" />
-              <span className="hidden sm:inline">Preview</span>
+              <span className="hidden sm:inline">View site</span>
             </Link>
 
             {/* Passcode Button (Desktop) */}
@@ -461,10 +484,10 @@ export function AdminCMSPage() {
               type="button"
               onClick={() => setShowPasswordModal(true)}
               className="hidden lg:inline-flex h-9 items-center justify-center gap-1.5 rounded border border-[#1E3D82]/50 bg-[#0E1A3D] px-2.5 text-xs font-medium text-slate-300 hover:bg-[#162659] hover:text-white transition-colors cursor-pointer"
-              title="Change Admin Passcode"
+              title="Change account password"
             >
               <KeyRound className="h-3.5 w-3.5 text-[#D4AF37]" />
-              <span>Passcode</span>
+              <span>Password</span>
             </button>
 
             {/* Sign Out Button */}
@@ -490,8 +513,12 @@ export function AdminCMSPage() {
               <div className="flex items-center gap-2">
                 <img src="/logo.png" alt="Logo" className="h-7 w-auto" />
                 <div>
-                  <h3 className="font-serif text-sm sm:text-base font-bold text-white">CMS Navigation</h3>
-                  <p className="text-[10px] text-slate-400">Select an editor section to view or update</p>
+                  <h3 className="font-serif text-sm sm:text-base font-bold text-white">
+                    CMS Navigation
+                  </h3>
+                  <p className="text-[10px] text-slate-400">
+                    Select an editor section to view or update
+                  </p>
                 </div>
               </div>
               <button
@@ -559,7 +586,7 @@ export function AdminCMSPage() {
                 className="inline-flex items-center gap-1 rounded border border-[#1E3D82]/40 bg-[#070D1F] px-2.5 py-1.5 text-xs font-medium text-slate-300 hover:text-white"
               >
                 <KeyRound className="h-3.5 w-3.5 text-[#D4AF37]" />
-                <span>Passcode</span>
+                <span>Password</span>
               </button>
 
               <button
@@ -579,7 +606,13 @@ export function AdminCMSPage() {
       {globalSavedToast && (
         <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded bg-emerald-600 px-4 py-2.5 text-xs font-semibold text-white shadow-2xl animate-in slide-in-from-bottom-5">
           <Check className="h-4 w-4" />
-          <span>All Changes Saved Successfully &amp; Published Live!</span>
+          <span>
+            {cms.saveStatus === "error"
+              ? "Save failed. Please retry."
+              : cms.saveStatus === "saved"
+                ? "Saved to shared site"
+                : "Saving to shared site"}
+          </span>
         </div>
       )}
 
@@ -587,17 +620,21 @@ export function AdminCMSPage() {
       {showPasswordModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-xs">
           <div className="w-full max-w-sm rounded border border-[#1E3D82]/40 bg-[#0A122E] p-5 shadow-2xl">
-            <h3 className="font-serif text-base font-bold text-white">Change Admin Passcode</h3>
+            <h3 className="font-serif text-base font-bold text-white">Change account password</h3>
             <p className="mt-1 text-xs text-slate-300">
-              Set a new passcode for accessing this Content Management System.
+              Set a new password for your administrator account.
             </p>
             <div className="mt-4">
-              <label className="text-xs font-semibold text-slate-200">New Passcode</label>
+              <label htmlFor="new-admin-password" className="text-xs font-semibold text-slate-200">
+                New password
+              </label>
               <input
-                type="text"
-                value={newPasscode}
-                onChange={(e) => setNewPasscode(e.target.value)}
-                placeholder="Enter new passcode"
+                id="new-admin-password"
+                type="password"
+                autoComplete="new-password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Enter new password"
                 className="mt-1.5 w-full rounded border border-[#1E3D82]/50 bg-[#070D1F] px-3 py-2 text-xs text-white focus:border-[#D4AF37] focus:outline-hidden"
               />
             </div>
@@ -611,19 +648,23 @@ export function AdminCMSPage() {
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  if (newPasscode.trim().length < 4) {
-                    alert("Passcode must be at least 4 characters long.");
+                onClick={async () => {
+                  if (newPassword.length < 12) {
+                    alert("Password must be at least 12 characters long.");
                     return;
                   }
-                  updateAuthConfig({ passcode: newPasscode.trim() });
+                  const result = await updateAdminPassword(newPassword);
+                  if (!result.success) {
+                    alert(result.error || "Password update failed.");
+                    return;
+                  }
                   setShowPasswordModal(false);
-                  setNewPasscode("");
-                  alert("Passcode successfully updated!");
+                  setNewPassword("");
+                  alert("Password updated.");
                 }}
                 className="rounded bg-[#D4AF37] px-4 py-1.5 text-xs font-bold text-[#0A1128] hover:bg-[#e6bf43]"
               >
-                Save Passcode
+                Save password
               </button>
             </div>
           </div>
@@ -631,13 +672,13 @@ export function AdminCMSPage() {
       )}
 
       {/* Main Layout Container: Desktop Sidebar + Editor Body */}
-      <div className="mx-auto w-full max-w-[1680px] px-4 py-5 sm:px-8">
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+      <div className="mx-auto w-full max-w-[1680px] px-4 py-7 sm:px-8">
+        <div className="grid grid-cols-1 gap-7 lg:grid-cols-12">
           {/* Desktop Sidebar Navigation */}
           <aside className="hidden lg:block lg:col-span-3">
-            <div className="sticky top-16 z-30 flex flex-col gap-1.5 rounded-xl border border-[#1E3D82]/30 bg-[#0A122E]/95 p-2.5 backdrop-blur-md shadow-lg">
-              <div className="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-[#D4AF37]">
-                Navigation &amp; Editors
+            <div className="sticky top-20 z-30 flex max-h-[calc(100dvh-6rem)] flex-col gap-1 overflow-y-auto rounded-2xl border border-white/10 bg-[#101d38] p-3 shadow-[0_20px_45px_rgba(3,12,31,0.2)]">
+              <div className="px-3 pb-2 pt-3 text-[11px] font-bold uppercase tracking-[0.18em] text-[#d8bd75]">
+                Workspace
               </div>
               {navItems.map((item) => (
                 <button
@@ -646,8 +687,8 @@ export function AdminCMSPage() {
                   onClick={() => setActiveTab(item.key)}
                   className={`flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-xs font-medium transition-all cursor-pointer ${
                     activeTab === item.key
-                      ? "bg-[#1E3D82] text-white font-semibold border-l-4 border-[#D4AF37] shadow-md shadow-[#040711]/50"
-                      : "text-slate-300 hover:bg-[#12204D] hover:text-white"
+                      ? "bg-[#1f3a60] text-white font-semibold ring-1 ring-[#d8bd75]/40"
+                      : "text-slate-300 hover:bg-[#1a2c4a] hover:text-white"
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
@@ -673,351 +714,40 @@ export function AdminCMSPage() {
           </aside>
 
           {/* Main Editor Body */}
-          <main className="space-y-5 lg:col-span-9">
-          {/* ========================================================================= */}
-          {/* TAB: DASHBOARD (Compact & Dense Layout) */}
-          {/* ========================================================================= */}
-          {activeTab === "dashboard" && (
-            <div className="space-y-5">
-              {/* 1. Compact Quick Operations Toolbar */}
-              <div className="rounded border border-[#D4AF37]/30 bg-gradient-to-r from-[#0A122E] via-[#0E1A3D] to-[#0A122E] p-4 shadow-md">
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                      <h3 className="font-serif text-sm font-bold text-white">
-                        Capetrust Executive Command Center
-                      </h3>
-                    </div>
-                    <p className="text-[11px] text-slate-400">
-                      Real-time site synchronization, instant content propagation, and live price matrix engine.
-                    </p>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Link
-                      to="/obituaries/create"
-                      target="_blank"
-                      className="inline-flex items-center gap-1.5 rounded border border-[#D4AF37] bg-[#D4AF37] px-3 py-1.5 text-xs font-bold text-[#070D1F] hover:bg-[#b5952f] transition-colors cursor-pointer"
-                    >
-                      <Plus className="h-3.5 w-3.5" />
-                      New Tribute Page
-                    </Link>
-                    <button
-                      type="button"
-                      onClick={() => setActiveTab("estimator")}
-                      className="inline-flex items-center gap-1.5 rounded border border-[#1E3D82]/60 bg-[#070D1F] px-3 py-1.5 text-xs font-semibold text-slate-200 hover:border-[#D4AF37] hover:text-[#D4AF37] transition-colors cursor-pointer"
-                    >
-                      <Calculator className="h-3.5 w-3.5 text-[#D4AF37]" />
-                      Price Matrix
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleExport}
-                      className="inline-flex items-center gap-1.5 rounded border border-[#1E3D82]/60 bg-[#070D1F] px-3 py-1.5 text-xs font-semibold text-slate-200 hover:border-[#D4AF37] hover:text-[#D4AF37] transition-colors cursor-pointer"
-                    >
-                      <Download className="h-3.5 w-3.5 text-sky-400" />
-                      Backup JSON
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* 2. Key Metric Cards (Compact) */}
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                <div
-                  onClick={() => setActiveTab("obituaries")}
-                  className="group cursor-pointer rounded border border-[#1E3D82]/30 bg-[#0A122E] p-3.5 shadow-sm transition-all hover:border-[#D4AF37]/60 hover:bg-[#0E1A3D]"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] text-slate-300 font-medium">Published Obituaries</span>
-                    <Flame className="h-4 w-4 text-[#D4AF37]" />
-                  </div>
-                  <p className="mt-1 font-serif text-2xl font-bold text-[#D4AF37]">
-                    {obituaries.length}
+          <main className="min-w-0 space-y-6 lg:col-span-9">
+            {activeTab !== "dashboard" && (
+              <div className="flex flex-wrap items-end justify-between gap-3 border-b border-white/10 pb-5">
+                <div>
+                  <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#d8bd75]">
+                    Content editor
                   </p>
-                  <span className="text-[10px] text-slate-400 group-hover:text-[#D4AF37] transition-colors">
-                    Manage Tributes →
-                  </span>
-                </div>
-
-                <div
-                  onClick={() => setActiveTab("services")}
-                  className="group cursor-pointer rounded border border-[#1E3D82]/30 bg-[#0A122E] p-3.5 shadow-sm transition-all hover:border-[#D4AF37]/60 hover:bg-[#0E1A3D]"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] text-slate-300 font-medium">Core Services</span>
-                    <Layers className="h-4 w-4 text-sky-400" />
-                  </div>
-                  <p className="mt-1 font-serif text-2xl font-bold text-white">
-                    {cms.content.services.servicesList.length}
+                  <h1 className="mt-1 font-serif text-3xl font-semibold text-white">
+                    {currentTabObj.label}
+                  </h1>
+                  <p className="mt-1 text-xs text-slate-400">
+                    Edits save to the shared site as you type.
                   </p>
-                  <span className="text-[10px] text-slate-400 group-hover:text-sky-300 transition-colors">
-                    Funeral &amp; Care →
-                  </span>
                 </div>
-
-                <div
-                  onClick={() => setActiveTab("gardenOfPeace")}
-                  className="group cursor-pointer rounded border border-[#1E3D82]/30 bg-[#0A122E] p-3.5 shadow-sm transition-all hover:border-[#D4AF37]/60 hover:bg-[#0E1A3D]"
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("dashboard")}
+                  className="rounded-lg border border-white/15 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:border-[#d8bd75]/50 hover:text-white"
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] text-slate-300 font-medium">Vault Packages</span>
-                    <TreePine className="h-4 w-4 text-emerald-400" />
-                  </div>
-                  <p className="mt-1 font-serif text-2xl font-bold text-white">
-                    {cms.content.gardenOfPeace.vaultTiers.length}
-                  </p>
-                  <span className="text-[10px] text-slate-400 group-hover:text-emerald-300 transition-colors">
-                    Garden of Peace™ →
-                  </span>
-                </div>
-
-                <div
-                  onClick={() => setActiveTab("memorialProducts")}
-                  className="group cursor-pointer rounded border border-[#1E3D82]/30 bg-[#0A122E] p-3.5 shadow-sm transition-all hover:border-[#D4AF37]/60 hover:bg-[#0E1A3D]"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] text-slate-300 font-medium">Product Collections</span>
-                    <Package className="h-4 w-4 text-amber-400" />
-                  </div>
-                  <p className="mt-1 font-serif text-2xl font-bold text-white">
-                    {cms.content.memorialProducts.collections.length}
-                  </p>
-                  <span className="text-[10px] text-slate-400 group-hover:text-amber-300 transition-colors">
-                    Caskets &amp; Vaults →
-                  </span>
-                </div>
+                  Back to dashboard
+                </button>
               </div>
-
-              {/* 3. Security & System Diagnostics Panel (Compact) */}
-              <div className="rounded border border-[#1E3D82]/40 bg-[#070D1F] p-3.5 shadow-xs">
-                <div className="flex items-center justify-between border-b border-[#1E3D82]/30 pb-2.5">
-                  <div className="flex items-center gap-2">
-                    <ShieldCheck className="h-4 w-4 text-[#D4AF37]" />
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-white">
-                      System Security &amp; Infrastructure Health
-                    </h4>
-                  </div>
-                  <span className="rounded bg-emerald-950/60 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
-                    All Systems Secure &amp; Active
-                  </span>
-                </div>
-                <div className="mt-3 grid grid-cols-2 lg:grid-cols-4 gap-2 text-xs">
-                  <div className="flex items-start gap-2.5 rounded border border-[#1E3D82]/20 bg-[#0A122E] p-2.5">
-                    <Lock className="h-3.5 w-3.5 text-[#D4AF37] shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-bold text-white text-[11px]">Portal Auth Gate</p>
-                      <p className="text-[10px] text-slate-400">Session passcode active</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-2.5 rounded border border-[#1E3D82]/20 bg-[#0A122E] p-2.5">
-                    <Activity className="h-3.5 w-3.5 text-sky-400 shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-bold text-white text-[11px]">Live Storage Sync</p>
-                      <p className="text-[10px] text-slate-400">Reactive state enabled</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-2.5 rounded border border-[#1E3D82]/20 bg-[#0A122E] p-2.5">
-                    <ImageIcon className="h-3.5 w-3.5 text-emerald-400 shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-bold text-white text-[11px]">Verified Assets</p>
-                      <p className="text-[10px] text-slate-400">Local fallback media</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-2.5 rounded border border-[#1E3D82]/20 bg-[#0A122E] p-2.5">
-                    <Zap className="h-3.5 w-3.5 text-amber-400 shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-bold text-white text-[11px]">Client Protection</p>
-                      <p className="text-[10px] text-slate-400">Zero exposed keys</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* 4. Quick Navigation & Site Editors (Compact 3x3 Grid) */}
-              <div className="space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-serif text-sm font-semibold tracking-tight text-white">
-                    Quick Navigation &amp; Site Editors
-                  </h3>
-                  <span className="text-[11px] text-slate-400">Click any tile to edit that module</span>
-                </div>
-
-                <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
-                  <div
-                    onClick={() => setActiveTab("settings")}
-                    className="group cursor-pointer rounded border border-[#1E3D82]/30 bg-[#0A122E] p-3 transition-all hover:border-[#D4AF37]/60 hover:bg-[#0E1A3D]"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div className="rounded bg-[#D4AF37]/15 p-2 text-[#D4AF37] group-hover:bg-[#D4AF37] group-hover:text-[#0A1128] transition-colors">
-                        <Settings className="h-4 w-4" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h4 className="text-xs font-bold text-white group-hover:text-[#D4AF37] transition-colors">
-                          Site &amp; Emergency Settings
-                        </h4>
-                        <p className="text-[10px] text-slate-400 truncate">
-                          Helplines, WhatsApp &amp; emergency badge
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div
-                    onClick={() => setActiveTab("home")}
-                    className="group cursor-pointer rounded border border-[#1E3D82]/30 bg-[#0A122E] p-3 transition-all hover:border-[#D4AF37]/60 hover:bg-[#0E1A3D]"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div className="rounded bg-[#D4AF37]/15 p-2 text-[#D4AF37] group-hover:bg-[#D4AF37] group-hover:text-[#0A1128] transition-colors">
-                        <Home className="h-4 w-4" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h4 className="text-xs font-bold text-white group-hover:text-[#D4AF37] transition-colors">
-                          Home Page
-                        </h4>
-                        <p className="text-[10px] text-slate-400 truncate">
-                          Hero banner, stats counters &amp; CTA
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div
-                    onClick={() => setActiveTab("about")}
-                    className="group cursor-pointer rounded border border-[#1E3D82]/30 bg-[#0A122E] p-3 transition-all hover:border-[#D4AF37]/60 hover:bg-[#0E1A3D]"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div className="rounded bg-[#D4AF37]/15 p-2 text-[#D4AF37] group-hover:bg-[#D4AF37] group-hover:text-[#0A1128] transition-colors">
-                        <Info className="h-4 w-4" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h4 className="text-xs font-bold text-white group-hover:text-[#D4AF37] transition-colors">
-                          About &amp; Leadership
-                        </h4>
-                        <p className="text-[10px] text-slate-400 truncate">
-                          Founding story, values &amp; team
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div
-                    onClick={() => setActiveTab("services")}
-                    className="group cursor-pointer rounded border border-[#1E3D82]/30 bg-[#0A122E] p-3 transition-all hover:border-[#D4AF37]/60 hover:bg-[#0E1A3D]"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div className="rounded bg-[#D4AF37]/15 p-2 text-[#D4AF37] group-hover:bg-[#D4AF37] group-hover:text-[#0A1128] transition-colors">
-                        <Layers className="h-4 w-4" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h4 className="text-xs font-bold text-white group-hover:text-[#D4AF37] transition-colors">
-                          Funeral &amp; Repatriation
-                        </h4>
-                        <p className="text-[10px] text-slate-400 truncate">
-                          Burials, motorcades &amp; chapel
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div
-                    onClick={() => setActiveTab("gardenOfPeace")}
-                    className="group cursor-pointer rounded border border-[#1E3D82]/30 bg-[#0A122E] p-3 transition-all hover:border-[#D4AF37]/60 hover:bg-[#0E1A3D]"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div className="rounded bg-[#415825]/30 p-2 text-[#86ab4d] group-hover:bg-[#415825] group-hover:text-white transition-colors">
-                        <TreePine className="h-4 w-4" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h4 className="text-xs font-bold text-white group-hover:text-[#86ab4d] transition-colors">
-                          Garden of Peace™ Park
-                        </h4>
-                        <p className="text-[10px] text-slate-400 truncate">
-                          Agbowa grounds, vault tiers &amp; park
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div
-                    onClick={() => setActiveTab("memorialProducts")}
-                    className="group cursor-pointer rounded border border-[#1E3D82]/30 bg-[#0A122E] p-3 transition-all hover:border-[#D4AF37]/60 hover:bg-[#0E1A3D]"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div className="rounded bg-[#D4AF37]/15 p-2 text-[#D4AF37] group-hover:bg-[#D4AF37] group-hover:text-[#0A1128] transition-colors">
-                        <Package className="h-4 w-4" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h4 className="text-xs font-bold text-white group-hover:text-[#D4AF37] transition-colors">
-                          Memorial Products
-                        </h4>
-                        <p className="text-[10px] text-slate-400 truncate">
-                          Caskets, headstones &amp; urns
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div
-                    onClick={() => setActiveTab("estimator")}
-                    className="group cursor-pointer rounded border border-[#1E3D82]/30 bg-[#0A122E] p-3 transition-all hover:border-[#D4AF37]/60 hover:bg-[#0E1A3D]"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div className="rounded bg-[#D4AF37]/15 p-2 text-[#D4AF37] group-hover:bg-[#D4AF37] group-hover:text-[#0A1128] transition-colors">
-                        <Calculator className="h-4 w-4" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h4 className="text-xs font-bold text-white group-hover:text-[#D4AF37] transition-colors">
-                          Price Estimator Matrix
-                        </h4>
-                        <p className="text-[10px] text-slate-400 truncate">
-                          Vault pricing, casket rates &amp; hearse
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div
-                    onClick={() => setActiveTab("obituaries")}
-                    className="group cursor-pointer rounded border border-[#1E3D82]/30 bg-[#0A122E] p-3 transition-all hover:border-[#D4AF37]/60 hover:bg-[#0E1A3D]"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div className="rounded bg-[#D4AF37]/15 p-2 text-[#D4AF37] group-hover:bg-[#D4AF37] group-hover:text-[#0A1128] transition-colors">
-                        <Flame className="h-4 w-4" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h4 className="text-xs font-bold text-white group-hover:text-[#D4AF37] transition-colors">
-                          Obituaries &amp; Tributes
-                        </h4>
-                        <p className="text-[10px] text-slate-400 truncate">
-                          Tribute biographies, photos &amp; tributes
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div
-                    onClick={() => setActiveTab("faq")}
-                    className="group cursor-pointer rounded border border-[#1E3D82]/30 bg-[#0A122E] p-3 transition-all hover:border-[#D4AF37]/60 hover:bg-[#0E1A3D]"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div className="rounded bg-[#D4AF37]/15 p-2 text-[#D4AF37] group-hover:bg-[#D4AF37] group-hover:text-[#0A1128] transition-colors">
-                        <HelpCircle className="h-4 w-4" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h4 className="text-xs font-bold text-white group-hover:text-[#D4AF37] transition-colors">
-                          FAQ Manager
-                        </h4>
-                        <p className="text-[10px] text-slate-400 truncate">
-                          Answers to client inquiries
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+            )}
+            {/* ========================================================================= */}
+            {/* TAB: DASHBOARD (Compact & Dense Layout) */}
+            {/* ========================================================================= */}
+            {activeTab === "dashboard" && (
+              <CMSOverview
+                content={cms.content}
+                obituaryCount={obituaries.length}
+                onNavigate={setActiveTab}
+                onExport={handleExport}
+              />
+            )}
 
             {/* ========================================================================= */}
             {/* TAB: SITE SETTINGS & BRANDING */}
@@ -1433,7 +1163,9 @@ export function AdminCMSPage() {
                             <button
                               type="button"
                               onClick={() => {
-                                const copy = cms.content.home.whyUsItems.filter((_, i) => i !== idx);
+                                const copy = cms.content.home.whyUsItems.filter(
+                                  (_, i) => i !== idx,
+                                );
                                 cms.updateHome({ ...cms.content.home, whyUsItems: copy });
                               }}
                               className="rounded p-1 text-slate-400 hover:bg-rose-950/40 hover:text-rose-300 transition-colors cursor-pointer"
@@ -1482,7 +1214,8 @@ export function AdminCMSPage() {
                         const newItem = {
                           tag: `0${cms.content.home.whyUsItems.length + 1}`,
                           title: "New Distinction Pillar",
-                          description: "Unmatched attention to detail, comfort, and professional family care.",
+                          description:
+                            "Unmatched attention to detail, comfort, and professional family care.",
                         };
                         cms.updateHome({
                           ...cms.content.home,
@@ -1519,7 +1252,9 @@ export function AdminCMSPage() {
                           <button
                             type="button"
                             onClick={() => {
-                              const copy = cms.content.home.testimonials.filter((_, i) => i !== idx);
+                              const copy = cms.content.home.testimonials.filter(
+                                (_, i) => i !== idx,
+                              );
                               cms.updateHome({ ...cms.content.home, testimonials: copy });
                             }}
                             className="rounded p-1.5 text-slate-400 hover:bg-rose-950/40 hover:text-rose-300 transition-colors cursor-pointer"
@@ -1576,7 +1311,8 @@ export function AdminCMSPage() {
                       onClick={() => {
                         const newT = {
                           id: `t_${Date.now()}`,
-                          quote: "Capetrust provided an exceptional, dignified service for our family.",
+                          quote:
+                            "Capetrust provided an exceptional, dignified service for our family.",
                           author: "Family Representative",
                           relationship: "Family Member",
                           location: "Lagos, Nigeria",
@@ -1727,7 +1463,8 @@ export function AdminCMSPage() {
                       onClick={() => {
                         const newVal = {
                           title: "New Core Value",
-                          description: "Steadfast commitment to compassion, dignity, and family support.",
+                          description:
+                            "Steadfast commitment to compassion, dignity, and family support.",
                         };
                         cms.updateAbout({
                           ...cms.content.about,
@@ -1766,7 +1503,9 @@ export function AdminCMSPage() {
                             <button
                               type="button"
                               onClick={() => {
-                                const copy = cms.content.about.milestones.filter((_, i) => i !== idx);
+                                const copy = cms.content.about.milestones.filter(
+                                  (_, i) => i !== idx,
+                                );
                                 cms.updateAbout({ ...cms.content.about, milestones: copy });
                               }}
                               className="rounded p-1 text-slate-400 hover:bg-rose-950/40 hover:text-rose-300 transition-colors cursor-pointer"
@@ -1815,7 +1554,8 @@ export function AdminCMSPage() {
                         const newM = {
                           year: `${new Date().getFullYear()}`,
                           title: "New Expansion Milestone",
-                          description: "Continued enhancement of memorial infrastructure and park grounds.",
+                          description:
+                            "Continued enhancement of memorial infrastructure and park grounds.",
                         };
                         cms.updateAbout({
                           ...cms.content.about,
@@ -1956,7 +1696,7 @@ export function AdminCMSPage() {
                             type="button"
                             onClick={() => {
                               const copy = cms.content.services.servicesList.filter(
-                                (_, i) => i !== idx
+                                (_, i) => i !== idx,
                               );
                               cms.updateServices({ ...cms.content.services, servicesList: copy });
                             }}
@@ -2063,7 +1803,10 @@ export function AdminCMSPage() {
                           onChange={(e) => {
                             const copy = [...cms.content.services.additionalServices];
                             copy[idx] = e.target.value;
-                            cms.updateServices({ ...cms.content.services, additionalServices: copy });
+                            cms.updateServices({
+                              ...cms.content.services,
+                              additionalServices: copy,
+                            });
                           }}
                           className="w-full rounded-md border border-[#1E3D82]/50 bg-[#070D1F] px-3.5 py-2 text-sm text-white focus:border-[#D4AF37] focus:outline-hidden"
                           placeholder="Service name..."
@@ -2071,8 +1814,13 @@ export function AdminCMSPage() {
                         <button
                           type="button"
                           onClick={() => {
-                            const copy = cms.content.services.additionalServices.filter((_, i) => i !== idx);
-                            cms.updateServices({ ...cms.content.services, additionalServices: copy });
+                            const copy = cms.content.services.additionalServices.filter(
+                              (_, i) => i !== idx,
+                            );
+                            cms.updateServices({
+                              ...cms.content.services,
+                              additionalServices: copy,
+                            });
                           }}
                           className="rounded p-2 text-slate-400 hover:bg-rose-950/40 hover:text-rose-300 transition-colors cursor-pointer"
                           title="Delete Item"
@@ -2138,7 +1886,9 @@ export function AdminCMSPage() {
                           <button
                             type="button"
                             onClick={() => {
-                              const copy = cms.content.gardenOfPeace.vaultTiers.filter((_, i) => i !== idx);
+                              const copy = cms.content.gardenOfPeace.vaultTiers.filter(
+                                (_, i) => i !== idx,
+                              );
                               cms.updateGardenOfPeace({
                                 ...cms.content.gardenOfPeace,
                                 vaultTiers: copy,
@@ -2267,7 +2017,9 @@ export function AdminCMSPage() {
                             <button
                               type="button"
                               onClick={() => {
-                                const copy = cms.content.gardenOfPeace.amenities.filter((_, i) => i !== idx);
+                                const copy = cms.content.gardenOfPeace.amenities.filter(
+                                  (_, i) => i !== idx,
+                                );
                                 cms.updateGardenOfPeace({
                                   ...cms.content.gardenOfPeace,
                                   amenities: copy,
@@ -2315,7 +2067,8 @@ export function AdminCMSPage() {
                       onClick={() => {
                         const newAmenity = {
                           title: "New Park Infrastructure",
-                          description: "High-grade continuous maintenance, 24/7 security, and accessible pathways.",
+                          description:
+                            "High-grade continuous maintenance, 24/7 security, and accessible pathways.",
                         };
                         cms.updateGardenOfPeace({
                           ...cms.content.gardenOfPeace,
@@ -2361,7 +2114,7 @@ export function AdminCMSPage() {
                             type="button"
                             onClick={() => {
                               const copy = cms.content.memorialProducts.collections.filter(
-                                (_, i) => i !== idx
+                                (_, i) => i !== idx,
                               );
                               cms.updateMemorialProducts({
                                 ...cms.content.memorialProducts,
@@ -2516,7 +2269,9 @@ export function AdminCMSPage() {
                               <button
                                 type="button"
                                 onClick={() => {
-                                  const copy = cms.content.prePlanning.steps.filter((_, i) => i !== idx);
+                                  const copy = cms.content.prePlanning.steps.filter(
+                                    (_, i) => i !== idx,
+                                  );
                                   cms.updatePrePlanning({
                                     ...cms.content.prePlanning,
                                     steps: copy,
@@ -2565,7 +2320,8 @@ export function AdminCMSPage() {
                           const newStep = {
                             step: `${cms.content.prePlanning.steps.length + 1}`,
                             title: "New Planning Step",
-                            description: "Review and lock in your memorial preferences and arrangements.",
+                            description:
+                              "Review and lock in your memorial preferences and arrangements.",
                           };
                           cms.updatePrePlanning({
                             ...cms.content.prePlanning,
@@ -2592,7 +2348,10 @@ export function AdminCMSPage() {
                             onChange={(e) => {
                               const copy = [...cms.content.prePlanning.checklistItems];
                               copy[idx] = e.target.value;
-                              cms.updatePrePlanning({ ...cms.content.prePlanning, checklistItems: copy });
+                              cms.updatePrePlanning({
+                                ...cms.content.prePlanning,
+                                checklistItems: copy,
+                              });
                             }}
                             className="w-full rounded-md border border-[#1E3D82]/50 bg-[#070D1F] px-3.5 py-2 text-sm text-white focus:border-[#D4AF37] focus:outline-hidden"
                             placeholder="Checklist point..."
@@ -2600,8 +2359,13 @@ export function AdminCMSPage() {
                           <button
                             type="button"
                             onClick={() => {
-                              const copy = cms.content.prePlanning.checklistItems.filter((_, i) => i !== idx);
-                              cms.updatePrePlanning({ ...cms.content.prePlanning, checklistItems: copy });
+                              const copy = cms.content.prePlanning.checklistItems.filter(
+                                (_, i) => i !== idx,
+                              );
+                              cms.updatePrePlanning({
+                                ...cms.content.prePlanning,
+                                checklistItems: copy,
+                              });
                             }}
                             className="rounded p-2 text-slate-400 hover:bg-rose-950/40 hover:text-rose-300 transition-colors cursor-pointer"
                             title="Delete Item"
@@ -2633,6 +2397,105 @@ export function AdminCMSPage() {
               </div>
             )}
 
+            {/* Family estates page */}
+            {activeTab === "investment" && (
+              <div className="space-y-6">
+                <CMSSectionCard
+                  title="Family Estates Introduction"
+                  description="Headline and introduction displayed on the family estates page."
+                  icon={<Coins className="h-5 w-5" />}
+                  onSave={() => {
+                    cms.updateInvestment(cms.content.investment);
+                    triggerGlobalToast();
+                  }}
+                  onReset={() => cms.resetSection("investment")}
+                >
+                  <div className="space-y-4">
+                    <CMSTextInput
+                      label="Eyebrow"
+                      value={cms.content.investment.hero.eyebrow}
+                      onChange={(e) =>
+                        cms.updateInvestment({
+                          ...cms.content.investment,
+                          hero: { ...cms.content.investment.hero, eyebrow: e.target.value },
+                        })
+                      }
+                    />
+                    <CMSTextInput
+                      label="Page Title"
+                      value={cms.content.investment.hero.title}
+                      onChange={(e) =>
+                        cms.updateInvestment({
+                          ...cms.content.investment,
+                          hero: { ...cms.content.investment.hero, title: e.target.value },
+                        })
+                      }
+                    />
+                    <CMSTextArea
+                      label="Introduction"
+                      value={cms.content.investment.hero.intro}
+                      onChange={(e) =>
+                        cms.updateInvestment({
+                          ...cms.content.investment,
+                          hero: { ...cms.content.investment.hero, intro: e.target.value },
+                        })
+                      }
+                      rows={3}
+                    />
+                    <CMSImagePicker
+                      label="Hero Image"
+                      value={cms.content.investment.hero.image}
+                      onChange={(image) =>
+                        cms.updateInvestment({
+                          ...cms.content.investment,
+                          hero: { ...cms.content.investment.hero, image },
+                        })
+                      }
+                    />
+                  </div>
+                </CMSSectionCard>
+                <CMSSectionCard
+                  title="Estate Planning Message"
+                  description="Main heading and introductory text below the hero."
+                  icon={<FileText className="h-5 w-5" />}
+                  onSave={() => {
+                    cms.updateInvestment(cms.content.investment);
+                    triggerGlobalToast();
+                  }}
+                >
+                  <div className="space-y-4">
+                    <CMSTextInput
+                      label="Section Title"
+                      value={cms.content.investment.valueProposition.title}
+                      onChange={(e) =>
+                        cms.updateInvestment({
+                          ...cms.content.investment,
+                          valueProposition: {
+                            ...cms.content.investment.valueProposition,
+                            title: e.target.value,
+                          },
+                        })
+                      }
+                    />
+                    <CMSTextArea
+                      label="Section Introduction"
+                      value={cms.content.investment.valueProposition.body}
+                      onChange={(e) =>
+                        cms.updateInvestment({
+                          ...cms.content.investment,
+                          valueProposition: {
+                            ...cms.content.investment.valueProposition,
+                            body: e.target.value,
+                          },
+                        })
+                      }
+                      rows={3}
+                    />
+                  </div>
+                </CMSSectionCard>
+              </div>
+            )}
+
             {/* ========================================================================= */}
             {/* TAB: PRICE ESTIMATOR MATRIX */}
             {/* ========================================================================= */}
@@ -2645,10 +2508,16 @@ export function AdminCMSPage() {
                     <span>Real-Time Public Estimator Pricing Engine</span>
                   </div>
                   <p className="mt-1 text-slate-300">
-                    Modifying any number below will instantly update the interactive calculations, receipts, and WhatsApp estimate dispatches on the public calculator at{" "}
-                    <Link to="/estimator" target="_blank" className="font-mono underline text-[#D4AF37] hover:text-white">
+                    Modifying any number below will instantly update the interactive calculations,
+                    receipts, and WhatsApp estimate dispatches on the public calculator at{" "}
+                    <Link
+                      to="/estimator"
+                      target="_blank"
+                      className="font-mono underline text-[#D4AF37] hover:text-white"
+                    >
                       /estimator
-                    </Link>.
+                    </Link>
+                    .
                   </p>
                 </div>
 
@@ -3019,24 +2888,40 @@ export function AdminCMSPage() {
               <div className="space-y-6">
                 <CMSSectionCard
                   title="Memorial Tributes & Obituaries Directory"
-                  description="Publish new memorial profiles, edit existing biographies, manage condolence messages, and view memorial candle counts."
+                  description="Review published memorial profiles and messages."
                   icon={<Flame className="h-5 w-5" />}
                   badge={`${obituaries.length} Profiles`}
                 >
                   <div className="space-y-4">
                     <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#1E3D82]/30 pb-3">
                       <p className="text-xs text-slate-300">
-                        Select a profile below to edit full life story, service times, and condolences.
+                        Publish memorials, update service details, and review submitted messages.
                       </p>
-                      <Link
-                        to="/obituaries/create"
-                        target="_blank"
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedObituary(null);
+                          setShowMemorialEditor(true);
+                        }}
                         className="inline-flex items-center gap-1.5 rounded-lg bg-[#D4AF37] px-3.5 py-1.5 text-xs font-bold text-[#0A1128] hover:bg-[#e6bf43] transition-colors"
                       >
                         <Plus className="h-3.5 w-3.5" />
-                        Create New Tribute Page
-                      </Link>
+                        New memorial
+                      </button>
                     </div>
+
+                    {showMemorialEditor && (
+                      <MemorialEditor
+                        key={selectedObituary?.id || "new"}
+                        memorial={selectedObituary}
+                        onCancel={() => setShowMemorialEditor(false)}
+                        onSave={async (memorial) => {
+                          await saveObituary(memorial);
+                          setObituaries(await getStoredObituaries());
+                          setShowMemorialEditor(false);
+                        }}
+                      />
+                    )}
 
                     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       {obituaries.map((obit) => (
@@ -3064,6 +2949,16 @@ export function AdminCMSPage() {
                             </div>
                           </div>
                           <div className="flex flex-col gap-1">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setSelectedObituary(obit);
+                                setShowMemorialEditor(true);
+                              }}
+                              className="rounded p-1.5 text-xs font-semibold text-[#D4AF37] hover:bg-[#1E3D82]/30"
+                            >
+                              Edit
+                            </button>
                             <Link
                               to="/obituaries/$slug"
                               params={{ slug: obit.slug }}
@@ -3078,16 +2973,21 @@ export function AdminCMSPage() {
                               onClick={() => {
                                 if (
                                   window.confirm(
-                                    `Are you sure you want to delete tribute for "${obit.fullName}"?`
+                                    `Are you sure you want to delete tribute for "${obit.fullName}"?`,
                                   )
                                 ) {
                                   const updated = obituaries.filter((o) => o.id !== obit.id);
-                                  setObituaries(updated);
-                                  localStorage.setItem(
-                                    "capetrust_obituaries_v1",
-                                    JSON.stringify(updated)
-                                  );
-                                  triggerGlobalToast();
+                                  void deleteObituary(obit.slug)
+                                    .then(() => {
+                                      setObituaries(updated);
+                                    })
+                                    .catch((error) =>
+                                      alert(
+                                        error instanceof Error
+                                          ? error.message
+                                          : "Could not delete memorial.",
+                                      ),
+                                    );
                                 }
                               }}
                               className="rounded p-1.5 text-slate-400 hover:bg-rose-950/40 hover:text-rose-300 transition-colors"
@@ -3099,25 +2999,80 @@ export function AdminCMSPage() {
                         </div>
                       ))}
                     </div>
-
-                    <div className="flex justify-end pt-2">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (window.confirm("Restore default sample obituaries?")) {
-                            setObituaries(INITIAL_OBITUARIES);
-                            localStorage.setItem(
-                              "capetrust_obituaries_v1",
-                              JSON.stringify(INITIAL_OBITUARIES)
-                            );
-                            triggerGlobalToast();
-                          }
-                        }}
-                        className="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-slate-200 transition-colors cursor-pointer"
-                      >
-                        <RotateCcw className="h-3.5 w-3.5" />
-                        Reset Obituaries to Default Sample
-                      </button>
+                    <div className="border-t border-[#1E3D82]/40 pt-5">
+                      <h3 className="text-sm font-bold text-white">
+                        Tributes awaiting review ({pendingCondolences.length})
+                      </h3>
+                      {pendingCondolences.length === 0 ? (
+                        <p className="mt-2 text-xs text-slate-400">
+                          No messages are waiting for approval.
+                        </p>
+                      ) : (
+                        <div className="mt-3 space-y-3">
+                          {pendingCondolences.map((item) => (
+                            <div
+                              key={item.id}
+                              className="rounded-lg border border-[#1E3D82]/40 bg-[#070D1F] p-4"
+                            >
+                              <p className="text-xs font-semibold text-white">
+                                {item.name} · {item.relationship}
+                              </p>
+                              <p className="mt-1 text-xs text-slate-400">
+                                For {item.slug} ·{" "}
+                                {new Date(item.created_at).toLocaleDateString("en-NG")}
+                              </p>
+                              <p className="mt-3 whitespace-pre-wrap text-sm text-slate-200">
+                                {item.message}
+                              </p>
+                              <div className="mt-3 flex gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    void approveCondolence(item.id)
+                                      .then(() => {
+                                        setPendingCondolences((current) =>
+                                          current.filter((entry) => entry.id !== item.id),
+                                        );
+                                        void getStoredObituaries().then(setObituaries);
+                                      })
+                                      .catch((error) =>
+                                        alert(
+                                          error instanceof Error
+                                            ? error.message
+                                            : "Could not approve tribute.",
+                                        ),
+                                      );
+                                  }}
+                                  className="rounded-md bg-emerald-700 px-3 py-1.5 text-xs font-semibold text-white"
+                                >
+                                  Approve
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    void deleteCondolence(item.id)
+                                      .then(() =>
+                                        setPendingCondolences((current) =>
+                                          current.filter((entry) => entry.id !== item.id),
+                                        ),
+                                      )
+                                      .catch((error) =>
+                                        alert(
+                                          error instanceof Error
+                                            ? error.message
+                                            : "Could not remove tribute.",
+                                        ),
+                                      );
+                                  }}
+                                  className="rounded-md border border-rose-800 px-3 py-1.5 text-xs font-semibold text-rose-200"
+                                >
+                                  Remove
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </CMSSectionCard>
@@ -3131,7 +3086,7 @@ export function AdminCMSPage() {
               <div className="space-y-6">
                 <CMSSectionCard
                   title="Content Backup & Data Portability"
-                  description="Export your complete website database to JSON format or restore from a backup file."
+                  description="Export shared site content or restore it from a JSON backup."
                   icon={<Download className="h-5 w-5" />}
                 >
                   <div className="space-y-6">
@@ -3145,13 +3100,13 @@ export function AdminCMSPage() {
                           <div>
                             <h4 className="text-sm font-bold text-white">Export JSON Backup</h4>
                             <p className="text-xs text-slate-400">
-                              Download full site content as a standalone .json file
+                              Download the shared site content as a .json file
                             </p>
                           </div>
                         </div>
                         <p className="mt-3 text-xs text-slate-400">
-                          Contains all settings, home copy, about story, services, products,
-                          estimator matrix, and FAQs.
+                          Includes page settings, copy, services, products, estimator values and
+                          FAQs. Memorial profiles are stored separately and are not included.
                         </p>
                         <button
                           type="button"
@@ -3212,7 +3167,7 @@ export function AdminCMSPage() {
                           onClick={() => {
                             if (
                               window.confirm(
-                                "WARNING: This will reset ALL website pages, pricing, and settings back to default. Continue?"
+                                "WARNING: This will reset ALL website pages, pricing, and settings back to default. Continue?",
                               )
                             ) {
                               cms.resetAllToDefault();

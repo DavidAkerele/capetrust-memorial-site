@@ -26,7 +26,9 @@ export function Footer() {
             </div>
           </div>
           <p className="max-w-sm text-xs leading-relaxed text-white/80">
-            {currentSettings.tagline || site.tagline} Providing compassionate funeral planning, dignified burials, and serene resting grounds at Garden of Peace™ Memorial Park, Agbowa, Lagos.
+            {currentSettings.tagline || site.tagline} Providing compassionate funeral planning,
+            dignified burials, and serene resting grounds at Garden of Peace™ Memorial Park, Agbowa,
+            Lagos.
           </p>
           <div className="pt-2">
             <span className="inline-flex items-center rounded-full bg-[#1E3F20] px-3 py-1 text-xs font-semibold text-white border border-[#D4AF37]/30">
@@ -78,20 +80,26 @@ export function Footer() {
           <h3 className="eyebrow text-gold tracking-widest text-xs">Tools &amp; Tributes</h3>
           <ul className="mt-4 space-y-2 text-xs text-primary-foreground/85">
             <li>
-              <Link to="/estimator" className="flex items-center gap-1.5 hover:text-gold hover:underline">
+              <Link
+                to="/estimator"
+                className="flex items-center gap-1.5 hover:text-gold hover:underline"
+              >
                 <Calculator className="size-3 text-gold" />
                 Price Estimator
               </Link>
             </li>
             <li>
-              <Link to="/obituaries" className="flex items-center gap-1.5 hover:text-gold hover:underline">
+              <Link
+                to="/obituaries"
+                className="flex items-center gap-1.5 hover:text-gold hover:underline"
+              >
                 <Flame className="size-3 text-gold" />
                 Obituaries &amp; Tributes
               </Link>
             </li>
             <li>
               <Link to="/obituaries/create" className="hover:text-gold hover:underline">
-                Publish a Memorial
+                Submit a Memorial Tribute
               </Link>
             </li>
             <li>
@@ -146,7 +154,9 @@ export function Footer() {
 
       <div className="border-t border-primary-foreground/15">
         <div className="container-page flex flex-col gap-2 py-5 text-xs text-primary-foreground/60 sm:flex-row sm:items-center sm:justify-between">
-          <span>© {new Date().getFullYear()} Capetrust Funeral Services Ltd. All rights reserved.</span>
+          <span>
+            © {new Date().getFullYear()} Capetrust Funeral Services Ltd. All rights reserved.
+          </span>
           <div className="flex items-center gap-4">
             <span>Garden of Peace™ Memorial Park · Agbowa-Ikosi, Lagos</span>
             <span>•</span>

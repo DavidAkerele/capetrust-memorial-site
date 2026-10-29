@@ -323,7 +323,8 @@ export interface FaqItem {
   id: string;
   question: string;
   answer: string;
-  category: "General" | "Garden of Peace" | "Services & Planning" | "Pricing & Payment" | "Obituaries";
+  category:
+    "General" | "Garden of Peace" | "Services & Planning" | "Pricing & Payment" | "Obituaries";
 }
 
 export interface FaqContent {

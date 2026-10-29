@@ -1,13 +1,7 @@
 import React, { useState } from "react";
 
 export type ImageContext =
-  | "mausoleum"
-  | "chapel"
-  | "park"
-  | "service"
-  | "product"
-  | "family"
-  | "general";
+  "mausoleum" | "chapel" | "park" | "service" | "product" | "family" | "general";
 
 const CONTEXT_FALLBACKS: Record<ImageContext, string> = {
   mausoleum: "/images/memorial_estate_card_1778053361538.png",
@@ -53,13 +47,5 @@ export function SafeImage({
     }
   };
 
-  return (
-    <img
-      src={imgSrc}
-      alt={alt}
-      className={className}
-      onError={handleError}
-      {...props}
-    />
-  );
+  return <img src={imgSrc} alt={alt} className={className} onError={handleError} {...props} />;
 }

@@ -1,12 +1,20 @@
-import React, { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { DEFAULT_CMS_CONTENT } from "./default-content";
 import type { CMSContent } from "./types";
-
-const CMS_STORAGE_KEY = "capetrust_cms_data_v1";
+import { getSupabaseClient } from "@/lib/supabase";
 
 interface CMSContextType {
   content: CMSContent;
   isLoaded: boolean;
+  saveStatus: "idle" | "saving" | "saved" | "error";
+  flushSave: () => Promise<boolean>;
   updateSection: <K extends keyof CMSContent>(sectionKey: K, data: CMSContent[K]) => void;
   updateSettings: (settings: CMSContent["settings"]) => void;
   updateHome: (home: CMSContent["home"]) => void;
@@ -27,78 +35,105 @@ interface CMSContextType {
 
 const CMSContext = createContext<CMSContextType | null>(null);
 
-export function getStoredCMSContent(): CMSContent {
-  if (typeof window === "undefined") {
-    return DEFAULT_CMS_CONTENT;
-  }
-  try {
-    const raw = localStorage.getItem(CMS_STORAGE_KEY);
-    if (!raw) {
-      localStorage.setItem(CMS_STORAGE_KEY, JSON.stringify(DEFAULT_CMS_CONTENT));
-      return DEFAULT_CMS_CONTENT;
-    }
-    const parsed = JSON.parse(raw);
-    // Merge shallowly with DEFAULT_CMS_CONTENT to ensure new fields in schema exist
-    return {
-      ...DEFAULT_CMS_CONTENT,
-      ...parsed,
-      settings: { ...DEFAULT_CMS_CONTENT.settings, ...(parsed.settings || {}) },
-      home: { ...DEFAULT_CMS_CONTENT.home, ...(parsed.home || {}) },
-      about: { ...DEFAULT_CMS_CONTENT.about, ...(parsed.about || {}) },
-      services: { ...DEFAULT_CMS_CONTENT.services, ...(parsed.services || {}) },
-      gardenOfPeace: { ...DEFAULT_CMS_CONTENT.gardenOfPeace, ...(parsed.gardenOfPeace || {}) },
-      memorialProducts: { ...DEFAULT_CMS_CONTENT.memorialProducts, ...(parsed.memorialProducts || {}) },
-      prePlanning: { ...DEFAULT_CMS_CONTENT.prePlanning, ...(parsed.prePlanning || {}) },
-      investment: { ...DEFAULT_CMS_CONTENT.investment, ...(parsed.investment || {}) },
-      estimator: { ...DEFAULT_CMS_CONTENT.estimator, ...(parsed.estimator || {}) },
-      faq: { ...DEFAULT_CMS_CONTENT.faq, ...(parsed.faq || {}) },
-      contact: { ...DEFAULT_CMS_CONTENT.contact, ...(parsed.contact || {}) },
-    };
-  } catch (err) {
-    console.error("Error reading stored CMS content:", err);
-    return DEFAULT_CMS_CONTENT;
-  }
+export async function getStoredCMSContent(): Promise<CMSContent> {
+  const client = getSupabaseClient();
+  if (!client) return DEFAULT_CMS_CONTENT;
+
+  const { data, error } = await client
+    .from("site_content")
+    .select("content")
+    .eq("id", "main")
+    .maybeSingle();
+  if (error) throw error;
+  const parsed = data?.content as Partial<CMSContent> | undefined;
+  if (!parsed) return DEFAULT_CMS_CONTENT;
+  return {
+    ...DEFAULT_CMS_CONTENT,
+    ...parsed,
+    settings: { ...DEFAULT_CMS_CONTENT.settings, ...parsed.settings },
+    home: { ...DEFAULT_CMS_CONTENT.home, ...parsed.home },
+    about: { ...DEFAULT_CMS_CONTENT.about, ...parsed.about },
+    services: { ...DEFAULT_CMS_CONTENT.services, ...parsed.services },
+    gardenOfPeace: { ...DEFAULT_CMS_CONTENT.gardenOfPeace, ...parsed.gardenOfPeace },
+    memorialProducts: { ...DEFAULT_CMS_CONTENT.memorialProducts, ...parsed.memorialProducts },
+    prePlanning: { ...DEFAULT_CMS_CONTENT.prePlanning, ...parsed.prePlanning },
+    investment: { ...DEFAULT_CMS_CONTENT.investment, ...parsed.investment },
+    estimator: { ...DEFAULT_CMS_CONTENT.estimator, ...parsed.estimator },
+    faq: { ...DEFAULT_CMS_CONTENT.faq, ...parsed.faq },
+    contact: { ...DEFAULT_CMS_CONTENT.contact, ...parsed.contact },
+  };
 }
 
-export function CMSProvider({ children }: { children: ReactNode }) {
-  const [content, setContent] = useState<CMSContent>(DEFAULT_CMS_CONTENT);
-  const [isLoaded, setIsLoaded] = useState(false);
+export function CMSProvider({
+  children,
+  initialContent = DEFAULT_CMS_CONTENT,
+}: {
+  children: ReactNode;
+  initialContent?: CMSContent;
+}) {
+  const [content, setContent] = useState<CMSContent>(initialContent);
+  const [isLoaded] = useState(true);
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const latestContent = useRef(initialContent);
+  const saveQueue = useRef<Promise<boolean>>(Promise.resolve(true));
 
   useEffect(() => {
-    const loaded = getStoredCMSContent();
-    setContent(loaded);
-    setIsLoaded(true);
-
-    // Listen to storage events for multi-tab sync
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === CMS_STORAGE_KEY && e.newValue) {
-        try {
-          setContent(JSON.parse(e.newValue));
-        } catch {}
-      }
+    const refresh = () => {
+      if (document.visibilityState !== "visible" || saveStatus === "saving") return;
+      void getStoredCMSContent()
+        .then((fresh) => {
+          latestContent.current = fresh;
+          setContent(fresh);
+        })
+        .catch(console.error);
     };
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
-  }, []);
+    document.addEventListener("visibilitychange", refresh);
+    return () => document.removeEventListener("visibilitychange", refresh);
+  }, [saveStatus]);
+
+  const flushSave = (): Promise<boolean> => {
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = null;
+    const snapshot = latestContent.current;
+    setSaveStatus("saving");
+    saveQueue.current = saveQueue.current
+      .catch(() => false)
+      .then(async () => {
+        const client = getSupabaseClient();
+        if (!client) {
+          if (snapshot === latestContent.current) setSaveStatus("error");
+          return false;
+        }
+        const { error } = await client
+          .from("site_content")
+          .upsert({ id: "main", content: snapshot });
+        if (snapshot === latestContent.current) setSaveStatus(error ? "error" : "saved");
+        if (error) console.error("Failed to save shared site content:", error);
+        return !error;
+      })
+      .catch((error) => {
+        if (snapshot === latestContent.current) setSaveStatus("error");
+        console.error("Failed to save shared site content:", error);
+        return false;
+      });
+    return saveQueue.current;
+  };
 
   const saveContent = (newContent: CMSContent) => {
-    const updated: CMSContent = {
-      ...newContent,
-      lastUpdated: new Date().toISOString(),
-    };
+    const updated = { ...newContent, lastUpdated: new Date().toISOString() };
+    latestContent.current = updated;
     setContent(updated);
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.setItem(CMS_STORAGE_KEY, JSON.stringify(updated));
-      } catch (err) {
-        console.error("Failed to save CMS content to localStorage:", err);
-      }
-    }
+    setSaveStatus("saving");
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => {
+      void flushSave();
+    }, 350);
   };
 
   const updateSection = <K extends keyof CMSContent>(sectionKey: K, data: CMSContent[K]) => {
     saveContent({
-      ...content,
+      ...latestContent.current,
       [sectionKey]: data,
     });
   };
@@ -107,18 +142,22 @@ export function CMSProvider({ children }: { children: ReactNode }) {
   const updateHome = (home: CMSContent["home"]) => updateSection("home", home);
   const updateAbout = (about: CMSContent["about"]) => updateSection("about", about);
   const updateServices = (services: CMSContent["services"]) => updateSection("services", services);
-  const updateGardenOfPeace = (gardenOfPeace: CMSContent["gardenOfPeace"]) => updateSection("gardenOfPeace", gardenOfPeace);
+  const updateGardenOfPeace = (gardenOfPeace: CMSContent["gardenOfPeace"]) =>
+    updateSection("gardenOfPeace", gardenOfPeace);
   const updateMemorialProducts = (memorialProducts: CMSContent["memorialProducts"]) =>
     updateSection("memorialProducts", memorialProducts);
-  const updatePrePlanning = (prePlanning: CMSContent["prePlanning"]) => updateSection("prePlanning", prePlanning);
-  const updateInvestment = (investment: CMSContent["investment"]) => updateSection("investment", investment);
-  const updateEstimator = (estimator: CMSContent["estimator"]) => updateSection("estimator", estimator);
+  const updatePrePlanning = (prePlanning: CMSContent["prePlanning"]) =>
+    updateSection("prePlanning", prePlanning);
+  const updateInvestment = (investment: CMSContent["investment"]) =>
+    updateSection("investment", investment);
+  const updateEstimator = (estimator: CMSContent["estimator"]) =>
+    updateSection("estimator", estimator);
   const updateFaq = (faq: CMSContent["faq"]) => updateSection("faq", faq);
   const updateContact = (contact: CMSContent["contact"]) => updateSection("contact", contact);
 
   const resetSection = (sectionKey: keyof Omit<CMSContent, "version" | "lastUpdated">) => {
     saveContent({
-      ...content,
+      ...latestContent.current,
       [sectionKey]: DEFAULT_CMS_CONTENT[sectionKey],
     });
   };
@@ -128,7 +167,7 @@ export function CMSProvider({ children }: { children: ReactNode }) {
   };
 
   const exportJSON = (): string => {
-    return JSON.stringify(content, null, 2);
+    return JSON.stringify(latestContent.current, null, 2);
   };
 
   const importJSON = (jsonString: string): { success: boolean; error?: string } => {
@@ -144,8 +183,11 @@ export function CMSProvider({ children }: { children: ReactNode }) {
         lastUpdated: new Date().toISOString(),
       });
       return { success: true };
-    } catch (err: any) {
-      return { success: false, error: err?.message || "Failed to parse JSON file." };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Failed to parse JSON file.",
+      };
     }
   };
 
@@ -154,6 +196,8 @@ export function CMSProvider({ children }: { children: ReactNode }) {
       value={{
         content,
         isLoaded,
+        saveStatus,
+        flushSave,
         updateSection,
         updateSettings,
         updateHome,
@@ -184,6 +228,8 @@ export function useCMS(): CMSContextType {
     return {
       content: DEFAULT_CMS_CONTENT,
       isLoaded: true,
+      saveStatus: "idle",
+      flushSave: async () => false,
       updateSection: () => {},
       updateSettings: () => {},
       updateHome: () => {},

@@ -29,22 +29,13 @@ export const Route = createFileRoute("/contact")({
       { name: "twitter:title", content: "Contact Capetrust Funeral Services" },
       {
         name: "twitter:description",
-        content: "24/7 immediate assistance, head office in Ikorodu, and cemetery tours at Agbowa, Lagos.",
+        content:
+          "24/7 immediate assistance, head office in Ikorodu, and cemetery tours at Agbowa, Lagos.",
       },
       { name: "twitter:image", content: "/images/og-capetrust.png" },
     ],
   }),
 });
-
-const interests = [
-  "Pre-Planning Enquiry",
-  "Billing, Payment & Account Enquiry",
-  "General Enquiry",
-  "Immediate Need Assistance",
-  "Repatriation Services",
-  "Investment & Partnership Enquiry",
-  "Directions to Our Locations",
-];
 
 import { useCMS } from "@/lib/cms/cms-store";
 
@@ -73,9 +64,9 @@ function Contact() {
   return (
     <>
       <PageHero
-        eyebrow="Contact us"
-        title="We're here whenever you need us"
-        intro="Please get in touch using the contact details below or complete our enquiry form, and we'll respond as soon as possible."
+        eyebrow={content.contact.hero.eyebrow}
+        title={content.contact.hero.title}
+        intro="Call, message us on WhatsApp, or prepare an email using the form below."
         image="https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?q=80&w=1920&auto=format&fit=crop"
       />
 
@@ -89,10 +80,14 @@ function Contact() {
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Button asChild size="lg">
-                <a href={site.phoneHref}>Call Us Now</a>
+                <a href={currentSettings.phoneHref || site.phoneHref}>Call Us Now</a>
               </Button>
               <Button asChild variant="outlineDark" size="lg">
-                <a href={site.whatsapp} target="_blank" rel="noreferrer">
+                <a
+                  href={currentSettings.whatsapp || site.whatsapp}
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   WhatsApp Us
                 </a>
               </Button>
@@ -117,7 +112,7 @@ function Contact() {
             <SectionHeading
               eyebrow="Enquiry & reservation"
               title="Send us a message"
-              intro="Complete the form below and a member of our team will be in touch."
+              intro="Complete the form to open an email draft. Send it from your email app to reach our team."
             />
             <form className="mt-8 grid gap-5" onSubmit={handleSubmit}>
               <div className="grid gap-5 sm:grid-cols-2">
@@ -141,10 +136,10 @@ function Contact() {
                     id="interest"
                     name="interest"
                     required
-                    defaultValue={interests[2]}
+                    defaultValue={content.contact.inquirySubjects[0]}
                     className="h-9 rounded-md border border-input bg-background px-3 text-sm"
                   >
-                    {interests.map((i) => (
+                    {content.contact.inquirySubjects.map((i) => (
                       <option key={i}>{i}</option>
                     ))}
                   </select>
@@ -156,11 +151,11 @@ function Contact() {
               </div>
               <div className="flex flex-wrap items-center gap-4">
                 <Button type="submit" variant="forest" size="xl">
-                  Submit Enquiry
+                  Open Email Draft
                 </Button>
                 {sent && (
                   <p className="text-sm text-muted-foreground">
-                    Thank you — your email client should now open with your enquiry.
+                    Your email draft should now be open. Please send it from your email app.
                   </p>
                 )}
               </div>
@@ -173,62 +168,55 @@ function Contact() {
               <ul className="mt-4 space-y-3 text-sm">
                 <li className="flex gap-3">
                   <Phone className="mt-0.5 size-4 text-[#415825]" />
-                  <a href={site.phoneHref} className="hover:underline font-semibold">
-                    {site.phone}
+                  <a
+                    href={currentSettings.phoneHref || site.phoneHref}
+                    className="hover:underline font-semibold"
+                  >
+                    {currentSettings.phone || site.phone}
                   </a>
                 </li>
                 <li className="flex gap-3">
                   <Mail className="mt-0.5 size-4 text-[#415825]" />
-                  <a href={`mailto:${site.email}`} className="hover:underline">
-                    {site.email}
+                  <a
+                    href={`mailto:${currentSettings.email || site.email}`}
+                    className="hover:underline"
+                  >
+                    {currentSettings.email || site.email}
                   </a>
                 </li>
               </ul>
             </div>
 
-            <div className="rounded-xl border border-border bg-card p-7 shadow-xs">
-              <h3 className="font-serif text-xl font-bold">Head Office</h3>
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                The best place to discuss funeral arrangements, pre-planning, billing enquiries and
-                general consultations.
-              </p>
-              <p className="mt-3 flex gap-3 text-sm">
-                <MapPin className="mt-0.5 size-4 shrink-0 text-[#415825]" />
-                {site.headOffice}
-              </p>
-              <Button asChild variant="outlineForest" size="sm" className="mt-5">
-                <a href={site.headOfficeMap} target="_blank" rel="noreferrer">
-                  Get Directions
-                </a>
-              </Button>
-            </div>
-
-            <div className="rounded-xl border border-border bg-card p-7 shadow-xs">
-              <h3 className="font-serif text-xl font-bold">Garden of Peace Memorial Park</h3>
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                We welcome families, prospective buyers and visitors to tour our memorial park.
-                Appointments are recommended so an advisor is available to assist you.
-              </p>
-              <p className="mt-3 flex gap-3 text-sm">
-                <MapPin className="mt-0.5 size-4 shrink-0 text-[#415825]" />
-                {site.park}
-              </p>
-              <Button asChild variant="forest" size="sm" className="mt-5">
-                <a href={site.parkMap} target="_blank" rel="noreferrer">
-                  Visit the Memorial Park
-                </a>
-              </Button>
-            </div>
+            {content.contact.branches.map((branch) => (
+              <div
+                key={branch.title}
+                className="rounded-xl border border-border bg-card p-7 shadow-xs"
+              >
+                <h3 className="font-serif text-xl font-bold">{branch.title}</h3>
+                <p className="mt-3 flex gap-3 text-sm text-muted-foreground">
+                  <MapPin className="mt-0.5 size-4 shrink-0 text-[#415825]" />
+                  {branch.address}
+                </p>
+                <p className="mt-3 text-xs text-muted-foreground">{branch.hours}</p>
+                {branch.mapLink && (
+                  <Button asChild variant="outlineForest" size="sm" className="mt-5">
+                    <a href={branch.mapLink} target="_blank" rel="noreferrer">
+                      Get directions
+                    </a>
+                  </Button>
+                )}
+              </div>
+            ))}
 
             <div className="rounded-lg border border-border bg-card p-7">
               <h3 className="flex items-center gap-2 text-xl">
                 <Clock className="size-4 text-gold" /> Business hours
               </h3>
               <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
-                {site.hours.map(([day, time]) => (
-                  <li key={day} className="flex justify-between gap-4">
-                    <span>{day}</span>
-                    <span className="text-foreground">{time}</span>
+                {currentSettings.hours.map(({ days, hours }) => (
+                  <li key={days} className="flex justify-between gap-4">
+                    <span>{days}</span>
+                    <span className="text-foreground">{hours}</span>
                   </li>
                 ))}
               </ul>

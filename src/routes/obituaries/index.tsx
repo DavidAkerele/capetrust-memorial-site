@@ -8,6 +8,7 @@ import { getStoredObituaries, Obituary } from "@/lib/obituaries-data";
 
 export const Route = createFileRoute("/obituaries/")({
   component: ObituariesIndexPage,
+  loader: () => getStoredObituaries(),
   head: () => ({
     meta: [
       { title: "Obituaries & Memorial Tributes | Capetrust Funeral Services" },
@@ -35,13 +36,9 @@ export const Route = createFileRoute("/obituaries/")({
 });
 
 function ObituariesIndexPage() {
-  const [obituaries, setObituaries] = useState<Obituary[]>([]);
+  const obituaries = Route.useLoaderData();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedYear, setSelectedYear] = useState<string>("all");
-
-  useEffect(() => {
-    setObituaries(getStoredObituaries());
-  }, []);
 
   const filteredObituaries = obituaries.filter((item) => {
     const matchesSearch =
@@ -50,11 +47,13 @@ function ObituariesIndexPage() {
       (item.title && item.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
       item.lifeStory.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesYear =
-      selectedYear === "all" || item.dateOfDeath.includes(selectedYear);
+    const matchesYear = selectedYear === "all" || item.dateOfDeath.includes(selectedYear);
 
     return matchesSearch && matchesYear;
   });
+  const years = [
+    ...new Set(obituaries.map((item) => item.dateOfDeath.match(/\b\d{4}\b/)?.[0]).filter(Boolean)),
+  ] as string[];
 
   return (
     <>
@@ -66,7 +65,7 @@ function ObituariesIndexPage() {
       >
         <div className="flex flex-wrap gap-3">
           <Button asChild variant="gold" size="xl">
-            <Link to="/obituaries/create">Publish a Memorial Tribute</Link>
+            <Link to="/obituaries/create">Submit a Memorial Tribute</Link>
           </Button>
         </div>
       </PageHero>
@@ -100,34 +99,28 @@ function ObituariesIndexPage() {
               >
                 All Years
               </button>
-              <button
-                type="button"
-                onClick={() => setSelectedYear("2026")}
-                className={`rounded-full px-3.5 py-1.5 transition-all ${
-                  selectedYear === "2026"
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "text-foreground/70 hover:text-foreground"
-                }`}
-              >
-                2026
-              </button>
-              <button
-                type="button"
-                onClick={() => setSelectedYear("2025")}
-                className={`rounded-full px-3.5 py-1.5 transition-all ${
-                  selectedYear === "2025"
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "text-foreground/70 hover:text-foreground"
-                }`}
-              >
-                2025
-              </button>
+              {years
+                .sort((a, b) => Number(b) - Number(a))
+                .map((year) => (
+                  <button
+                    key={year}
+                    type="button"
+                    onClick={() => setSelectedYear(year)}
+                    className={`rounded-full px-3.5 py-1.5 transition-all ${
+                      selectedYear === year
+                        ? "bg-primary text-primary-foreground shadow-sm"
+                        : "text-foreground/70 hover:text-foreground"
+                    }`}
+                  >
+                    {year}
+                  </button>
+                ))}
             </div>
 
             <Button asChild variant="gold" size="lg">
               <Link to="/obituaries/create" className="flex items-center gap-2">
                 <PlusCircle className="size-4" />
-                Publish Tribute
+                Submit Tribute
               </Link>
             </Button>
           </div>
@@ -137,17 +130,23 @@ function ObituariesIndexPage() {
         <div className="mt-12">
           {filteredObituaries.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-border py-16 text-center">
-              <p className="text-base text-muted-foreground">No memorial tributes matched your search criteria.</p>
-              <button
-                type="button"
-                onClick={() => {
-                  setSearchQuery("");
-                  setSelectedYear("all");
-                }}
-                className="mt-4 text-xs font-bold uppercase tracking-wider text-primary underline"
-              >
-                Clear Filters
-              </button>
+              <p className="text-base text-muted-foreground">
+                {obituaries.length === 0
+                  ? "There are no published memorial tributes yet."
+                  : "No memorial tributes matched your search criteria."}
+              </p>
+              {obituaries.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchQuery("");
+                    setSelectedYear("all");
+                  }}
+                  className="mt-4 text-xs font-bold uppercase tracking-wider text-primary underline"
+                >
+                  Clear Filters
+                </button>
+              )}
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">

@@ -38,7 +38,7 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+function ErrorComponent({ error, reset }: { error: unknown; reset: () => void }) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
@@ -77,6 +77,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  loader: () => getStoredCMSContent(),
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -110,7 +111,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:image", content: "/images/og-capetrust.png" },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
-      { property: "og:image:alt", content: "Capetrust Funeral Services & Garden of Peace Memorial Park" },
+      {
+        property: "og:image:alt",
+        content: "Capetrust Funeral Services & Garden of Peace Memorial Park",
+      },
 
       // Twitter Card Unfurl
       { name: "twitter:card", content: "summary_large_image" },
@@ -121,7 +125,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "Compassionate funeral care, burial coordination, and Garden of Peace™ Memorial Park in Agbowa, Lagos.",
       },
       { name: "twitter:image", content: "/images/og-capetrust.png" },
-      { name: "twitter:image:alt", content: "Capetrust Funeral Services & Garden of Peace Memorial Park" },
+      {
+        name: "twitter:image:alt",
+        content: "Capetrust Funeral Services & Garden of Peace Memorial Park",
+      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -157,16 +164,17 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
-import { CMSProvider } from "@/lib/cms/cms-store";
+import { CMSProvider, getStoredCMSContent } from "@/lib/cms/cms-store";
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const initialContent = Route.useLoaderData();
   const routerState = useRouterState();
   const isAdmin = routerState?.location?.pathname?.startsWith("/admin");
 
   return (
     <QueryClientProvider client={queryClient}>
-      <CMSProvider>
+      <CMSProvider initialContent={initialContent}>
         <div className="flex min-h-screen flex-col">
           {!isAdmin && <Header />}
           <main className="flex-1">

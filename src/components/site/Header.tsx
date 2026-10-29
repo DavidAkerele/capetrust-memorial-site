@@ -81,19 +81,13 @@ export function Header() {
             onClick={() => setOpenDropdown(null)}
             className="flex items-center gap-3.5 group shrink-0"
           >
-            <img
-              src="/logo.png"
-              alt="Capetrust Logo"
-              className="h-12 w-auto object-contain"
-            />
+            <img src="/logo.png" alt="Capetrust Logo" className="h-12 w-auto object-contain" />
             <div className="flex flex-col leading-none">
               <div className="flex items-baseline gap-1.5">
                 <span className="font-serif text-2xl font-bold tracking-tight text-primary">
                   Capetrust
                 </span>
-                <span className="eyebrow text-[0.62rem] text-gold font-bold">
-                  Funerals
-                </span>
+                <span className="eyebrow text-[0.62rem] text-gold font-bold">Funerals</span>
               </div>
             </div>
           </Link>
@@ -126,9 +120,7 @@ export function Header() {
               if (item.children) {
                 const isOpen = openDropdown === item.label;
                 const isGroupActive = item.children.some(
-                  (child) =>
-                    currentPath === child.to ||
-                    currentPath.startsWith(child.to + "/")
+                  (child) => currentPath === child.to || currentPath.startsWith(child.to + "/"),
                 );
 
                 return (
@@ -140,15 +132,13 @@ export function Header() {
                   >
                     <button
                       type="button"
-                      onClick={() =>
-                        setOpenDropdown(isOpen ? null : item.label)
-                      }
+                      onClick={() => setOpenDropdown(isOpen ? null : item.label)}
                       className={`inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wider px-3 py-2 rounded-md transition-colors ${
                         isGroupActive
                           ? "text-primary font-bold bg-primary/5"
                           : isOpen
-                          ? "text-primary bg-secondary/80"
-                          : "text-foreground/80 hover:text-primary hover:bg-secondary/60"
+                            ? "text-primary bg-secondary/80"
+                            : "text-foreground/80 hover:text-primary hover:bg-secondary/60"
                       }`}
                     >
                       <span>{item.label}</span>
@@ -166,8 +156,7 @@ export function Header() {
                           <div className="space-y-1">
                             {item.children.map((child) => {
                               const isChildActive =
-                                currentPath === child.to ||
-                                currentPath.startsWith(child.to + "/");
+                                currentPath === child.to || currentPath.startsWith(child.to + "/");
 
                               return (
                                 <Link
@@ -224,14 +213,9 @@ export function Header() {
               </Link>
             </Button>
 
-            <Button
-              asChild
-              variant="pine"
-              size="sm"
-              className="hidden sm:inline-flex text-xs"
-            >
+            <Button asChild variant="pine" size="sm" className="hidden sm:inline-flex text-xs">
               <a
-                href={site.whatsapp}
+                href={currentSettings.whatsapp || site.whatsapp}
                 target="_blank"
                 rel="noreferrer"
                 className="flex items-center gap-1.5"
@@ -273,15 +257,10 @@ export function Header() {
                   const isExpanded = mobileExpandedGroup === item.label;
 
                   return (
-                    <div
-                      key={item.label}
-                      className="border-b border-border/60 py-2"
-                    >
+                    <div key={item.label} className="border-b border-border/60 py-2">
                       <button
                         type="button"
-                        onClick={() =>
-                          setMobileExpandedGroup(isExpanded ? null : item.label)
-                        }
+                        onClick={() => setMobileExpandedGroup(isExpanded ? null : item.label)}
                         className="flex w-full items-center justify-between text-sm font-medium text-foreground hover:text-primary py-1"
                       >
                         <span>{item.label}</span>
@@ -317,13 +296,22 @@ export function Header() {
               })}
 
               <div className="mt-4 grid grid-cols-2 gap-3 pt-3 pb-3">
-                <Button asChild variant="outlineForest" size="default" className="w-full text-xs font-bold">
+                <Button
+                  asChild
+                  variant="outlineForest"
+                  size="default"
+                  className="w-full text-xs font-bold"
+                >
                   <Link to="/estimator" onClick={() => setMobileOpen(false)}>
                     Price Estimator
                   </Link>
                 </Button>
                 <Button asChild variant="pine" size="default" className="w-full text-xs font-bold">
-                  <a href={site.whatsapp} target="_blank" rel="noreferrer">
+                  <a
+                    href={currentSettings.whatsapp || site.whatsapp}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
                     WhatsApp Us
                   </a>
                 </Button>

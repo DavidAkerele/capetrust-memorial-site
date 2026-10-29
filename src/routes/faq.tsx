@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CTABand, PageHero, Section, SectionHeading } from "@/components/site/Sections";
 import { site } from "@/lib/site";
+import { useCMS } from "@/lib/cms/cms-store";
 
 export const Route = createFileRoute("/faq")({
   component: FAQ,
@@ -38,155 +39,48 @@ export const Route = createFileRoute("/faq")({
       { property: "og:title", content: "Frequently Asked Questions | Capetrust" },
       {
         property: "og:description",
-        content: "Answers to common questions about funerals, cemetery vaults, and services in Lagos.",
+        content:
+          "Answers to common questions about funerals, cemetery vaults, and services in Lagos.",
       },
       { property: "og:image", content: "/images/og-capetrust.png" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Funeral FAQs | Capetrust Funeral Services" },
       {
         name: "twitter:description",
-        content: "Answers to common questions regarding funerals, cemetery vaults, and burial logistics in Lagos.",
+        content:
+          "Answers to common questions regarding funerals, cemetery vaults, and burial logistics in Lagos.",
       },
       { name: "twitter:image", content: "/images/og-capetrust.png" },
     ],
   }),
 });
 
-type QA = { q: string; a: string[]; category: string };
-
-const faqData: { category: string; icon: any; items: { q: string; a: string[] }[] }[] = [
-  {
-    category: "Immediate Need & General",
-    icon: Heart,
-    items: [
-      {
-        q: "What happens immediately after I contact Capetrust following a death?",
-        a: [
-          "1. Reach us anytime, 24/7, via phone call (+234 802 6666 655) or WhatsApp.",
-          "2. Pickup & Transfer — our professional team collects your loved one and transfers them to a certified mortuary facility.",
-          "3. Documentation & Planning — you provide the Medical Certificate of Cause of Death, and our dedicated advisor sits with your family to plan a service tailored to your traditions.",
-          "4. Confirmation & Preparation — we finalise caskets, vault reservations, floral tributes, and order of service printing.",
-          "5. Day of Burial — seamless execution, hearse motorcade, and dignified interment ceremony at Garden of Peace™.",
-        ],
-      },
-      {
-        q: "How quickly can Capetrust respond when a passing occurs?",
-        a: [
-          "Our emergency response team is on standby 24 hours a day, 7 days a week across Lagos and Ogun states. We dispatch recovery transport immediately upon receipt of notice.",
-        ],
-      },
-    ],
-  },
-  {
-    category: "Cost & Payment",
-    icon: DollarSign,
-    items: [
-      {
-        q: "How much does a funeral and cemetery vault cost with Capetrust?",
-        a: [
-          "Vault options start from ₦4,000,000 for Single Units (with promotional pre-need rates from ₦2,000,000), ₦7,000,000 for Double Units, and ₦9,800,000 for Triple Tier chambers. Mandatory sealed top slabs start at ₦150,000.",
-          "You can generate an itemized estimate instantly on our website using our Transparent Price Estimator.",
-        ],
-      },
-      {
-        q: "Can I pre-plan and pay in installments for future peace of mind?",
-        a: [
-          "Yes. Pre-planning allows families to secure prime cemetery locations, lock in current prices against future inflation, and take advantage of 0% interest flexible installment payment plans.",
-        ],
-      },
-      {
-        q: "What statutory fees or optional additions apply?",
-        a: [
-          "• Local Government (LGA) Burial Documentation: ₦20,000 per burial",
-          "• Chamber Re-opening Preparation Deposit: ₦300,000 per instance",
-          "• Custom Single Headstone: ₦200,000 | Double Headstone: ₦350,000",
-          "• Memorial Street Naming inside Garden of Peace™: ₦600,000",
-        ],
-      },
-    ],
-  },
-  {
-    category: "Cemetery & Vaults",
-    icon: Shield,
-    items: [
-      {
-        q: "Where is Garden of Peace™ Memorial Park located?",
-        a: [
-          "Garden of Peace™ is located at Odo-Ayandelu (opposite Government Estate, Agbowa, Lagos State). It spans over 10 acres of secure, beautifully landscaped grounds designed by horticulturists.",
-        ],
-      },
-      {
-        q: "What vault chamber configurations are available?",
-        a: [
-          "• Single Unit Vault: Designed for 1 individual with lifetime structural concrete integrity.",
-          "• Double Unit Vault: Accommodates 2 interments within a unified structure.",
-          "• Triple Unit Vault: Three-tiered chamber configuration for space efficiency.",
-          "• Private Mausoleums & Gated Family Sanctuaries: Multi-chamber estates (4, 6, 8, or 12 units) with private ornamental gates and bespoke family crests.",
-        ],
-      },
-      {
-        q: "How is the cemetery secured and maintained over the years?",
-        a: [
-          "Garden of Peace™ features permanent concrete vault construction, solar-powered CCTV surveillance cameras, 24/7 on-site security personnel, clean paved walkways, and perpetual horticultural maintenance included with every vault.",
-        ],
-      },
-    ],
-  },
-  {
-    category: "Documentation & Legal",
-    icon: FileText,
-    items: [
-      {
-        q: "What documents do I need to provide for burial arrangements?",
-        a: [
-          "You will need to provide the Medical Certificate of Cause of Death issued by the attending hospital doctor. Once provided, our administrative team handles registrar filings, LGA burial permits, and official cemetery certification.",
-          "If the passing was sudden or unattended, an autopsy may be required first. Our team provides complete procedural guidance.",
-        ],
-      },
-    ],
-  },
-  {
-    category: "Transport & Repatriation",
-    icon: Truck,
-    items: [
-      {
-        q: "Can you transport a loved one for burial outside Lagos State?",
-        a: [
-          "Yes. We coordinate interstate transportation across Nigeria with executive hearses, fully air-conditioned Hiace family support buses, and interstate transit permits.",
-        ],
-      },
-      {
-        q: "Do you handle international repatriation into or out of Nigeria?",
-        a: [
-          "Yes. We manage international embassy clearance, airline cargo documentation, zinc-lined hermetic shipping caskets, and customs clearance for arrivals and departures.",
-        ],
-      },
-    ],
-  },
-  {
-    category: "Religious & Cultural Practices",
-    icon: Sparkles,
-    items: [
-      {
-        q: "Do you accommodate different religious and cultural customs?",
-        a: [
-          "Yes. We respectfully accommodate Islamic rapid burials (including same-day interment), Christian denominational liturgies (Catholic, Anglican, Methodist, Evangelical), and traditional family customs.",
-        ],
-      },
-      {
-        q: "Can we use the on-site chapel for memorial services and receptions?",
-        a: [
-          "Yes. Garden of Peace™ features a private, air-conditioned on-site chapel and reception garden for prayers, viewings, and family gatherings.",
-        ],
-      },
-    ],
-  },
-];
+const categoryIcons: Record<string, typeof HelpCircle> = {
+  General: Heart,
+  "Garden of Peace": Shield,
+  "Services & Planning": Truck,
+  "Pricing & Payment": DollarSign,
+  Obituaries: FileText,
+};
 
 function FAQ() {
+  const { content } = useCMS();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
 
+  const faqData = useMemo(
+    () =>
+      content.faq.categories
+        .map((category) => ({
+          category,
+          icon: categoryIcons[category] || HelpCircle,
+          items: content.faq.faqs
+            .filter((item) => item.category === category)
+            .map((item) => ({ q: item.question, a: item.answer.split(/\n\s*\n/).filter(Boolean) })),
+        }))
+        .filter((category) => category.items.length > 0),
+    [content.faq],
+  );
   const categories = ["All", ...faqData.map((c) => c.category)];
 
   const filteredData = useMemo(() => {
@@ -211,15 +105,15 @@ function FAQ() {
         };
       })
       .filter(Boolean) as typeof faqData;
-  }, [searchQuery, selectedCategory]);
+  }, [faqData, searchQuery, selectedCategory]);
 
   return (
     <>
       <PageHero
-        eyebrow="Help &amp; Guidance"
-        title="Frequently Asked Questions"
-        intro="Clear, transparent answers regarding funeral planning, cemetery vault reservations, documentation, costs, and memorial care in Lagos."
-        image="https://images.unsplash.com/photo-1548625361-16eb16ce3998?q=80&w=1920&auto=format&fit=crop"
+        eyebrow={content.faq.hero.eyebrow}
+        title={content.faq.hero.title}
+        intro={content.faq.hero.intro}
+        image="/images/flow-banner.jpg"
       >
         <Button asChild variant="gold" size="xl">
           <Link to="/contact">Speak with an Advisor</Link>
@@ -291,9 +185,12 @@ function FAQ() {
             {filteredData.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-border bg-card p-12 text-center">
                 <HelpCircle className="mx-auto size-12 text-muted-foreground/40" />
-                <h3 className="mt-4 font-serif text-2xl font-bold text-foreground">No answers found</h3>
+                <h3 className="mt-4 font-serif text-2xl font-bold text-foreground">
+                  No answers found
+                </h3>
                 <p className="mt-2 text-sm text-muted-foreground max-w-md mx-auto">
-                  We couldn't find any questions matching "{searchQuery}". Try a different search term or contact our advisors directly.
+                  We couldn't find any questions matching "{searchQuery}". Try a different search
+                  term or contact our advisors directly.
                 </p>
                 <Button
                   type="button"
@@ -317,7 +214,9 @@ function FAQ() {
                       <div className="flex size-8 items-center justify-center rounded-lg bg-[#415825]/10 text-[#415825]">
                         <Icon className="size-4" />
                       </div>
-                      <h3 className="font-serif text-xl font-bold text-foreground">{cat.category}</h3>
+                      <h3 className="font-serif text-xl font-bold text-foreground">
+                        {cat.category}
+                      </h3>
                     </div>
 
                     <Accordion type="multiple" className="w-full space-y-3">
@@ -352,21 +251,27 @@ function FAQ() {
                 <span className="inline-block rounded-xs bg-[#D4AF37]/20 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-gold border-l-2 border-[#D4AF37]">
                   24/7 Support
                 </span>
-                <h3 className="mt-3 font-serif text-2xl font-bold text-white">Have a specific question?</h3>
+                <h3 className="mt-3 font-serif text-2xl font-bold text-white">
+                  Have a specific question?
+                </h3>
                 <p className="mt-2 text-xs leading-relaxed text-white/85">
-                  Our compassionate advisors are available around the clock to guide your family through immediate arrangements, vault selection, and price estimates.
+                  Our compassionate advisors are available around the clock to guide your family
+                  through immediate arrangements, vault selection, and price estimates.
                 </p>
 
                 <div className="mt-6 space-y-3">
                   <Button asChild variant="gold" size="lg" className="w-full">
-                    <a href={site.phoneHref} className="flex items-center justify-center gap-2">
+                    <a
+                      href={content.settings.phoneHref || site.phoneHref}
+                      className="flex items-center justify-center gap-2"
+                    >
                       <Phone className="size-4" />
-                      Call {site.phone}
+                      Call {content.settings.phone || site.phone}
                     </a>
                   </Button>
                   <Button asChild variant="onDark" size="lg" className="w-full">
                     <a
-                      href={site.whatsapp}
+                      href={content.settings.whatsapp || site.whatsapp}
                       target="_blank"
                       rel="noreferrer"
                       className="flex items-center justify-center gap-2"
@@ -384,9 +289,12 @@ function FAQ() {
                   <Calculator className="size-4 text-[#415825]" />
                   <span>Interactive Pricing Tool</span>
                 </div>
-                <h4 className="font-serif text-lg font-bold text-foreground">Estimate Your Vault Cost</h4>
+                <h4 className="font-serif text-lg font-bold text-foreground">
+                  Estimate Your Vault Cost
+                </h4>
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  Calculate the exact live price for Single, Double, or Triple unit vaults and mandatory surface finishes in real time.
+                  Calculate the exact live price for Single, Double, or Triple unit vaults and
+                  mandatory surface finishes in real time.
                 </p>
                 <Button asChild variant="outlineForest" size="sm" className="w-full mt-2">
                   <Link to="/estimator">Open Live Price Estimator</Link>

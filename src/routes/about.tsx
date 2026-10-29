@@ -37,14 +37,16 @@ export const Route = createFileRoute("/about")({
       { property: "og:title", content: "About Capetrust Funeral Services | Our Story & Values" },
       {
         property: "og:description",
-        content: "A family-owned funeral home founded on the belief that every life leaves a unique mark, and every departure deserves dignity, care, and foresight.",
+        content:
+          "A family-owned funeral home founded on the belief that every life leaves a unique mark, and every departure deserves dignity, care, and foresight.",
       },
       { property: "og:image", content: "/images/og-capetrust.png" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "About Capetrust Funeral Services" },
       {
         name: "twitter:description",
-        content: "Our story, vision, mission, and family-led commitment to dignified memorial care in Nigeria.",
+        content:
+          "Our story, vision, mission, and family-led commitment to dignified memorial care in Nigeria.",
       },
       { name: "twitter:image", content: "/images/og-capetrust.png" },
     ],
@@ -116,7 +118,10 @@ function About() {
       <PageHero
         eyebrow={aboutData?.hero?.eyebrow || "About Capetrust"}
         title={aboutData?.hero?.title || "Dignity, Care & Foresight in Every Farewell"}
-        intro={aboutData?.hero?.intro || "Welcome to Capetrust Funeral Services, a family-owned funeral home founded on the belief that every life leaves a unique mark, and every departure deserves to be handled with utmost dignity, care, and foresight."}
+        intro={
+          aboutData?.hero?.intro ||
+          "Welcome to Capetrust Funeral Services, a family-owned funeral home founded on the belief that every life leaves a unique mark, and every departure deserves to be handled with utmost dignity, care, and foresight."
+        }
         image={advisor}
       >
         <Button asChild variant="gold" size="xl">
@@ -134,16 +139,29 @@ function About() {
             <SectionHeading eyebrow="Our Story" title="Born from Conviction &amp; Compassion" />
             <div className="space-y-4 text-sm leading-relaxed text-muted-foreground">
               <p>
-                Capetrust was born out of a pivotal event witnessed by our founder, <strong className="text-foreground font-semibold">Juwon Osibanjo</strong>. In his local church, there was a remarkable 87-year-old woman who was an active, vibrant participant and a dedicated contributor to the community. However, when her time came, all her children were in the diaspora.
+                Capetrust was born out of a pivotal event witnessed by our founder,{" "}
+                <strong className="text-foreground font-semibold">Juwon Osibanjo</strong>. In his
+                local church, there was a remarkable 87-year-old woman who was an active, vibrant
+                participant and a dedicated contributor to the community. However, when her time
+                came, all her children were in the diaspora.
               </p>
               <p>
-                With no prior arrangements or plans in place, she unfortunately passed away alone in Nigeria, leaving a vacuum of chaos, confusion, and grief where there should have been a proper celebration of life and a peaceful send-off.
+                With no prior arrangements or plans in place, she unfortunately passed away alone in
+                Nigeria, leaving a vacuum of chaos, confusion, and grief where there should have
+                been a proper celebration of life and a peaceful send-off.
               </p>
               <p>
-                That heartbreaking reality sparked a clear vision: <strong className="text-foreground">no family should ever have to navigate the weight of loss unprepared, and no elder should pass without a laid out structure of honourable care.</strong>
+                That heartbreaking reality sparked a clear vision:{" "}
+                <strong className="text-foreground">
+                  no family should ever have to navigate the weight of loss unprepared, and no elder
+                  should pass without a laid out structure of honourable care.
+                </strong>
               </p>
               <p>
-                Driven by this conviction, Juwon established Capetrust Funeral Services as a family-owned organization where families can find complete support before, during, and after a loss. As a family-owned business, we treat every client family with the same accountability and dedication we would extend to our own.
+                Driven by this conviction, Juwon established Capetrust Funeral Services as a
+                family-owned organization where families can find complete support before, during,
+                and after a loss. As a family-owned business, we treat every client family with the
+                same accountability and dedication we would extend to our own.
               </p>
             </div>
           </div>
@@ -160,7 +178,8 @@ function About() {
               />
               <div className="mt-4 rounded-xl border border-[#415825]/30 bg-[#415825]/10 p-5 text-xs leading-relaxed text-[#1E3F20] dark:text-emerald-300">
                 <p className="font-semibold italic">
-                  "Every life leaves a mark. We make sure the final chapter is handled with the order, respect, and dignity deserved."
+                  "Every life leaves a mark. We make sure the final chapter is handled with the
+                  order, respect, and dignity deserved."
                 </p>
                 <p className="mt-1 font-bold tracking-wider uppercase text-[10px] text-[#415825]">
                   — Juwon Osibanjo, Founder
@@ -194,10 +213,16 @@ function About() {
             </p>
             <div className="space-y-4 text-sm leading-relaxed text-muted-foreground">
               <p>
-                At the heart of our services is Garden of Peace™ Memorial Park. We recognize that a cemetery is not merely a burial ground; it is a dedicated space where families return to remember, reflect, honour their loved ones, and preserve their memories.
+                At the heart of our services is Garden of Peace™ Memorial Park. We recognize that a
+                cemetery is not merely a burial ground; it is a dedicated space where families
+                return to remember, reflect, honour their loved ones, and preserve their memories.
               </p>
               <p>
-                Conceived as a <strong className="text-foreground">garden cemetery</strong> rather than a simple plot of land, the environment is professionally designed by horticulturists to maintain a clean, secure, and serene setting. It is supported by solar-powered security cameras and guarded by experienced personnel to ensure absolute peace of mind during burials and visits.
+                Conceived as a <strong className="text-foreground">garden cemetery</strong> rather
+                than a simple plot of land, the environment is professionally designed by
+                horticulturists to maintain a clean, secure, and serene setting. It is supported by
+                solar-powered security cameras and guarded by experienced personnel to ensure
+                absolute peace of mind during burials and visits.
               </p>
             </div>
             <div className="pt-2 flex flex-wrap gap-3">
@@ -263,8 +288,14 @@ function About() {
           <SectionHeading
             center
             eyebrow={aboutData.teamHeading?.eyebrow || "Leadership & Advisory"}
-            title={aboutData.teamHeading?.title || "Dedicated Professionals Committed to Your Peace of Mind"}
-            intro={aboutData.teamHeading?.description || "Our leadership brings decades of experience in healthcare, funeral logistics, and memorial care."}
+            title={
+              aboutData.teamHeading?.title ||
+              "Dedicated Professionals Committed to Your Peace of Mind"
+            }
+            intro={
+              aboutData.teamHeading?.description ||
+              "Our leadership brings decades of experience in healthcare, funeral logistics, and memorial care."
+            }
           />
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {aboutData.team.map((member: TeamMember) => (
@@ -303,7 +334,9 @@ function About() {
             intro="Beyond providing a serene final resting place, we believe in being an active partner to the communities we serve."
           />
           <p className="mt-5 text-sm leading-relaxed text-muted-foreground max-w-5xl">
-            As we grow, we remain deeply committed to contributing to local government development initiatives and community empowerment, ensuring that our presence brings tangible infrastructure, shared growth, and mutual upliftment wherever we establish our roots.
+            As we grow, we remain deeply committed to contributing to local government development
+            initiatives and community empowerment, ensuring that our presence brings tangible
+            infrastructure, shared growth, and mutual upliftment wherever we establish our roots.
           </p>
         </div>
       </Section>

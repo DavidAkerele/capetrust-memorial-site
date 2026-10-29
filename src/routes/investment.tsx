@@ -16,6 +16,7 @@ import chapel from "@/assets/chapel.jpg";
 import { Button } from "@/components/ui/button";
 import { CTABand, PageHero, Section, SectionHeading } from "@/components/site/Sections";
 import { site } from "@/lib/site";
+import { useCMS } from "@/lib/cms/cms-store";
 
 export const Route = createFileRoute("/investment")({
   component: InvestmentPage,
@@ -38,8 +39,7 @@ export const Route = createFileRoute("/investment")({
       { name: "twitter:title", content: "Family Estates & Cemetery Investment | Garden of Peace™" },
       {
         name: "twitter:description",
-        content:
-          "Protect against inflation and secure multi-generational family plots in Lagos.",
+        content: "Protect against inflation and secure multi-generational family plots in Lagos.",
       },
       { name: "twitter:image", content: "/images/og-capetrust.png" },
     ],
@@ -97,13 +97,14 @@ const investmentBenefits = [
 ];
 
 function InvestmentPage() {
+  const { content } = useCMS();
   return (
     <>
       <PageHero
-        eyebrow="Legacy &amp; Estate Planning"
-        title="Invest in Tomorrow's Legacy with Confidence"
-        intro="Planning and reserving memorial estate plots in advance is one of the most thoughtful decisions you can make. Protect your family's future, secure prime memorial real estate, and gain lasting peace of mind."
-        image={heroPark}
+        eyebrow={content.investment.hero.eyebrow}
+        title={content.investment.hero.title}
+        intro={content.investment.hero.intro}
+        image={content.investment.hero.image || heroPark}
       >
         <div className="flex flex-wrap gap-3">
           <Button asChild variant="gold" size="xl">
@@ -119,15 +120,18 @@ function InvestmentPage() {
       <Section>
         <SectionHeading
           eyebrow="Why Invest Ahead"
-          title="Strategic value for your family and legacy"
-          intro="Memorial real estate at Garden of Peace™ offers both financial security and deep emotional reassurance for families planning for generations."
+          title={content.investment.valueProposition.title}
+          intro={content.investment.valueProposition.body}
         />
 
         <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {investmentBenefits.map((b) => {
             const Icon = b.icon;
             return (
-              <div key={b.title} className="rounded-2xl border border-border bg-card p-6 shadow-sm flex flex-col justify-between transition-all hover:border-[#415825]/50">
+              <div
+                key={b.title}
+                className="rounded-2xl border border-border bg-card p-6 shadow-sm flex flex-col justify-between transition-all hover:border-[#415825]/50"
+              >
                 <div>
                   <div className="flex size-12 items-center justify-center rounded-xl bg-[#415825]/10 text-[#415825]">
                     <Icon className="size-6" />
@@ -197,7 +201,10 @@ function InvestmentPage() {
             <div className="absolute inset-0 bg-gradient-to-t from-[#0E0E44]/75 via-transparent to-transparent" />
             <div className="absolute bottom-5 left-5 right-5 rounded-xl border border-white/20 bg-background/90 p-4 backdrop-blur-md">
               <p className="text-xs font-bold text-foreground">Perpetually Preserved Sanctuary</p>
-              <p className="text-[11px] text-muted-foreground">Concrete vault foundations &bull; 24/7 security &bull; Horticulturist-maintained lawns</p>
+              <p className="text-[11px] text-muted-foreground">
+                Concrete vault foundations &bull; 24/7 security &bull; Horticulturist-maintained
+                lawns
+              </p>
             </div>
           </div>
 
@@ -210,19 +217,27 @@ function InvestmentPage() {
             <ul className="mt-6 space-y-3 text-sm text-foreground/80">
               <li className="flex items-start gap-2">
                 <CheckCircle2 className="mt-0.5 size-4 text-[#415825] shrink-0" />
-                <span>Custom architecture, ornamental gates, and personalized family crest plaques</span>
+                <span>
+                  Custom architecture, ornamental gates, and personalized family crest plaques
+                </span>
               </li>
               <li className="flex items-start gap-2">
                 <CheckCircle2 className="mt-0.5 size-4 text-[#415825] shrink-0" />
-                <span>Exclusive multi-generational vaults (4, 6, 8 or 12 chamber configurations)</span>
+                <span>
+                  Exclusive multi-generational vaults (4, 6, 8 or 12 chamber configurations)
+                </span>
               </li>
               <li className="flex items-start gap-2">
                 <CheckCircle2 className="mt-0.5 size-4 text-[#415825] shrink-0" />
-                <span>Priority access to the on-site memorial chapel and private reception gardens</span>
+                <span>
+                  Priority access to the on-site memorial chapel and private reception gardens
+                </span>
               </li>
               <li className="flex items-start gap-2">
                 <CheckCircle2 className="mt-0.5 size-4 text-[#415825] shrink-0" />
-                <span>Flexible installment plans with 0% interest during pre-planning reservation</span>
+                <span>
+                  Flexible installment plans with 0% interest during pre-planning reservation
+                </span>
               </li>
             </ul>
 
@@ -231,7 +246,11 @@ function InvestmentPage() {
                 <Link to="/contact">Request Estate Brochure</Link>
               </Button>
               <Button asChild variant="pine" size="lg">
-                <a href={site.whatsapp} target="_blank" rel="noreferrer">
+                <a
+                  href={content.settings.whatsapp || site.whatsapp}
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   WhatsApp Private Inquiry
                 </a>
               </Button>

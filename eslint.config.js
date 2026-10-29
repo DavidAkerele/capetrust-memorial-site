@@ -37,4 +37,10 @@ export default tseslint.config(
     },
   },
   eslintPluginPrettier,
+  {
+    // Shared UI primitives and the CMS context intentionally export hooks or style helpers.
+    // Fast Refresh falls back to a full reload for these modules in development.
+    files: ["src/components/ui/**/*.tsx", "src/lib/cms/cms-store.tsx"],
+    rules: { "react-refresh/only-export-components": "off" },
+  },
 );

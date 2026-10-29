@@ -1,10 +1,12 @@
 import { MessageCircle } from "lucide-react";
 import { site } from "@/lib/site";
+import { useCMS } from "@/lib/cms/cms-store";
 
 export function WhatsAppButton() {
+  const { content } = useCMS();
   return (
     <a
-      href={site.whatsapp}
+      href={content.settings.whatsapp || site.whatsapp}
       target="_blank"
       rel="noreferrer"
       aria-label="Chat with Capetrust on WhatsApp"

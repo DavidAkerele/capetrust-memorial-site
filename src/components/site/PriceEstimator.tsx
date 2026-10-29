@@ -25,7 +25,9 @@ export function PriceEstimator() {
 
   // 1. Cemetery State
   const [includeCemetery, setIncludeCemetery] = useState<boolean>(true);
-  const [vaultType, setVaultType] = useState<"single" | "double" | "triple" | "mausoleum">("single");
+  const [vaultType, setVaultType] = useState<"single" | "double" | "triple" | "mausoleum">(
+    "single",
+  );
   const [finish, setFinish] = useState<"concrete" | "granite" | "pebble" | "flower">("concrete");
   const [headstone, setHeadstone] = useState<"none" | "single" | "double">("none");
   const [includeLgaDoc, setIncludeLgaDoc] = useState<boolean>(true);
@@ -33,10 +35,14 @@ export function PriceEstimator() {
   const [includeStreetNaming, setIncludeStreetNaming] = useState<boolean>(false);
 
   // 2. Funeral Transport & Car Rental State
-  const [hearseOption, setHearseOption] = useState<"none" | "standard" | "executive" | "motorcade">("standard");
+  const [hearseOption, setHearseOption] = useState<"none" | "standard" | "executive" | "motorcade">(
+    "standard",
+  );
 
   // 3. Caskets & Memorial Products State
-  const [casketOption, setCasketOption] = useState<"none" | "standard" | "executive" | "luxury">("standard");
+  const [casketOption, setCasketOption] = useState<"none" | "standard" | "executive" | "luxury">(
+    "standard",
+  );
 
   // 4. Ceremony & Chapel State
   const [includePallbearers, setIncludePallbearers] = useState<boolean>(true);
@@ -279,7 +285,9 @@ export function PriceEstimator() {
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-bold text-foreground">Double Companion Vault</span>
+                      <span className="text-sm font-bold text-foreground">
+                        Double Companion Vault
+                      </span>
                       {vaultType === "double" && <Check className="size-4 text-[#415825]" />}
                     </div>
                     <p className="mt-1 text-xs text-muted-foreground">Two tiered interments</p>
@@ -325,10 +333,14 @@ export function PriceEstimator() {
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-bold text-foreground">★ Private Family Mausoleum</span>
+                      <span className="text-sm font-bold text-foreground">
+                        ★ Private Family Mausoleum
+                      </span>
                       {vaultType === "mausoleum" && <Check className="size-4 text-[#D4AF37]" />}
                     </div>
-                    <p className="mt-1 text-xs text-muted-foreground">Dedicated multi-chamber sanctuary</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Dedicated multi-chamber sanctuary
+                    </p>
                     <span className="mt-4 text-base font-bold text-[#D4AF37]">
                       {formatNaira(vaultPrices.mausoleum)}
                     </span>
@@ -358,10 +370,14 @@ export function PriceEstimator() {
                     }`}
                   >
                     <div>
-                      <span className="text-xs font-bold text-foreground">Concrete Sealed Slab</span>
+                      <span className="text-xs font-bold text-foreground">
+                        Concrete Sealed Slab
+                      </span>
                       <p className="text-[10px] text-muted-foreground">Standard masonry seal</p>
                     </div>
-                    <span className="text-xs font-bold text-[#1E3F20]">+{formatNaira(finishPrices.concrete)}</span>
+                    <span className="text-xs font-bold text-[#1E3F20]">
+                      +{formatNaira(finishPrices.concrete)}
+                    </span>
                   </button>
 
                   <button
@@ -377,10 +393,14 @@ export function PriceEstimator() {
                     }`}
                   >
                     <div>
-                      <span className="text-xs font-bold text-foreground">Polished Granite Top</span>
+                      <span className="text-xs font-bold text-foreground">
+                        Polished Granite Top
+                      </span>
                       <p className="text-[10px] text-muted-foreground">Black / Royal granite</p>
                     </div>
-                    <span className="text-xs font-bold text-[#1E3F20]">+{formatNaira(finishPrices.granite)}</span>
+                    <span className="text-xs font-bold text-[#1E3F20]">
+                      +{formatNaira(finishPrices.granite)}
+                    </span>
                   </button>
 
                   <button
@@ -399,7 +419,9 @@ export function PriceEstimator() {
                       <span className="text-xs font-bold text-foreground">Decorative Pebbles</span>
                       <p className="text-[10px] text-muted-foreground">Stone surround</p>
                     </div>
-                    <span className="text-xs font-bold text-[#1E3F20]">+{formatNaira(finishPrices.pebble)}</span>
+                    <span className="text-xs font-bold text-[#1E3F20]">
+                      +{formatNaira(finishPrices.pebble)}
+                    </span>
                   </button>
 
                   <button
@@ -415,10 +437,14 @@ export function PriceEstimator() {
                     }`}
                   >
                     <div>
-                      <span className="text-xs font-bold text-foreground">Evergreen Flower Bed</span>
+                      <span className="text-xs font-bold text-foreground">
+                        Evergreen Flower Bed
+                      </span>
                       <p className="text-[10px] text-muted-foreground">Floral array finish</p>
                     </div>
-                    <span className="text-xs font-bold text-[#1E3F20]">+{formatNaira(finishPrices.flower)}</span>
+                    <span className="text-xs font-bold text-[#1E3F20]">
+                      +{formatNaira(finishPrices.flower)}
+                    </span>
                   </button>
                 </div>
               </div>
@@ -458,7 +484,9 @@ export function PriceEstimator() {
                     }`}
                   >
                     <span className="text-xs font-bold text-foreground">Single Upright</span>
-                    <span className="mt-2 text-xs font-bold text-[#1E3F20]">+{formatNaira(headstonePrices.single)}</span>
+                    <span className="mt-2 text-xs font-bold text-[#1E3F20]">
+                      +{formatNaira(headstonePrices.single)}
+                    </span>
                   </button>
 
                   <button
@@ -474,7 +502,9 @@ export function PriceEstimator() {
                     }`}
                   >
                     <span className="text-xs font-bold text-foreground">Double Companion</span>
-                    <span className="mt-2 text-xs font-bold text-[#1E3F20]">+{formatNaira(headstonePrices.double)}</span>
+                    <span className="mt-2 text-xs font-bold text-[#1E3F20]">
+                      +{formatNaira(headstonePrices.double)}
+                    </span>
                   </button>
                 </div>
               </div>
@@ -493,11 +523,17 @@ export function PriceEstimator() {
                       className="mt-0.5 size-4 rounded border-border text-[#415825] accent-[#415825]"
                     />
                     <div>
-                      <span className="text-xs font-bold text-foreground">LGA Burial Documentation &amp; Certificate</span>
-                      <p className="text-[11px] text-muted-foreground">Official registrar certification</p>
+                      <span className="text-xs font-bold text-foreground">
+                        LGA Burial Documentation &amp; Certificate
+                      </span>
+                      <p className="text-[11px] text-muted-foreground">
+                        Official registrar certification
+                      </p>
                     </div>
                   </div>
-                  <span className="text-xs font-bold text-[#1E3F20]">+{formatNaira(lgaDocPrice)}</span>
+                  <span className="text-xs font-bold text-[#1E3F20]">
+                    +{formatNaira(lgaDocPrice)}
+                  </span>
                 </label>
               </div>
             </div>
@@ -516,7 +552,8 @@ export function PriceEstimator() {
                       Hearse &amp; Funeral Motorcade Transport Rental
                     </h3>
                     <p className="text-xs text-muted-foreground">
-                      Chauffeured luxury vehicles for dignified transport across Lagos and inter-state
+                      Chauffeured luxury vehicles for dignified transport across Lagos and
+                      inter-state
                     </p>
                   </div>
                 </div>
@@ -582,7 +619,9 @@ export function PriceEstimator() {
                     <span className="text-xs font-bold text-foreground">Executive Escort</span>
                     {hearseOption === "executive" && <Check className="size-3.5 text-[#D4AF37]" />}
                   </div>
-                  <p className="mt-1 text-[11px] text-muted-foreground">Hearse + Police Pilot Escort</p>
+                  <p className="mt-1 text-[11px] text-muted-foreground">
+                    Hearse + Police Pilot Escort
+                  </p>
                   <span className="mt-4 text-sm font-bold text-[#D4AF37]">
                     +{formatNaira(hearsePrices.executive)}
                   </span>
@@ -614,7 +653,9 @@ export function PriceEstimator() {
                     }`}
                   >
                     <span className="text-xs font-bold text-foreground">Standard Polished</span>
-                    <span className="mt-2 text-xs font-bold text-[#1E3D82]">+{formatNaira(casketPrices.standard)}</span>
+                    <span className="mt-2 text-xs font-bold text-[#1E3D82]">
+                      +{formatNaira(casketPrices.standard)}
+                    </span>
                   </button>
 
                   <button
@@ -630,7 +671,9 @@ export function PriceEstimator() {
                     }`}
                   >
                     <span className="text-xs font-bold text-foreground">Solid Hardwood</span>
-                    <span className="mt-2 text-xs font-bold text-[#D4AF37]">+{formatNaira(casketPrices.executive)}</span>
+                    <span className="mt-2 text-xs font-bold text-[#D4AF37]">
+                      +{formatNaira(casketPrices.executive)}
+                    </span>
                   </button>
 
                   <button
@@ -645,8 +688,12 @@ export function PriceEstimator() {
                         : "border-border bg-background hover:border-[#D4AF37]/50"
                     }`}
                   >
-                    <span className="text-xs font-bold text-foreground">Luxury Imperial Bronze</span>
-                    <span className="mt-2 text-xs font-bold text-[#D4AF37]">+{formatNaira(casketPrices.luxury)}</span>
+                    <span className="text-xs font-bold text-foreground">
+                      Luxury Imperial Bronze
+                    </span>
+                    <span className="mt-2 text-xs font-bold text-[#D4AF37]">
+                      +{formatNaira(casketPrices.luxury)}
+                    </span>
                   </button>
                 </div>
               </div>
@@ -669,9 +716,13 @@ export function PriceEstimator() {
                         }}
                         className="size-4 rounded border-border text-[#1E3D82] accent-[#1E3D82]"
                       />
-                      <span className="text-xs font-bold text-foreground">Ceremonial Pallbearers Uniformed Team</span>
+                      <span className="text-xs font-bold text-foreground">
+                        Ceremonial Pallbearers Uniformed Team
+                      </span>
                     </div>
-                    <span className="text-xs font-bold text-[#1E3D82]">+{formatNaira(pallbearersPrice)}</span>
+                    <span className="text-xs font-bold text-[#1E3D82]">
+                      +{formatNaira(pallbearersPrice)}
+                    </span>
                   </label>
 
                   <label className="flex cursor-pointer items-center justify-between rounded-xl border border-border bg-background p-3 hover:border-[#1E3D82]/50 transition-colors">
@@ -685,9 +736,13 @@ export function PriceEstimator() {
                         }}
                         className="size-4 rounded border-border text-[#1E3D82] accent-[#1E3D82]"
                       />
-                      <span className="text-xs font-bold text-foreground">On-Site Chapel Hall Rental for Service</span>
+                      <span className="text-xs font-bold text-foreground">
+                        On-Site Chapel Hall Rental for Service
+                      </span>
                     </div>
-                    <span className="text-xs font-bold text-[#1E3D82]">+{formatNaira(chapelRentalPrice)}</span>
+                    <span className="text-xs font-bold text-[#1E3D82]">
+                      +{formatNaira(chapelRentalPrice)}
+                    </span>
                   </label>
 
                   <label className="flex cursor-pointer items-center justify-between rounded-xl border border-border bg-background p-3 hover:border-[#1E3D82]/50 transition-colors">
@@ -701,9 +756,13 @@ export function PriceEstimator() {
                         }}
                         className="size-4 rounded border-border text-[#1E3D82] accent-[#1E3D82]"
                       />
-                      <span className="text-xs font-bold text-foreground">HD Multi-Camera Livestreaming &amp; Recording</span>
+                      <span className="text-xs font-bold text-foreground">
+                        HD Multi-Camera Livestreaming &amp; Recording
+                      </span>
                     </div>
-                    <span className="text-xs font-bold text-[#1E3D82]">+{formatNaira(livestreamPrice)}</span>
+                    <span className="text-xs font-bold text-[#1E3D82]">
+                      +{formatNaira(livestreamPrice)}
+                    </span>
                   </label>
                 </div>
               </div>
@@ -718,7 +777,9 @@ export function PriceEstimator() {
               <div className="flex items-center justify-between border-b border-border pb-4">
                 <div>
                   <span className="eyebrow text-[#D4AF37]">Live Calculation</span>
-                  <h3 className="font-serif text-2xl font-bold text-foreground">Itemized Summary</h3>
+                  <h3 className="font-serif text-2xl font-bold text-foreground">
+                    Itemized Summary
+                  </h3>
                 </div>
                 <button
                   type="button"
@@ -737,22 +798,30 @@ export function PriceEstimator() {
                   <>
                     <div className="flex justify-between py-1 text-foreground/80">
                       <span>Vault ({vaultType.toUpperCase()})</span>
-                      <span className="font-bold text-foreground">{formatNaira(vaultPrices[vaultType])}</span>
+                      <span className="font-bold text-foreground">
+                        {formatNaira(vaultPrices[vaultType])}
+                      </span>
                     </div>
                     <div className="flex justify-between py-1 text-foreground/80">
                       <span>Finish ({finish})</span>
-                      <span className="font-semibold text-foreground">{formatNaira(finishPrices[finish])}</span>
+                      <span className="font-semibold text-foreground">
+                        {formatNaira(finishPrices[finish])}
+                      </span>
                     </div>
                     {headstone !== "none" && (
                       <div className="flex justify-between py-1 text-foreground/80">
                         <span>Headstone ({headstone})</span>
-                        <span className="font-semibold text-foreground">{formatNaira(headstonePrices[headstone])}</span>
+                        <span className="font-semibold text-foreground">
+                          {formatNaira(headstonePrices[headstone])}
+                        </span>
                       </div>
                     )}
                     {includeLgaDoc && (
                       <div className="flex justify-between py-1 text-foreground/80">
                         <span>LGA Documentation</span>
-                        <span className="font-semibold text-foreground">{formatNaira(lgaDocPrice)}</span>
+                        <span className="font-semibold text-foreground">
+                          {formatNaira(lgaDocPrice)}
+                        </span>
                       </div>
                     )}
                   </>
@@ -763,31 +832,41 @@ export function PriceEstimator() {
                     {hearseOption !== "none" && (
                       <div className="flex justify-between py-1 text-foreground/80">
                         <span>Hearse / Transport ({hearseOption})</span>
-                        <span className="font-semibold text-foreground">{formatNaira(hearsePrices[hearseOption])}</span>
+                        <span className="font-semibold text-foreground">
+                          {formatNaira(hearsePrices[hearseOption])}
+                        </span>
                       </div>
                     )}
                     {casketOption !== "none" && (
                       <div className="flex justify-between py-1 text-foreground/80">
                         <span>Casket ({casketOption})</span>
-                        <span className="font-semibold text-foreground">{formatNaira(casketPrices[casketOption])}</span>
+                        <span className="font-semibold text-foreground">
+                          {formatNaira(casketPrices[casketOption])}
+                        </span>
                       </div>
                     )}
                     {includePallbearers && (
                       <div className="flex justify-between py-1 text-foreground/80">
                         <span>Pallbearers Team</span>
-                        <span className="font-semibold text-foreground">{formatNaira(pallbearersPrice)}</span>
+                        <span className="font-semibold text-foreground">
+                          {formatNaira(pallbearersPrice)}
+                        </span>
                       </div>
                     )}
                     {includeChapel && (
                       <div className="flex justify-between py-1 text-foreground/80">
                         <span>Chapel Rental</span>
-                        <span className="font-semibold text-foreground">{formatNaira(chapelRentalPrice)}</span>
+                        <span className="font-semibold text-foreground">
+                          {formatNaira(chapelRentalPrice)}
+                        </span>
                       </div>
                     )}
                     {includeLivestream && (
                       <div className="flex justify-between py-1 text-foreground/80">
                         <span>HD Livestream Production</span>
-                        <span className="font-semibold text-foreground">{formatNaira(livestreamPrice)}</span>
+                        <span className="font-semibold text-foreground">
+                          {formatNaira(livestreamPrice)}
+                        </span>
                       </div>
                     )}
                   </>
@@ -843,7 +922,8 @@ export function PriceEstimator() {
                   <span>Custom Packages &amp; Installments</span>
                 </div>
                 <p className="text-[11px] leading-relaxed text-muted-foreground">
-                  Our family counselors are available 24/7 to tailor memorial packages, schedule vault viewings, and arrange structured payment schedules.
+                  Our family counselors are available 24/7 to tailor memorial packages, schedule
+                  vault viewings, and arrange structured payment schedules.
                 </p>
               </div>
             </div>

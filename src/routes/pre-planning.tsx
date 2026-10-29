@@ -23,7 +23,8 @@ export const Route = createFileRoute("/pre-planning")({
       { name: "twitter:title", content: "Funeral Pre-Planning in Lagos | Capetrust" },
       {
         name: "twitter:description",
-        content: "Document wishes, protect from inflation, and relieve future burdens on your family.",
+        content:
+          "Document wishes, protect from inflation, and relieve future burdens on your family.",
       },
       { name: "twitter:image", content: "/images/og-capetrust.png" },
     ],
@@ -86,7 +87,12 @@ function PrePlanning() {
       </Section>
 
       <Section tone="cream" className="bg-texture-dots">
-        <SectionHeading center eyebrow="How it works" title="A simple, thoughtful four-step process" intro="Structured step-by-step guidance to ensure complete clarity, legal certainty, and family peace of mind." />
+        <SectionHeading
+          center
+          eyebrow="How it works"
+          title="A simple, thoughtful four-step process"
+          intro="Structured step-by-step guidance to ensure complete clarity, legal certainty, and family peace of mind."
+        />
         <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {steps.map((s, i) => {
             const Icon = s.icon;
@@ -136,7 +142,9 @@ function PrePlanning() {
             </p>
           </div>
           <div className="rounded-xl border border-border bg-card p-8 shadow-soft transition-all hover:border-[#415825]/40">
-            <span className="inline-block rounded-xs bg-[#415825]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-[#415825] border-l-2 border-[#415825]">Support Services</span>
+            <span className="inline-block rounded-xs bg-[#415825]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-[#415825] border-l-2 border-[#415825]">
+              Support Services
+            </span>
             <h3 className="mt-3 text-2xl font-serif">Estate Settlement Guidance</h3>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
               Planning ahead often extends beyond funeral arrangements. As part of our pre-planning

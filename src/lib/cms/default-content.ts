@@ -113,7 +113,8 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
       {
         tag: "Certified",
         title: "Licensed & Dedicated Memorial Park",
-        description: "Privately owned, legally secured 10+ acre cemetery with permanent land titles.",
+        description:
+          "Privately owned, legally secured 10+ acre cemetery with permanent land titles.",
       },
       {
         tag: "Permanent",
@@ -133,7 +134,8 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
       {
         tag: "24/7 Support",
         title: "24-Hour Immediate Assistance",
-        description: "Immediate response team available round the clock for urgent removals & logistics.",
+        description:
+          "Immediate response team available round the clock for urgent removals & logistics.",
       },
       {
         tag: "Transparent",
@@ -148,7 +150,7 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
         "Nestled in the serene surroundings of Odo-Ayandelu, Agbowa (Lagos State), Garden of Peace™ offers an oasis of calm and dignity away from the bustle of the city.",
       body2:
         "With paved access roads, landscaped lawns, private family mausoleums, and lifetime perpetual care, your loved ones rest in peace and dignity.",
-      image: "https://images.pexels.com/photos/7317677/pexels-photo-7317677.jpeg",
+      image: "/images/hero-park.jpg",
       ctaText: "Discover Garden of Peace™",
       ctaLink: "/garden-of-peace",
     },
@@ -202,7 +204,7 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
       title: "Honouring Life, Preserving Legacy, Supporting Families",
       intro:
         "Capetrust Funeral Services and Garden of Peace™ Memorial Park provide a distinguished standard of funeral care and perpetual memorialization in Lagos State.",
-      image: "https://images.unsplash.com/photo-1548625361-16eb16ce3998?q=80&w=800&auto=format&fit=crop",
+      image: "/images/family-comfort.jpg",
     },
     mission: {
       title: "Our Mission",
@@ -219,12 +221,14 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
         "Capetrust was established to transform the experience of funeral planning and memorialization in Nigeria. We recognized that grieving families deserve transparent pricing, compassionate guidance, and a pristine, well-maintained environment for their loved ones' final resting place.",
         "Today, Garden of Peace™ Memorial Park spans over 10 acres of lush, landscaped grounds in Agbowa-Ikosi, Lagos. With modern engineered concrete vaults, paved roadways, on-site chapel facilities, and perpetual maintenance, we provide families with eternal peace of mind.",
       ],
-      image: "https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?q=80&w=800&auto=format&fit=crop",
+      image:
+        "https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?q=80&w=800&auto=format&fit=crop",
     },
     values: [
       {
         title: "Dignity & Reverence",
-        description: "We treat every departed soul and their grieving family with the highest respect and solemn care.",
+        description:
+          "We treat every departed soul and their grieving family with the highest respect and solemn care.",
       },
       {
         title: "Integrity & Transparency",
@@ -232,39 +236,46 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
       },
       {
         title: "Perpetual Stewardship",
-        description: "Our commitment to the perpetual care of our memorial park ensures grounds remain pristine for generations.",
+        description:
+          "Our commitment to the perpetual care of our memorial park ensures grounds remain pristine for generations.",
       },
       {
         title: "Empathetic Guidance",
-        description: "We listen with patience, support with compassion, and shoulder logistics so families can grieve in peace.",
+        description:
+          "We listen with patience, support with compassion, and shoulder logistics so families can grieve in peace.",
       },
     ],
     milestones: [
       {
         year: "2018",
         title: "Capetrust Inception",
-        description: "Acquisition of 10+ acres in Agbowa, Lagos, and initial park zoning masterplan.",
+        description:
+          "Acquisition of 10+ acres in Agbowa, Lagos, and initial park zoning masterplan.",
       },
       {
         year: "2020",
         title: "Garden of Peace™ Inauguration",
-        description: "Completion of Phase 1 concrete vaults, perimeter fencing, and internal paved road network.",
+        description:
+          "Completion of Phase 1 concrete vaults, perimeter fencing, and internal paved road network.",
       },
       {
         year: "2023",
         title: "Chapel & Fleet Expansion",
-        description: "Launch of Capetrust Private Chapel, executive hearse fleet, and digital memorial platform.",
+        description:
+          "Launch of Capetrust Private Chapel, executive hearse fleet, and digital memorial platform.",
       },
       {
         year: "2026",
         title: "Family Estates & Pre-Planning",
-        description: "Introduction of private family mausoleum estates, inflation-hedged pre-planning, and interactive online tools.",
+        description:
+          "Introduction of private family mausoleum estates, inflation-hedged pre-planning, and interactive online tools.",
       },
     ],
     teamHeading: {
       eyebrow: "Leadership & Advisory",
       title: "Dedicated Professionals Committed to Your Peace of Mind",
-      description: "Our leadership team brings decades of experience in healthcare, funeral logistics, and memorial estate management.",
+      description:
+        "Our leadership team brings decades of experience in healthcare, funeral logistics, and memorial estate management.",
     },
     team: [
       {
@@ -316,7 +327,7 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
         id: "s1",
         title: "Funeral Planning & Coordination",
         body: "Our experienced team works closely with you to coordinate every aspect of the service, ensuring your loved one's wishes, family traditions and personal preferences are carefully reflected. Whether a simple service or a larger celebration of life, we guide you through every decision.",
-        image: "https://images.unsplash.com/photo-1548625361-16eb16ce3998?q=80&w=800&auto=format&fit=crop",
+        image: "/images/family-comfort.jpg",
         cta: "Speak with an Advisor",
         href: "/contact",
       },
@@ -332,7 +343,8 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
         id: "s3",
         title: "Burial & Vault Interments",
         body: "From cemetery arrangements and graveside coordination to vault preparation and burial scheduling at Garden of Peace™, we create a seamless experience during an important moment of remembrance.",
-        image: "https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?q=80&w=800&auto=format&fit=crop",
+        image:
+          "https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?q=80&w=800&auto=format&fit=crop",
         cta: "Explore Memorial Park",
         href: "/garden-of-peace",
       },
@@ -365,7 +377,8 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
     ],
     transportHeading: {
       title: "Executive Transportation & Hearse Fleet",
-      description: "We provide modern, dignified hearse fleets and air-conditioned luxury buses for family and mourners.",
+      description:
+        "We provide modern, dignified hearse fleets and air-conditioned luxury buses for family and mourners.",
       features: [
         "Modern Mercedes-Benz and Cadillac Funeral Hearses",
         "Executive Coaster & HiAce Passenger Buses",
@@ -387,7 +400,8 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
       title: "Engineered for Permanence, Landscaped for Serenity",
       description:
         "Unlike overcrowded public cemeteries, Garden of Peace™ offers structured concrete vaults, wide paved avenues, private family estates, solar lighting, and perpetual lawn care.",
-      locationNote: "Conveniently accessible along the Ikorodu–Epe expressway at Odo-Ayandelu, Agbowa, Lagos.",
+      locationNote:
+        "Conveniently accessible along the Ikorodu–Epe expressway at Odo-Ayandelu, Agbowa, Lagos.",
     },
     vaultTiers: [
       {
@@ -395,7 +409,8 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
         title: "Single Unit Vault",
         subtitle: "Individual Resting Space",
         capacity: "1 Casket Vault",
-        description: "Reinforced concrete underground vault designed for one individual with full granite marker finish.",
+        description:
+          "Reinforced concrete underground vault designed for one individual with full granite marker finish.",
         priceNote: "Starting from ₦2,500,000",
         features: [
           "Reinforced structural concrete chamber",
@@ -410,7 +425,8 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
         title: "Double Unit Companion Vault",
         subtitle: "Spousal & Companion Resting Space",
         capacity: "2 Casket Vaults (Side-by-side or Layered)",
-        description: "Designed for couples wishing to be laid to rest side by side in eternal companionship.",
+        description:
+          "Designed for couples wishing to be laid to rest side by side in eternal companionship.",
         priceNote: "Starting from ₦4,500,000",
         features: [
           "Dual reinforced concrete chambers",
@@ -426,7 +442,8 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
         title: "Triple Unit Family Vault",
         subtitle: "Family Resting Space",
         capacity: "3 Casket Vaults",
-        description: "Generational resting space for immediate family members within a dedicated perimeter.",
+        description:
+          "Generational resting space for immediate family members within a dedicated perimeter.",
         priceNote: "Starting from ₦6,500,000",
         features: [
           "Triple reinforced concrete chambers",
@@ -441,7 +458,8 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
         title: "Private Family Mausoleum Estate",
         subtitle: "Exclusive Gated Dynasty Estate",
         capacity: "6 to 12+ Vaults",
-        description: "A private, gated estate with personalized architecture, seating benches, and custom street naming.",
+        description:
+          "A private, gated estate with personalized architecture, seating benches, and custom street naming.",
         priceNote: "Custom Quote on Request",
         features: [
           "Private gated enclosure with wrought iron perimeter",
@@ -460,19 +478,23 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
     amenities: [
       {
         title: "24/7 Security & CCTV",
-        description: "Manned security post, perimeter fencing, solar lighting, and CCTV monitoring around the clock.",
+        description:
+          "Manned security post, perimeter fencing, solar lighting, and CCTV monitoring around the clock.",
       },
       {
         title: "Perpetual Grounds Care",
-        description: "Dedicated full-time gardening staff keeping grass manicured, flowers fresh, and walkways pristine.",
+        description:
+          "Dedicated full-time gardening staff keeping grass manicured, flowers fresh, and walkways pristine.",
       },
       {
         title: "Paved Access & Parking",
-        description: "Smooth asphalt and paved internal roads ensuring easy vehicle access in all weather conditions.",
+        description:
+          "Smooth asphalt and paved internal roads ensuring easy vehicle access in all weather conditions.",
       },
       {
         title: "On-Site Chapel & Gazebos",
-        description: "Covered reflection gazebos and access to our private chapel for committal services.",
+        description:
+          "Covered reflection gazebos and access to our private chapel for committal services.",
       },
     ],
     galleryImages: [
@@ -510,7 +532,8 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
       {
         id: "p1",
         title: "Coffins & Caskets",
-        image: "https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=800&auto=format&fit=crop",
+        image:
+          "https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=800&auto=format&fit=crop",
         body: "A carefully curated range of coffins and caskets in solid hardwood, bronze, brushed steel, and bespoke finishes, crafted in Nigeria and imported to international standards.",
         items: [
           "Solid Mahogany & Oak Hardwood Caskets",
@@ -522,7 +545,8 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
       {
         id: "p2",
         title: "Floral Tributes & Wreaths",
-        image: "https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=800&auto=format&fit=crop",
+        image:
+          "https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=800&auto=format&fit=crop",
         body: "Flowers offer a timeless, elegant expression of remembrance, celebration, and gratitude for a cherished life.",
         items: [
           "Custom Heart and Cross Funeral Wreaths",
@@ -535,7 +559,8 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
       {
         id: "p3",
         title: "Memorial Keepsakes & Urns",
-        image: "https://images.unsplash.com/photo-1603796846097-bee99e4a601f?q=80&w=800&auto=format&fit=crop",
+        image:
+          "https://images.unsplash.com/photo-1603796846097-bee99e4a601f?q=80&w=800&auto=format&fit=crop",
         body: "Some memories deserve to be held close. Thoughtfully selected items that allow families to preserve meaningful memories for generations.",
         items: [
           "Handcrafted Decorative Marble & Brass Urns",
@@ -547,7 +572,8 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
       {
         id: "p4",
         title: "Headstones & Memorial Accessories",
-        image: "https://images.unsplash.com/photo-1526047932273-341f2a7631f9?q=80&w=800&auto=format&fit=crop",
+        image:
+          "https://images.unsplash.com/photo-1526047932273-341f2a7631f9?q=80&w=800&auto=format&fit=crop",
         body: "Every detail contributes to a dignified farewell, from solid granite headstone engravings to brass accents.",
         items: [
           "Polished Black & Grey Granite Headstones",
@@ -570,46 +596,55 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
       title: "Funeral & Memorial Pre-Planning Guide",
       intro:
         "Planning ahead provides emotional peace of mind, locks in current prices against inflation, and spares your loved ones from stressful decisions during a time of grief.",
-      image: "https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?q=80&w=800&auto=format&fit=crop",
+      image:
+        "https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?q=80&w=800&auto=format&fit=crop",
     },
     benefits: [
       {
         title: "Lock in Current Prices",
-        description: "Protect against inflation and future price hikes by securing vaults and services today with zero-interest installments.",
+        description:
+          "Protect against inflation and future price hikes by securing vaults and services today with zero-interest installments.",
       },
       {
         title: "Relieve Family Emotional Burden",
-        description: "Spares your grieving family from difficult financial decisions and logistical stress when the time comes.",
+        description:
+          "Spares your grieving family from difficult financial decisions and logistical stress when the time comes.",
       },
       {
         title: "Ensure Personal Wishes are Met",
-        description: "Document your exact desires for your service, burial location, casket choice, and order of ceremonies.",
+        description:
+          "Document your exact desires for your service, burial location, casket choice, and order of ceremonies.",
       },
       {
         title: "Flexible Payment Options",
-        description: "Structured installment plans spread across 3, 6, or 12 months with 0% interest.",
+        description:
+          "Structured installment plans spread across 3, 6, or 12 months with 0% interest.",
       },
     ],
     steps: [
       {
         step: "01",
         title: "Consultation & Preference Mapping",
-        description: "Meet with an advisor in person or virtually to discuss resting vault options, ceremony preferences, and budget.",
+        description:
+          "Meet with an advisor in person or virtually to discuss resting vault options, ceremony preferences, and budget.",
       },
       {
         step: "02",
         title: "Select Vault & Resting Space",
-        description: "Choose your preferred location and vault type (single, double, or family estate) at Garden of Peace™.",
+        description:
+          "Choose your preferred location and vault type (single, double, or family estate) at Garden of Peace™.",
       },
       {
         step: "03",
         title: "Customize Plan & Flexible Terms",
-        description: "Select payment schedule and document specific ceremony wishes in our binding pre-planning agreement.",
+        description:
+          "Select payment schedule and document specific ceremony wishes in our binding pre-planning agreement.",
       },
       {
         step: "04",
         title: "Certificate of Allocation Issued",
-        description: "Receive an official Certificate of Vault Allocation and Pre-Planning Record for your family archives.",
+        description:
+          "Receive an official Certificate of Vault Allocation and Pre-Planning Record for your family archives.",
       },
     ],
     checklistItems: [
@@ -627,7 +662,7 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
       title: "Family Estates & Generational Legacy",
       intro:
         "Secure family mausoleum estates and burial vaults as an enduring heritage for your family, protected by perpetual care and rising land value.",
-      image: "https://images.pexels.com/photos/7317677/pexels-photo-7317677.jpeg",
+      image: "/images/hero-park.jpg",
     },
     valueProposition: {
       title: "Why Invest in a Memorial Estate Today?",
@@ -643,30 +678,50 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
       {
         title: "Executive Duo Plot",
         plots: "2 Contiguous Vaults",
-        description: "Side-by-side companion resting space with shared granite monument and lush turf finish.",
-        features: ["2 Reinforced Concrete Vaults", "Double Granite Marker", "Lifetime Lawn Maintenance", "0% 6-Month Plan Available"],
+        description:
+          "Side-by-side companion resting space with shared granite monument and lush turf finish.",
+        features: [
+          "2 Reinforced Concrete Vaults",
+          "Double Granite Marker",
+          "Lifetime Lawn Maintenance",
+          "0% 6-Month Plan Available",
+        ],
       },
       {
         title: "Heritage Family Quad",
         plots: "4 Contiguous Vaults",
-        description: "Dedicated 4-vault family enclave with private perimeter border and family name plaque.",
-        features: ["4 Reinforced Concrete Vaults", "Custom Family Monument", "Pebblestone Surrounds", "Priority Booking for Services"],
+        description:
+          "Dedicated 4-vault family enclave with private perimeter border and family name plaque.",
+        features: [
+          "4 Reinforced Concrete Vaults",
+          "Custom Family Monument",
+          "Pebblestone Surrounds",
+          "Priority Booking for Services",
+        ],
       },
       {
         title: "Dynasty Mausoleum Estate",
         plots: "8 to 12+ Vaults",
-        description: "An exclusive, gated private sanctuary with bespoke pavilion architecture and private access gate.",
-        features: ["Up to 12 Underground Vaults", "Private Wrought-Iron Gate", "Custom Pavilion & Benches", "Dedicated Family Access Key"],
+        description:
+          "An exclusive, gated private sanctuary with bespoke pavilion architecture and private access gate.",
+        features: [
+          "Up to 12 Underground Vaults",
+          "Private Wrought-Iron Gate",
+          "Custom Pavilion & Benches",
+          "Dedicated Family Access Key",
+        ],
       },
     ],
     faqExcerpt: [
       {
         question: "Can an allocated plot be transferred or inherited?",
-        answer: "Yes, your Certificate of Allocation is legally recognized and can be passed down as part of your family estate or transferred to designated beneficiaries.",
+        answer:
+          "Yes, your Certificate of Allocation is legally recognized and can be passed down as part of your family estate or transferred to designated beneficiaries.",
       },
       {
         question: "How is perpetual maintenance funded?",
-        answer: "A dedicated portion of every plot allocation goes into an independent Perpetual Care Trust Fund that finances ongoing security, landscaping, and infrastructure maintenance in perpetuity.",
+        answer:
+          "A dedicated portion of every plot allocation goes into an independent Perpetual Care Trust Fund that finances ongoing security, landscaping, and infrastructure maintenance in perpetuity.",
       },
     ],
   },
@@ -696,7 +751,13 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
       intro:
         "Find answers regarding our funeral coordination, Garden of Peace™ Memorial Park, pre-planning, and obituaries.",
     },
-    categories: ["General", "Garden of Peace", "Services & Planning", "Pricing & Payment", "Obituaries"],
+    categories: [
+      "General",
+      "Garden of Peace",
+      "Services & Planning",
+      "Pricing & Payment",
+      "Obituaries",
+    ],
     faqs: [
       {
         id: "f1",
@@ -738,7 +799,7 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
         category: "Obituaries",
         question: "How do I publish an online obituary and memorial tribute page?",
         answer:
-          "You can publish directly through our website by navigating to Obituaries > Publish a Memorial, or our team can assist you with photo curation, biography writing, and tribute design.",
+          "Complete the tribute form to prepare an email to our team, then send it from your email app. We review details with the family before publication and can help with photos, biography writing, and tribute design.",
       },
       {
         id: "f7",
@@ -776,7 +837,8 @@ export const DEFAULT_CMS_CONTENT: CMSContent = {
     ],
     emergencyContact: {
       heading: "24/7 Immediate Emergency Line",
-      description: "For immediate funeral assistance, mortuary pickup, or emergency ambulance coordination:",
+      description:
+        "For immediate funeral assistance, mortuary pickup, or emergency ambulance coordination:",
       phone: "+234 802 6666 655",
       whatsapp: "https://wa.me/2348026666655",
     },

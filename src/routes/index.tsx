@@ -43,7 +43,8 @@ export const Route = createFileRoute("/")({
       { name: "twitter:title", content: "Capetrust Funeral Services & Memorial Park" },
       {
         name: "twitter:description",
-        content: "Serene 10+ acre private memorial park, single/double/triple vaults, and 24/7 care.",
+        content:
+          "Serene 10+ acre private memorial park, single/double/triple vaults, and 24/7 care.",
       },
       { name: "twitter:image", content: "/images/og-capetrust.png" },
     ],
@@ -82,12 +83,36 @@ const services = [
 ];
 
 const reasons = [
-  { icon: ShieldCheck, text: "Licensed and professionally managed memorial park", tag: "Certified" },
-  { icon: Building2, text: "Permanent concrete vault construction with lifetime structural integrity", tag: "Permanent" },
-  { icon: TreePine, text: "Perpetual landscape care, clean paved walkways and 24/7 security", tag: "Perpetual" },
-  { icon: Users, text: "Compassionate, dedicated advisors to guide your family through every step", tag: "Compassion" },
-  { icon: Clock, text: "24-hour immediate assistance available whenever you need us", tag: "24/7 Support" },
-  { icon: Award, text: "Clear, transparent pricing in Nigerian Naira with no hidden fees", tag: "Transparent" },
+  {
+    icon: ShieldCheck,
+    text: "Licensed and professionally managed memorial park",
+    tag: "Certified",
+  },
+  {
+    icon: Building2,
+    text: "Permanent concrete vault construction with lifetime structural integrity",
+    tag: "Permanent",
+  },
+  {
+    icon: TreePine,
+    text: "Perpetual landscape care, clean paved walkways and 24/7 security",
+    tag: "Perpetual",
+  },
+  {
+    icon: Users,
+    text: "Compassionate, dedicated advisors to guide your family through every step",
+    tag: "Compassion",
+  },
+  {
+    icon: Clock,
+    text: "24-hour immediate assistance available whenever you need us",
+    tag: "24/7 Support",
+  },
+  {
+    icon: Award,
+    text: "Clear, transparent pricing in Nigerian Naira with no hidden fees",
+    tag: "Transparent",
+  },
 ];
 
 import { useCMS } from "@/lib/cms/cms-store";
@@ -102,13 +127,15 @@ function Home() {
       <section className="relative isolate flex min-h-[calc(100vh-5rem)] items-center overflow-hidden">
         {/* Background Image with Slow Ambient Scale Effect */}
         <img
-          src={home.heroImage || "https://images.pexels.com/photos/7317677/pexels-photo-7317677.jpeg"}
+          src={
+            home.heroImage || "https://images.pexels.com/photos/7317677/pexels-photo-7317677.jpeg"
+          }
           alt="Capetrust Memorial & Funeral Care"
           className="absolute inset-0 -z-20 size-full object-cover scale-105 transition-transform duration-1000 ease-out"
           width={1920}
           height={1088}
         />
-        
+
         {/* Deep Royal Midnight Blue with Subtle Pine Green Undertones */}
         <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[#0E0E44]/95 via-[#0D2436]/85 to-[#153B26]/45" />
         <div className="absolute inset-0 -z-10 bg-texture-grid opacity-30 pointer-events-none" />
@@ -136,16 +163,36 @@ function Home() {
 
             {/* Action Buttons with Dynamic Hover Micro-Motions */}
             <div className="pt-4 flex flex-wrap items-center gap-3 sm:gap-4">
-              <Button asChild variant="gold" size="xl" className="w-full sm:w-auto shadow-lg hover:shadow-gold/25 transition-all duration-300 hover:scale-105">
-                <Link to={home.heroPrimaryCtaLink || "/contact"}>{home.heroPrimaryCtaText || "Speak with an Advisor"}</Link>
+              <Button
+                asChild
+                variant="gold"
+                size="xl"
+                className="w-full sm:w-auto shadow-lg hover:shadow-gold/25 transition-all duration-300 hover:scale-105"
+              >
+                <Link to={home.heroPrimaryCtaLink || "/contact"}>
+                  {home.heroPrimaryCtaText || "Speak with an Advisor"}
+                </Link>
               </Button>
-              <Button asChild variant="pine" size="xl" className="w-full sm:w-auto shadow-lg hover:shadow-pine/30 transition-all duration-300 hover:scale-105">
-                <Link to={home.heroSecondaryCtaLink || "/estimator"} className="flex items-center justify-center gap-2">
+              <Button
+                asChild
+                variant="pine"
+                size="xl"
+                className="w-full sm:w-auto shadow-lg hover:shadow-pine/30 transition-all duration-300 hover:scale-105"
+              >
+                <Link
+                  to={home.heroSecondaryCtaLink || "/estimator"}
+                  className="flex items-center justify-center gap-2"
+                >
                   <Calculator className="size-4" />
                   {home.heroSecondaryCtaText || "Calculate Vault Price"}
                 </Link>
               </Button>
-              <Button asChild variant="onDark" size="xl" className="w-full sm:w-auto backdrop-blur-md transition-all duration-300 hover:bg-white/20">
+              <Button
+                asChild
+                variant="onDark"
+                size="xl"
+                className="w-full sm:w-auto backdrop-blur-md transition-all duration-300 hover:bg-white/20"
+              >
                 <Link to="/garden-of-peace">Explore Memorial Park</Link>
               </Button>
             </div>
@@ -172,18 +219,31 @@ function Home() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#415825] opacity-75" />
                 <span className="relative inline-flex size-3 rounded-full bg-[#415825]" />
               </span>
-              <h2 className="text-xl sm:text-2xl font-serif font-bold text-foreground">Has a death occurred?</h2>
+              <h2 className="text-xl sm:text-2xl font-serif font-bold text-foreground">
+                Has a death occurred?
+              </h2>
             </div>
             <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
-              Immediate professional support is available 24 hours a day, 7 days a week across Lagos and surrounding states.
+              Immediate professional support is available 24 hours a day, 7 days a week across Lagos
+              and surrounding states.
             </p>
           </div>
           <div className="flex flex-wrap gap-3 w-full sm:w-auto">
-            <Button asChild variant="default" size="lg" className="flex-1 sm:flex-none hover:shadow-md transition-all">
-              <a href={site.phoneHref}>Call Us 24/7</a>
+            <Button
+              asChild
+              variant="default"
+              size="lg"
+              className="flex-1 sm:flex-none hover:shadow-md transition-all"
+            >
+              <a href={content.settings.phoneHref || site.phoneHref}>Call Us 24/7</a>
             </Button>
-            <Button asChild variant="pine" size="lg" className="flex-1 sm:flex-none hover:shadow-md transition-all">
-              <a href={site.whatsapp} target="_blank" rel="noreferrer">
+            <Button
+              asChild
+              variant="pine"
+              size="lg"
+              className="flex-1 sm:flex-none hover:shadow-md transition-all"
+            >
+              <a href={content.settings.whatsapp || site.whatsapp} target="_blank" rel="noreferrer">
                 WhatsApp Us
               </a>
             </Button>
@@ -206,7 +266,7 @@ function Home() {
                 height={912}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0E0E44]/80 via-transparent to-transparent" />
-              
+
               {/* Floating Remembrance Badge */}
               <div className="absolute bottom-6 left-6 right-6 rounded-xl border border-white/20 bg-background/90 p-4 backdrop-blur-md shadow-lg">
                 <div className="flex items-center gap-3">
@@ -215,7 +275,9 @@ function Home() {
                   </div>
                   <div>
                     <p className="text-xs font-bold text-foreground">Dedicated Family Care</p>
-                    <p className="text-[11px] text-muted-foreground">Preserving cherished legacies with reverence</p>
+                    <p className="text-[11px] text-muted-foreground">
+                      Preserving cherished legacies with reverence
+                    </p>
                   </div>
                 </div>
               </div>
@@ -231,9 +293,9 @@ function Home() {
             />
             <p className="leading-relaxed text-muted-foreground text-sm sm:text-base">
               Whether you're making arrangements for a loved one or planning ahead for the future,
-              our team is committed to guiding you with empathy, integrity and exceptional
-              attention to every detail, so you can focus on what truly matters: celebrating a life
-              well lived.
+              our team is committed to guiding you with empathy, integrity and exceptional attention
+              to every detail, so you can focus on what truly matters: celebrating a life well
+              lived.
             </p>
 
             {/* Interactive Feature List */}
@@ -244,7 +306,9 @@ function Home() {
                 </div>
                 <div>
                   <h4 className="text-xs font-bold text-foreground">Family-Led Accountability</h4>
-                  <p className="text-[11px] text-muted-foreground">Every arrangement handled with personal care and institutional excellence.</p>
+                  <p className="text-[11px] text-muted-foreground">
+                    Every arrangement handled with personal care and institutional excellence.
+                  </p>
                 </div>
               </div>
 
@@ -253,17 +317,32 @@ function Home() {
                   <CheckCircle2 className="size-3.5" />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-foreground">End-to-End Funeral &amp; Vault Solutions</h4>
-                  <p className="text-[11px] text-muted-foreground">From documentation and mortuary care to graveside committal and perpetual park maintenance.</p>
+                  <h4 className="text-xs font-bold text-foreground">
+                    End-to-End Funeral &amp; Vault Solutions
+                  </h4>
+                  <p className="text-[11px] text-muted-foreground">
+                    From documentation and mortuary care to graveside committal and perpetual park
+                    maintenance.
+                  </p>
                 </div>
               </div>
             </div>
 
             <div className="pt-2 flex flex-wrap gap-3">
-              <Button asChild variant="outlineForest" size="lg" className="w-full sm:w-auto hover:shadow-sm">
+              <Button
+                asChild
+                variant="outlineForest"
+                size="lg"
+                className="w-full sm:w-auto hover:shadow-sm"
+              >
                 <Link to="/about">More About Capetrust</Link>
               </Button>
-              <Button asChild variant="forest" size="lg" className="w-full sm:w-auto hover:shadow-sm">
+              <Button
+                asChild
+                variant="forest"
+                size="lg"
+                className="w-full sm:w-auto hover:shadow-sm"
+              >
                 <Link to="/investment">Family Estates &amp; Pre-Planning</Link>
               </Button>
             </div>
@@ -332,7 +411,8 @@ function Home() {
                 Plan and estimate your cemetery vault cost in real time
               </h2>
               <p className="text-xs sm:text-sm leading-relaxed text-white/85 max-w-2xl">
-                Choose single, double, or triple vaults, surface finishes (granite, pebble, flower beds), headstones, and optional services with transparent pricing in Nigerian Naira.
+                Choose single, double, or triple vaults, surface finishes (granite, pebble, flower
+                beds), headstones, and optional services with transparent pricing in Nigerian Naira.
               </p>
 
               {/* Price Chips */}
@@ -350,7 +430,12 @@ function Home() {
             </div>
 
             <div className="lg:col-span-4 flex flex-col gap-3 sm:flex-row lg:flex-col justify-center">
-              <Button asChild variant="gold" size="xl" className="w-full shadow-lg hover:scale-105 transition-all">
+              <Button
+                asChild
+                variant="gold"
+                size="xl"
+                className="w-full shadow-lg hover:scale-105 transition-all"
+              >
                 <Link to="/estimator" className="flex items-center justify-center gap-2">
                   <Calculator className="size-4" />
                   Launch Price Estimator
@@ -380,10 +465,20 @@ function Home() {
             </p>
 
             <div className="pt-2 flex flex-wrap gap-3">
-              <Button asChild variant="forest" size="lg" className="w-full sm:w-auto hover:shadow-md transition-all">
+              <Button
+                asChild
+                variant="forest"
+                size="lg"
+                className="w-full sm:w-auto hover:shadow-md transition-all"
+              >
                 <Link to="/garden-of-peace">Explore the Memorial Park</Link>
               </Button>
-              <Button asChild variant="outlineForest" size="lg" className="w-full sm:w-auto hover:shadow-md transition-all">
+              <Button
+                asChild
+                variant="outlineForest"
+                size="lg"
+                className="w-full sm:w-auto hover:shadow-md transition-all"
+              >
                 <Link to="/contact">Book a Cemetery Tour</Link>
               </Button>
             </div>
@@ -402,7 +497,9 @@ function Home() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
               <div className="absolute bottom-4 left-4 right-4 rounded-xl bg-black/60 p-3 backdrop-blur-xs text-white text-xs">
                 <p className="font-bold">On-Site Chapel Sanctuary</p>
-                <p className="text-[11px] text-white/80">Air-conditioned chapel for private liturgical and memorial services</p>
+                <p className="text-[11px] text-white/80">
+                  Air-conditioned chapel for private liturgical and memorial services
+                </p>
               </div>
             </div>
           </div>
@@ -420,7 +517,9 @@ function Home() {
               Memorial Tributes &amp; Life Stories
             </h2>
             <p className="mx-auto mt-4 max-w-3xl text-xs sm:text-sm leading-relaxed text-muted-foreground">
-              A sacred space where cherished lives are honoured, beautiful memories preserved, and families around the world can share condolences, light virtual candles, and view service arrangements.
+              A sacred space where cherished lives are honoured, beautiful memories preserved, and
+              families around the world can share condolences, light virtual candles, and view
+              service arrangements.
             </p>
           </div>
 
@@ -430,9 +529,12 @@ function Home() {
                 <div className="flex size-10 items-center justify-center rounded-lg bg-[#415825]/10 text-[#415825]">
                   <Flame className="size-5" />
                 </div>
-                <h3 className="mt-4 font-serif text-xl font-bold text-foreground">Submit a Family Tribute</h3>
+                <h3 className="mt-4 font-serif text-xl font-bold text-foreground">
+                  Submit a Family Tribute
+                </h3>
                 <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                  Submit tribute announcements, life biographies, and funeral service schedules directly to our administration team for verified publication.
+                  Prepare tribute announcements, life biographies, and funeral service schedules to
+                  email to our team for review.
                 </p>
               </div>
               <Button asChild variant="forest" size="lg" className="mt-6 w-full sm:w-auto">
@@ -447,9 +549,12 @@ function Home() {
                 <div className="flex size-10 items-center justify-center rounded-lg bg-[#1E3D82]/10 text-[#1E3D82]">
                   <Sparkles className="size-5" />
                 </div>
-                <h3 className="mt-4 font-serif text-xl font-bold text-foreground">Search Memorial Registry</h3>
+                <h3 className="mt-4 font-serif text-xl font-bold text-foreground">
+                  Search Memorial Registry
+                </h3>
                 <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                  Explore published memorials, send condolences to bereaved families, and light candles in memory of departed loved ones.
+                  Explore published memorials, send condolences to bereaved families, and light
+                  candles in memory of departed loved ones.
                 </p>
               </div>
               <Button asChild variant="outlineForest" size="lg" className="mt-6 w-full sm:w-auto">

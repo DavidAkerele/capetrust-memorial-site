@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useParams } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, useParams } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import {
   Flame,
@@ -15,46 +15,55 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Section, SectionHeading, CTABand } from "@/components/site/Sections";
-import {
-  getStoredObituaries,
-  getObituaryBySlug,
-  addCondolence,
-  incrementCandle,
-  Obituary,
-  INITIAL_OBITUARIES,
-} from "@/lib/obituaries-data";
+import { getObituaryBySlug, addCondolence, incrementCandle, Obituary } from "@/lib/obituaries-data";
 
 export const Route = createFileRoute("/obituaries/$slug")({
   component: SingleObituaryPage,
-  head: () => ({
+  loader: async ({ params }) => {
+    const memorial = await getObituaryBySlug(params.slug);
+    if (!memorial) throw notFound();
+    return memorial;
+  },
+  head: ({ loaderData }) => ({
     meta: [
-      { title: "Memorial Tribute & Life Celebration | Capetrust" },
+      { title: `${loaderData?.fullName || "Memorial Tribute"} | Capetrust` },
       {
         name: "description",
-        content: "Celebrating a cherished life with honor, dignity, and eternal remembrance at Capetrust Funeral Services.",
+        content:
+          loaderData?.summaryQuote || "Celebrating a cherished life at Capetrust Funeral Services.",
       },
-      { property: "og:title", content: "Memorial Tribute & Life Celebration | Capetrust" },
+      {
+        property: "og:title",
+        content: `${loaderData?.fullName || "Memorial Tribute"} | Capetrust`,
+      },
       {
         property: "og:description",
-        content: "Light a virtual candle, view service arrangements, and share condolences with the bereaved family.",
+        content:
+          loaderData?.summaryQuote ||
+          "View service arrangements and share condolences with the bereaved family.",
       },
-      { property: "og:image", content: "/images/og-capetrust.png" },
+      { property: "og:image", content: loaderData?.featuredImage || "/images/og-capetrust.png" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "Memorial Tribute & Life Celebration | Capetrust" },
+      {
+        name: "twitter:title",
+        content: `${loaderData?.fullName || "Memorial Tribute"} | Capetrust`,
+      },
       {
         name: "twitter:description",
-        content: "Light a virtual candle and share heartfelt condolences for this celebrated life.",
+        content:
+          loaderData?.summaryQuote || "Share heartfelt condolences for this celebrated life.",
       },
-      { name: "twitter:image", content: "/images/og-capetrust.png" },
+      { name: "twitter:image", content: loaderData?.featuredImage || "/images/og-capetrust.png" },
     ],
   }),
 });
 
 function SingleObituaryPage() {
   const { slug } = useParams({ from: "/obituaries/$slug" });
+  const loadedObituary = Route.useLoaderData();
 
-  const [obituary, setObituary] = useState<Obituary | null>(null);
-  const [candles, setCandles] = useState<number>(0);
+  const [obituary, setObituary] = useState<Obituary | null>(loadedObituary ?? null);
+  const [candles, setCandles] = useState<number>(loadedObituary?.candlesCount ?? 0);
   const [hasLitCandle, setHasLitCandle] = useState<boolean>(false);
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
 
@@ -66,15 +75,9 @@ function SingleObituaryPage() {
   const [submittedCondolenceSuccess, setSubmittedCondolenceSuccess] = useState(false);
 
   useEffect(() => {
-    if (!slug) return;
-    const found =
-      getObituaryBySlug(slug) ||
-      INITIAL_OBITUARIES.find((o) => o.slug === slug);
-    if (found) {
-      setObituary(found);
-      setCandles(found.candlesCount || 0);
-    }
-  }, [slug]);
+    setObituary(loadedObituary ?? null);
+    setCandles(loadedObituary?.candlesCount ?? 0);
+  }, [loadedObituary]);
 
   if (!obituary) {
     return (
@@ -95,11 +98,15 @@ function SingleObituaryPage() {
     );
   }
 
-  const handleLightCandle = () => {
+  const handleLightCandle = async () => {
     if (!slug) return;
-    const newCount = incrementCandle(slug);
-    setCandles(newCount);
-    setHasLitCandle(true);
+    try {
+      const newCount = await incrementCandle(slug);
+      setCandles(newCount);
+      setHasLitCandle(true);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "Could not light the candle.");
+    }
   };
 
   const handleCopyLink = () => {
@@ -110,28 +117,26 @@ function SingleObituaryPage() {
     }
   };
 
-  const handleCondolenceSubmit = (e: React.FormEvent) => {
+  const handleCondolenceSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!authorName.trim() || !message.trim() || !slug) return;
-
     setSubmittingCondolence(true);
-    setTimeout(() => {
-      const updated = addCondolence(slug, {
+    try {
+      await addCondolence(slug, {
         name: authorName.trim(),
         relationship: relationship.trim() || "Family Friend",
         message: message.trim(),
       });
-
-      if (updated) {
-        setObituary(updated);
-      }
       setAuthorName("");
       setRelationship("");
       setMessage("");
-      setSubmittingCondolence(false);
       setSubmittedCondolenceSuccess(true);
       setTimeout(() => setSubmittedCondolenceSuccess(false), 4000);
-    }, 400);
+    } catch (error) {
+      alert(error instanceof Error ? error.message : "Could not submit your tribute.");
+    } finally {
+      setSubmittingCondolence(false);
+    }
   };
 
   return (
@@ -191,8 +196,12 @@ function SingleObituaryPage() {
                       : "bg-background text-foreground hover:bg-gold hover:text-primary"
                   }`}
                 >
-                  <Flame className={`size-4 ${hasLitCandle ? "fill-primary text-primary" : "text-gold fill-gold"}`} />
-                  <span>{hasLitCandle ? "Candle Lit" : "Light a Candle"} ({candles})</span>
+                  <Flame
+                    className={`size-4 ${hasLitCandle ? "fill-primary text-primary" : "text-gold fill-gold"}`}
+                  />
+                  <span>
+                    {hasLitCandle ? "Candle Lit" : "Light a Candle"} ({candles})
+                  </span>
                 </button>
 
                 <button
@@ -200,7 +209,11 @@ function SingleObituaryPage() {
                   onClick={handleCopyLink}
                   className="flex items-center gap-2 rounded-full border border-primary-foreground/30 bg-primary-foreground/10 px-5 py-3 text-xs font-semibold text-primary-foreground hover:bg-primary-foreground/20 transition-all"
                 >
-                  {copiedLink ? <Check className="size-4 text-green-400" /> : <Share2 className="size-4" />}
+                  {copiedLink ? (
+                    <Check className="size-4 text-green-400" />
+                  ) : (
+                    <Share2 className="size-4" />
+                  )}
                   <span>{copiedLink ? "Link Copied!" : "Share Tribute"}</span>
                 </button>
               </div>
@@ -217,14 +230,18 @@ function SingleObituaryPage() {
             {/* Biography */}
             <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-sm">
               <span className="eyebrow text-gold">Celebration of Life</span>
-              <h2 className="mt-2 font-serif text-2xl font-bold text-foreground">Biography &amp; Life Story</h2>
+              <h2 className="mt-2 font-serif text-2xl font-bold text-foreground">
+                Biography &amp; Life Story
+              </h2>
               <div className="mt-6 space-y-4 text-sm leading-relaxed text-foreground/80 whitespace-pre-line">
                 {obituary.lifeStory}
               </div>
 
               {obituary.familyNote && (
                 <div className="mt-8 rounded-xl border border-gold/30 bg-secondary/60 p-5">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-primary">A Note from the Family</h4>
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-primary">
+                    A Note from the Family
+                  </h4>
                   <p className="mt-2 text-xs italic text-foreground/80">{obituary.familyNote}</p>
                 </div>
               )}
@@ -234,7 +251,9 @@ function SingleObituaryPage() {
             {obituary.galleryImages && obituary.galleryImages.length > 0 && (
               <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-sm">
                 <span className="eyebrow text-gold">Memories &amp; Moments</span>
-                <h2 className="mt-2 font-serif text-2xl font-bold text-foreground">Photo Gallery</h2>
+                <h2 className="mt-2 font-serif text-2xl font-bold text-foreground">
+                  Photo Gallery
+                </h2>
                 <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
                   {obituary.galleryImages.map((img, i) => (
                     <div key={i} className="overflow-hidden rounded-xl bg-muted">
@@ -269,7 +288,10 @@ function SingleObituaryPage() {
                   </p>
                 ) : (
                   obituary.condolences.map((c) => (
-                    <div key={c.id} className="rounded-xl border border-border/80 bg-background p-4 shadow-2xs">
+                    <div
+                      key={c.id}
+                      className="rounded-xl border border-border/80 bg-background p-4 shadow-2xs"
+                    >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <div className="flex size-7 items-center justify-center rounded-full bg-primary/10 text-primary">
@@ -277,12 +299,16 @@ function SingleObituaryPage() {
                           </div>
                           <div>
                             <span className="text-xs font-bold text-foreground">{c.name}</span>
-                            <span className="ml-2 text-[10px] text-gold font-medium">({c.relationship})</span>
+                            <span className="ml-2 text-[10px] text-gold font-medium">
+                              ({c.relationship})
+                            </span>
                           </div>
                         </div>
                         <span className="text-[10px] text-muted-foreground">{c.date}</span>
                       </div>
-                      <p className="mt-3 text-xs leading-relaxed text-foreground/80">"{c.message}"</p>
+                      <p className="mt-3 text-xs leading-relaxed text-foreground/80">
+                        "{c.message}"
+                      </p>
                     </div>
                   ))
                 )}
@@ -295,7 +321,9 @@ function SingleObituaryPage() {
             {/* Service Events Schedule */}
             <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-sm">
               <span className="eyebrow text-gold">Order of Events</span>
-              <h3 className="mt-2 font-serif text-2xl font-bold text-foreground">Service Schedule</h3>
+              <h3 className="mt-2 font-serif text-2xl font-bold text-foreground">
+                Service Schedule
+              </h3>
 
               <div className="mt-6 space-y-4">
                 {obituary.services.map((svc, i) => (
@@ -327,21 +355,25 @@ function SingleObituaryPage() {
             {/* Leave a Tribute Form */}
             <div className="rounded-2xl border border-gold/40 bg-card p-6 sm:p-8 shadow-soft">
               <span className="eyebrow text-gold">Support the Family</span>
-              <h3 className="mt-2 font-serif text-2xl font-bold text-foreground">Leave a Tribute</h3>
+              <h3 className="mt-2 font-serif text-2xl font-bold text-foreground">
+                Leave a Tribute
+              </h3>
               <p className="mt-1 text-xs text-muted-foreground">
-                Your message will be displayed publicly on this eternal memorial page.
+                Your message will be reviewed before it appears on this memorial page.
               </p>
 
               {submittedCondolenceSuccess && (
                 <div className="mt-4 flex items-center gap-2 rounded-xl bg-green-500/10 border border-green-500/30 p-3 text-xs text-green-700">
                   <Check className="size-4 shrink-0" />
-                  <span>Your condolence message has been posted successfully.</span>
+                  <span>Your condolence message has been submitted for review.</span>
                 </div>
               )}
 
               <form onSubmit={handleCondolenceSubmit} className="mt-6 space-y-4">
                 <div>
-                  <label className="block text-xs font-semibold text-foreground">Your Full Name *</label>
+                  <label className="block text-xs font-semibold text-foreground">
+                    Your Full Name *
+                  </label>
                   <input
                     type="text"
                     required
@@ -353,7 +385,9 @@ function SingleObituaryPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-foreground">Relationship to the Family</label>
+                  <label className="block text-xs font-semibold text-foreground">
+                    Relationship to the Family
+                  </label>
                   <input
                     type="text"
                     value={relationship}
@@ -364,7 +398,9 @@ function SingleObituaryPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-foreground">Your Tribute / Condolence Message *</label>
+                  <label className="block text-xs font-semibold text-foreground">
+                    Your Tribute / Condolence Message *
+                  </label>
                   <textarea
                     required
                     rows={4}
@@ -383,7 +419,7 @@ function SingleObituaryPage() {
                   className="w-full flex items-center justify-center gap-2"
                 >
                   <Send className="size-4" />
-                  {submittingCondolence ? "Posting..." : "Post Tribute"}
+                  {submittingCondolence ? "Submitting..." : "Submit Tribute"}
                 </Button>
               </form>
             </div>

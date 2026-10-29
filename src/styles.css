@@ -165,8 +165,8 @@
 }
 /* Hide scrollbar for IE, Edge and Firefox */
 .no-scrollbar {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 /* ==========================================================================
@@ -181,14 +181,15 @@
 
 .bg-texture-grid {
   background-size: 40px 40px;
-  background-image: 
+  background-image:
     linear-gradient(to right, rgba(212, 175, 55, 0.06) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(212, 175, 55, 0.06) 1px, transparent 1px);
 }
 
 .bg-texture-mesh {
-  background-image: radial-gradient(at 0% 0%, rgba(30, 63, 32, 0.08) 0px, transparent 50%),
-                    radial-gradient(at 100% 100%, rgba(212, 175, 55, 0.08) 0px, transparent 50%);
+  background-image:
+    radial-gradient(at 0% 0%, rgba(30, 63, 32, 0.08) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(212, 175, 55, 0.08) 0px, transparent 50%);
 }
 
 /* Interactive Card Hover Motions */
@@ -198,13 +199,16 @@
 
 .card-interactive:hover {
   transform: translateY(-6px);
-  box-shadow: 0 20px 35px -10px rgba(14, 14, 68, 0.12), 0 0 20px -5px rgba(212, 175, 55, 0.2);
+  box-shadow:
+    0 20px 35px -10px rgba(14, 14, 68, 0.12),
+    0 0 20px -5px rgba(212, 175, 55, 0.2);
   border-color: rgba(212, 175, 55, 0.5);
 }
 
 /* Keyframe Animations */
 @keyframes floatSlow {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {
@@ -213,7 +217,8 @@
 }
 
 @keyframes glowPulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.5;
     transform: scale(1);
   }
@@ -241,7 +246,12 @@
 }
 
 .animate-shimmer-sweep {
-  background: linear-gradient(90deg, rgba(212,175,55,0) 0%, rgba(212,175,55,0.25) 50%, rgba(212,175,55,0) 100%);
+  background: linear-gradient(
+    90deg,
+    rgba(212, 175, 55, 0) 0%,
+    rgba(212, 175, 55, 0.25) 50%,
+    rgba(212, 175, 55, 0) 100%
+  );
   background-size: 200% 100%;
   animation: shimmerSweep 3s infinite;
 }

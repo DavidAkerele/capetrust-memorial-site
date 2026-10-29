@@ -18,6 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Section, CTABand } from "@/components/site/Sections";
 import { site } from "@/lib/site";
+import { useCMS } from "@/lib/cms/cms-store";
 
 export interface SubmitServiceEvent {
   title: string;
@@ -55,6 +56,7 @@ export const Route = createFileRoute("/obituaries/create")({
 });
 
 function CreateObituaryPage() {
+  const { content } = useCMS();
   // Contact Submitter Details
   const [submitterName, setSubmitterName] = useState("");
   const [submitterRelationship, setSubmitterRelationship] = useState("");
@@ -101,11 +103,7 @@ function CreateObituaryPage() {
     setServices(services.filter((_, i) => i !== index));
   };
 
-  const updateServiceEvent = (
-    index: number,
-    field: keyof SubmitServiceEvent,
-    value: string
-  ) => {
+  const updateServiceEvent = (index: number, field: keyof SubmitServiceEvent, value: string) => {
     const updated = [...services];
     if (updated[index]) {
       updated[index] = { ...updated[index], [field]: value };
@@ -123,7 +121,7 @@ function CreateObituaryPage() {
       .filter((s) => s.title || s.location)
       .map(
         (s, i) =>
-          `Event ${i + 1}: ${s.title}\nDate/Time: ${s.date} ${s.time}\nLocation: ${s.location} (${s.address})`
+          `Event ${i + 1}: ${s.title}\nDate/Time: ${s.date} ${s.time}\nLocation: ${s.location} (${s.address})`,
       )
       .join("\n\n");
 
@@ -154,8 +152,8 @@ ${servicesText || "None specified"}
 ----------------------------------------`;
 
     // Direct mailto link fallback
-    const mailtoUrl = `mailto:${site.email}?subject=${encodeURIComponent(
-      emailSubject
+    const mailtoUrl = `mailto:${content.settings.email || site.email}?subject=${encodeURIComponent(
+      emailSubject,
     )}&body=${encodeURIComponent(emailBody)}`;
 
     window.open(mailtoUrl, "_blank");
@@ -179,7 +177,8 @@ ${servicesText || "None specified"}
               Submit a Memorial Tribute
             </h1>
             <p className="mt-2 max-w-2xl text-xs text-primary-foreground/80">
-              Submit tribute and service details directly to our administration team. All submissions are verified with the family prior to publication.
+              Complete the form to prepare an email for our team. Send the draft from your email app
+              so we can review it with your family.
             </p>
           </div>
         </div>
@@ -192,13 +191,17 @@ ${servicesText || "None specified"}
               <CheckCircle2 className="size-8" />
             </div>
             <h2 className="mt-6 font-serif text-3xl font-bold text-foreground">
-              Tribute Form Submitted
+              Your email draft is ready
             </h2>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-              Thank you, <strong className="text-foreground">{submitterName}</strong>. Your memorial tribute submission for <strong className="text-foreground">{fullName}</strong> has been sent to our administration team.
+              Thank you, <strong className="text-foreground">{submitterName}</strong>. Please send
+              the email draft for <strong className="text-foreground">{fullName}</strong> from your
+              email app. The form has not sent it automatically.
             </p>
             <p className="mt-2 text-xs text-muted-foreground">
-              An advisor from Capetrust Funeral Services will contact you at <strong className="text-foreground">{submitterPhone}</strong> to confirm photo attachments and official publication.
+              Once our team receives your email, an advisor can contact you at{" "}
+              <strong className="text-foreground">{submitterPhone}</strong> to confirm photos and
+              publication.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-4">
               <Button asChild variant="gold" size="lg">
@@ -219,7 +222,8 @@ ${servicesText || "None specified"}
                   Family / Submitter Contact
                 </h2>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  We use these details to verify and coordinate the memorial tribute with your family.
+                  We use these details to verify and coordinate the memorial tribute with your
+                  family.
                 </p>
               </div>
 
@@ -462,9 +466,7 @@ ${servicesText || "None specified"}
                         <input
                           type="text"
                           value={svc.title}
-                          onChange={(e) =>
-                            updateServiceEvent(index, "title", e.target.value)
-                          }
+                          onChange={(e) => updateServiceEvent(index, "title", e.target.value)}
                           placeholder="e.g. Service of Songs"
                           className="mt-1 w-full rounded-lg border border-border bg-card px-3 py-2 text-xs"
                         />
@@ -476,9 +478,7 @@ ${servicesText || "None specified"}
                         <input
                           type="text"
                           value={svc.date}
-                          onChange={(e) =>
-                            updateServiceEvent(index, "date", e.target.value)
-                          }
+                          onChange={(e) => updateServiceEvent(index, "date", e.target.value)}
                           placeholder="e.g. Thursday, Feb 26, 2026"
                           className="mt-1 w-full rounded-lg border border-border bg-card px-3 py-2 text-xs"
                         />
@@ -490,9 +490,7 @@ ${servicesText || "None specified"}
                         <input
                           type="text"
                           value={svc.time}
-                          onChange={(e) =>
-                            updateServiceEvent(index, "time", e.target.value)
-                          }
+                          onChange={(e) => updateServiceEvent(index, "time", e.target.value)}
                           placeholder="e.g. 10:00 AM"
                           className="mt-1 w-full rounded-lg border border-border bg-card px-3 py-2 text-xs"
                         />
@@ -507,9 +505,7 @@ ${servicesText || "None specified"}
                         <input
                           type="text"
                           value={svc.location}
-                          onChange={(e) =>
-                            updateServiceEvent(index, "location", e.target.value)
-                          }
+                          onChange={(e) => updateServiceEvent(index, "location", e.target.value)}
                           placeholder="e.g. Capetrust Private Chapel"
                           className="mt-1 w-full rounded-lg border border-border bg-card px-3 py-2 text-xs"
                         />
@@ -521,9 +517,7 @@ ${servicesText || "None specified"}
                         <input
                           type="text"
                           value={svc.address}
-                          onChange={(e) =>
-                            updateServiceEvent(index, "address", e.target.value)
-                          }
+                          onChange={(e) => updateServiceEvent(index, "address", e.target.value)}
                           placeholder="e.g. 194, Elepe Rd, Ikorodu, Lagos"
                           className="mt-1 w-full rounded-lg border border-border bg-card px-3 py-2 text-xs"
                         />
@@ -541,7 +535,9 @@ ${servicesText || "None specified"}
                 <span>Verification Policy</span>
               </div>
               <p className="text-xs leading-relaxed text-muted-foreground">
-                To maintain authenticity and privacy, submitted tributes are verified directly with the bereaved family before publication. High-resolution portrait photographs may be sent directly via email or WhatsApp to our administrative desk.
+                To maintain authenticity and privacy, submitted tributes are verified directly with
+                the bereaved family before publication. High-resolution portrait photographs may be
+                sent directly via email or WhatsApp to our administrative desk.
               </p>
             </div>
 
@@ -557,7 +553,7 @@ ${servicesText || "None specified"}
                 className="flex items-center justify-center gap-2"
               >
                 <Send className="size-4" />
-                Submit Tribute for Review
+                Open Email Draft for Review
               </Button>
             </div>
           </form>

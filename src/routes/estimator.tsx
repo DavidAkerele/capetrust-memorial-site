@@ -13,7 +13,10 @@ export const Route = createFileRoute("/estimator")({
         content:
           "Calculate estimated costs for single, double, and triple vaults, custom headstones, and surface finishes at Garden of Peace Memorial Park, Agbowa, Lagos.",
       },
-      { property: "og:title", content: "Vault & Service Price Estimator | Capetrust Funeral Services" },
+      {
+        property: "og:title",
+        content: "Vault & Service Price Estimator | Capetrust Funeral Services",
+      },
       {
         property: "og:description",
         content:

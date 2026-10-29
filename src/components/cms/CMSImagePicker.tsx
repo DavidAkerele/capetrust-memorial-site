@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { Sparkles, Check, ExternalLink, Upload, Image as ImageIcon, X } from "lucide-react";
 import { CMSField } from "./CMSField";
+import { getSupabaseClient } from "@/lib/supabase";
 
 const PRESET_IMAGES = [
   { label: "Memorial Park Aerial / Lawns", url: "/images/hero-park.jpg" },
@@ -25,34 +26,59 @@ interface CMSImagePickerProps {
 }
 
 export function CMSImagePicker({ label, description, value, onChange }: CMSImagePickerProps) {
+  const imageInputId = React.useId();
   const [showPresets, setShowPresets] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const result = event.target?.result as string;
-        if (result) {
-          onChange(result);
-        }
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+    const client = getSupabaseClient();
+    if (!client) return setUploadError("Connect the shared backend before uploading images.");
+    if (
+      !["image/jpeg", "image/png", "image/webp", "image/avif"].includes(file.type) ||
+      file.size > 5 * 1024 * 1024
+    ) {
+      return setUploadError("Choose a JPEG, PNG, WebP or AVIF image under 5 MB.");
+    }
+    setUploading(true);
+    setUploadError("");
+    const extension =
+      {
+        "image/jpeg": "jpg",
+        "image/png": "png",
+        "image/webp": "webp",
+        "image/avif": "avif",
+      }[file.type] || "jpg";
+    const path = `${crypto.randomUUID()}.${extension}`;
+    try {
+      const { error } = await client.storage
+        .from("site-media")
+        .upload(path, file, { contentType: file.type, upsert: false });
+      if (error) setUploadError(error.message);
+      else onChange(client.storage.from("site-media").getPublicUrl(path).data.publicUrl);
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : "Image upload failed.");
+    } finally {
+      setUploading(false);
+      e.target.value = "";
     }
   };
 
   return (
-    <CMSField label={label} description={description}>
+    <CMSField label={label} htmlFor={imageInputId} description={description}>
       <div className="space-y-3">
         {/* URL Input & Quick Actions */}
         <div className="flex flex-wrap gap-2">
           <input
+            id={imageInputId}
             type="text"
             value={value || ""}
             onChange={(e) => onChange(e.target.value)}
             placeholder="Paste image URL (e.g. /images/... or https://...)"
-            className="flex-1 min-w-[200px] rounded border border-[#1E3D82]/50 bg-[#070D1F] px-3.5 py-2 text-xs text-white shadow-inner focus:border-[#D4AF37] focus:outline-hidden focus:ring-1 focus:ring-[#D4AF37] placeholder:text-slate-500"
+            className="flex-1 min-w-[200px] rounded-lg border border-white/15 bg-[#0c172d] px-3.5 py-2 text-xs text-white focus:border-[#e0bd65] focus:outline-hidden focus:ring-2 focus:ring-[#e0bd65]/25 placeholder:text-slate-500"
           />
 
           {/* Hidden File Input for Device Storage Upload */}
@@ -67,11 +93,12 @@ export function CMSImagePicker({ label, description, value, onChange }: CMSImage
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
             className="inline-flex items-center gap-1.5 rounded border border-emerald-500/50 bg-emerald-950/40 px-3 py-2 text-xs font-bold text-emerald-300 hover:bg-emerald-900/60 transition-all cursor-pointer shadow-sm"
             title="Upload image directly from your computer or phone storage"
           >
             <Upload className="h-3.5 w-3.5" />
-            <span>Upload File</span>
+            <span>{uploading ? "Uploading…" : "Upload File"}</span>
           </button>
 
           <button
@@ -83,6 +110,11 @@ export function CMSImagePicker({ label, description, value, onChange }: CMSImage
             {showPresets ? "Hide Library" : "Preset Library"}
           </button>
         </div>
+        {uploadError && (
+          <p role="alert" className="text-xs text-rose-300">
+            {uploadError}
+          </p>
+        )}
 
         {/* Preset Gallery Accordion */}
         {showPresets && (
@@ -150,10 +182,10 @@ export function CMSImagePicker({ label, description, value, onChange }: CMSImage
               />
             </div>
             <div className="min-w-0 flex-1">
-              <span className="text-[10px] font-semibold text-[#D4AF37] uppercase">Active Image Source:</span>
-              <p className="truncate text-xs font-mono text-slate-200 mt-0.5">
-                {value.startsWith("data:") ? "Uploaded Local Storage Image (Ready to Save)" : value}
-              </p>
+              <span className="text-[10px] font-semibold text-[#D4AF37] uppercase">
+                Active Image Source:
+              </span>
+              <p className="truncate text-xs font-mono text-slate-200 mt-0.5">{value}</p>
             </div>
             <button
               type="button"

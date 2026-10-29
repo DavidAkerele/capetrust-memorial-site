@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { SafeImage } from "@/components/ui/SafeImage";
 import { site } from "@/lib/site";
+import { useCMS } from "@/lib/cms/cms-store";
 import { cn } from "@/lib/utils";
 
 export function PageHero({
@@ -92,15 +93,21 @@ export function SectionHeading({
   return (
     <div className={cn("max-w-4xl lg:max-w-5xl", center && "mx-auto text-center")}>
       {eyebrow && (
-        <span className={cn(
-          "inline-block text-[11px] font-bold uppercase tracking-[0.22em] text-[#415825] border-l-2 border-[#415825] pl-2.5 py-0.5 bg-[#415825]/5 pr-3",
-          center && "border-x-2 px-3"
-        )}>
+        <span
+          className={cn(
+            "inline-block text-[11px] font-bold uppercase tracking-[0.22em] text-[#415825] border-l-2 border-[#415825] pl-2.5 py-0.5 bg-[#415825]/5 pr-3",
+            center && "border-x-2 px-3",
+          )}
+        >
           {eyebrow}
         </span>
       )}
       <h2 className="mt-3 text-3xl font-serif font-bold md:text-4xl text-foreground">{title}</h2>
-      {intro && <p className="mt-3 leading-relaxed text-muted-foreground text-sm sm:text-base max-w-4xl">{intro}</p>}
+      {intro && (
+        <p className="mt-3 leading-relaxed text-muted-foreground text-sm sm:text-base max-w-4xl">
+          {intro}
+        </p>
+      )}
     </div>
   );
 }
@@ -118,7 +125,9 @@ export function InfoCard({
 }) {
   return (
     <article className="card-interactive group flex h-full flex-col rounded-md border border-border bg-card p-6 shadow-soft">
-      <h3 className="text-2xl font-serif font-bold text-foreground transition-colors group-hover:text-primary">{title}</h3>
+      <h3 className="text-2xl font-serif font-bold text-foreground transition-colors group-hover:text-primary">
+        {title}
+      </h3>
       <div className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">{children}</div>
       {cta && (
         <div className="mt-6 pt-4 border-t border-border/60">
@@ -142,6 +151,7 @@ export function CTABand({
   primary?: { label: string; to: string };
   secondaryLabel?: string;
 }) {
+  const { content } = useCMS();
   return (
     <section className="bg-primary text-primary-foreground py-14">
       <div className="container-page flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
@@ -154,7 +164,7 @@ export function CTABand({
             <Link to={primary.to}>{primary.label}</Link>
           </Button>
           <Button asChild variant="onDark" size="lg">
-            <a href={site.phoneHref}>{secondaryLabel}</a>
+            <a href={content.settings.phoneHref || site.phoneHref}>{secondaryLabel}</a>
           </Button>
         </div>
       </div>

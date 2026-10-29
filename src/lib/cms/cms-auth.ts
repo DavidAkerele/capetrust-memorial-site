@@ -1,74 +1,51 @@
-const AUTH_STORAGE_KEY = "capetrust_cms_auth_session_v1";
-const CONFIG_STORAGE_KEY = "capetrust_cms_auth_config_v1";
+import { getSupabaseClient } from "@/lib/supabase";
 
-export interface AdminAuthConfig {
-  passcode: string;
-  adminEmail: string;
-  adminName: string;
+export async function isAuthenticated(): Promise<boolean> {
+  const client = getSupabaseClient();
+  if (!client || typeof window === "undefined") return false;
+
+  const { data: userResult, error: userError } = await client.auth.getUser();
+  if (userError || !userResult.user) return false;
+
+  const { data, error } = await client
+    .from("site_admins")
+    .select("user_id")
+    .eq("user_id", userResult.user.id)
+    .maybeSingle();
+
+  return !error && Boolean(data);
 }
 
-const DEFAULT_CONFIG: AdminAuthConfig = {
-  passcode: "capetrust2026",
-  adminEmail: "admin@capetrustfunerals.com",
-  adminName: "Capetrust Administrator",
-};
-
-export function getAuthConfig(): AdminAuthConfig {
-  if (typeof window === "undefined") return DEFAULT_CONFIG;
-  try {
-    const raw = localStorage.getItem(CONFIG_STORAGE_KEY);
-    if (!raw) {
-      localStorage.setItem(CONFIG_STORAGE_KEY, JSON.stringify(DEFAULT_CONFIG));
-      return DEFAULT_CONFIG;
-    }
-    return JSON.parse(raw);
-  } catch {
-    return DEFAULT_CONFIG;
+export async function loginAdmin(
+  email: string,
+  password: string,
+): Promise<{ success: boolean; error?: string }> {
+  const client = getSupabaseClient();
+  if (!client) {
+    return { success: false, error: "The shared database is not configured yet." };
   }
-}
 
-export function updateAuthConfig(config: Partial<AdminAuthConfig>): void {
-  if (typeof window === "undefined") return;
-  const current = getAuthConfig();
-  const updated = { ...current, ...config };
-  localStorage.setItem(CONFIG_STORAGE_KEY, JSON.stringify(updated));
-}
+  const { error } = await client.auth.signInWithPassword({ email, password });
+  if (error) return { success: false, error: error.message };
 
-export function isAuthenticated(): boolean {
-  if (typeof window === "undefined") return false;
-  try {
-    const session = localStorage.getItem(AUTH_STORAGE_KEY);
-    if (!session) return false;
-    const parsed = JSON.parse(session);
-    // Session valid for 7 days
-    const isExpired = Date.now() - parsed.timestamp > 7 * 24 * 60 * 60 * 1000;
-    if (isExpired) {
-      localStorage.removeItem(AUTH_STORAGE_KEY);
-      return false;
-    }
-    return parsed.authenticated === true;
-  } catch {
-    return false;
+  if (!(await isAuthenticated())) {
+    await client.auth.signOut();
+    return { success: false, error: "This account is not authorized to manage CapeTrust." };
   }
+
+  return { success: true };
 }
 
-export function loginAdmin(passcode: string): { success: boolean; error?: string } {
-  if (typeof window === "undefined") return { success: false, error: "Window not defined" };
-  const config = getAuthConfig();
-  if (passcode.trim() === config.passcode.trim()) {
-    localStorage.setItem(
-      AUTH_STORAGE_KEY,
-      JSON.stringify({
-        authenticated: true,
-        timestamp: Date.now(),
-      })
-    );
-    return { success: true };
+export async function logoutAdmin(): Promise<void> {
+  await getSupabaseClient()?.auth.signOut();
+}
+
+export async function updateAdminPassword(
+  password: string,
+): Promise<{ success: boolean; error?: string }> {
+  if (!(await isAuthenticated())) {
+    return { success: false, error: "Please sign in as a CapeTrust administrator." };
   }
-  return { success: false, error: "Incorrect administrator passcode. Please try again." };
-}
-
-export function logoutAdmin(): void {
-  if (typeof window === "undefined") return;
-  localStorage.removeItem(AUTH_STORAGE_KEY);
+  const { error } = await getSupabaseClient()!.auth.updateUser({ password });
+  return error ? { success: false, error: error.message } : { success: true };
 }

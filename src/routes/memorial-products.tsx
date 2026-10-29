@@ -33,13 +33,20 @@ export const Route = createFileRoute("/memorial-products")({
 const collections = [
   {
     title: "Coffins & Caskets",
-    image: "https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=800&auto=format&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=800&auto=format&fit=crop",
     body: "A carefully curated range of coffins and caskets in solid hardwood, bronze, brushed steel, and bespoke finishes, both crafted in Nigeria and imported to international standards.",
-    items: ["Solid Mahogany & Oak Caskets", "Executive Metal & Bronze Caskets", "Eco-Friendly Wood Coffins", "Custom Interior Upholstery"],
+    items: [
+      "Solid Mahogany & Oak Caskets",
+      "Executive Metal & Bronze Caskets",
+      "Eco-Friendly Wood Coffins",
+      "Custom Interior Upholstery",
+    ],
   },
   {
     title: "Floral Tributes & Wreaths",
-    image: "https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=800&auto=format&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1584824486509-112e4181ff6b?q=80&w=800&auto=format&fit=crop",
     body: "Flowers offer a timeless, elegant expression of remembrance, celebration, and gratitude for a cherished life.",
     items: [
       "Custom Funeral Wreaths",
@@ -51,13 +58,20 @@ const collections = [
   },
   {
     title: "Memorial Keepsakes & Urns",
-    image: "https://images.unsplash.com/photo-1603796846097-bee99e4a601f?q=80&w=800&auto=format&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1603796846097-bee99e4a601f?q=80&w=800&auto=format&fit=crop",
     body: "Some memories deserve to be held close. Thoughtfully selected items that allow families to preserve meaningful memories for generations.",
-    items: ["Handcrafted Decorative Urns", "Memorial Keepsake Plaques", "Engraved Memory Boxes", "Personalised Tribute Frames"],
+    items: [
+      "Handcrafted Decorative Urns",
+      "Memorial Keepsake Plaques",
+      "Engraved Memory Boxes",
+      "Personalised Tribute Frames",
+    ],
   },
   {
     title: "Headstones & Memorial Accessories",
-    image: "https://images.unsplash.com/photo-1526047932273-341f2a7631f9?q=80&w=800&auto=format&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1526047932273-341f2a7631f9?q=80&w=800&auto=format&fit=crop",
     body: "Every detail contributes to a dignified farewell, from solid granite headstone engravings to brass accents.",
     items: [
       "Polished Black & Grey Granite Headstones",
@@ -81,7 +95,10 @@ function MemorialProducts() {
       <PageHero
         eyebrow={hero?.eyebrow || "Offerings"}
         title={hero?.title || "Memorial Products & Craftsmanship"}
-        intro={hero?.intro || "Alongside our professional funeral services, Capetrust offers a growing collection of memorial products designed to help families honour their loved ones with quality, thoughtful design and lasting craftsmanship."}
+        intro={
+          hero?.intro ||
+          "Alongside our professional funeral services, Capetrust offers a growing collection of memorial products designed to help families honour their loved ones with quality, thoughtful design and lasting craftsmanship."
+        }
         image={flowers}
       >
         <Button asChild variant="gold" size="xl">
@@ -118,7 +135,8 @@ function MemorialProducts() {
           ))}
         </div>
         <p className="mt-6 text-xs text-muted-foreground">
-          Professionally designed, proofed, and printed on luxury textured paper stock to reflect each family's preferences.
+          Professionally designed, proofed, and printed on luxury textured paper stock to reflect
+          each family's preferences.
         </p>
         <Button asChild variant="forest" size="lg" className="mt-6">
           <Link to="/contact">Request Funeral Stationery Samples</Link>
