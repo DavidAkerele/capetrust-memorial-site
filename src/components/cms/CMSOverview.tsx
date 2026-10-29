@@ -65,7 +65,7 @@ export function CMSOverview({ content, obituaryCount, onNavigate, onExport }: CM
       icon: Package,
       key: "memorialProducts",
     },
-    { label: "Tributes in this browser", value: obituaryCount, icon: FileText, key: "obituaries" },
+    { label: "Published memorials", value: obituaryCount, icon: FileText, key: "obituaries" },
   ] as const;
 
   const editors = [
@@ -225,8 +225,8 @@ export function CMSOverview({ content, obituaryCount, onNavigate, onExport }: CM
             <Settings className="size-5 text-[#e0bd65]" />
             <h3 className="mt-4 font-serif text-xl font-semibold text-white">Before you edit</h3>
             <p className="mt-2 text-xs leading-5 text-slate-300">
-              This CMS currently saves content in your browser. Changes on one device are not shared
-              with other visitors or staff.
+              Changes save to CapeTrust’s shared site and are available across devices. Download a
+              backup before making major edits.
             </p>
             <button
               type="button"
