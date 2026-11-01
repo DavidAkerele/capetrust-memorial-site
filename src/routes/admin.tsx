@@ -54,6 +54,11 @@ import {
   getPendingCondolences,
   approveCondolence,
   deleteCondolence,
+  getPendingMemorialSubmissions,
+  submissionToObituary,
+  publishMemorialSubmission,
+  declineMemorialSubmission,
+  type MemorialSubmission,
   type PendingCondolence,
   type Obituary,
 } from "@/lib/obituaries-data";
@@ -93,6 +98,7 @@ type TabKey =
   | "estimator"
   | "faq"
   | "contact"
+  | "submissions"
   | "obituaries"
   | "backup";
 
@@ -121,6 +127,9 @@ function AdminCMSPage() {
   // Obituaries local state
   const [obituaries, setObituaries] = useState<Obituary[]>([]);
   const [pendingCondolences, setPendingCondolences] = useState<PendingCondolence[]>([]);
+  const [pendingMemorials, setPendingMemorials] = useState<MemorialSubmission[]>([]);
+  const [selectedSubmission, setSelectedSubmission] = useState<MemorialSubmission | null>(null);
+  const [submissionError, setSubmissionError] = useState("");
   const [selectedObituary, setSelectedObituary] = useState<Obituary | null>(null);
   const [showMemorialEditor, setShowMemorialEditor] = useState(false);
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
@@ -139,6 +148,13 @@ function AdminCMSPage() {
   useEffect(() => {
     if (!authed) return;
     void getPendingCondolences().then(setPendingCondolences).catch(console.error);
+    void getPendingMemorialSubmissions()
+      .then(setPendingMemorials)
+      .catch((error) =>
+        setSubmissionError(
+          error instanceof Error ? error.message : "Could not load memorial submissions.",
+        ),
+      );
   }, [authed]);
 
   const handleLogout = async () => {
@@ -382,6 +398,12 @@ function AdminCMSPage() {
     { key: "estimator", label: "Price Estimator Matrix", icon: <Calculator className="h-4 w-4" /> },
     { key: "faq", label: "FAQ Manager", icon: <HelpCircle className="h-4 w-4" /> },
     { key: "contact", label: "Contact & Branches", icon: <PhoneCall className="h-4 w-4" /> },
+    {
+      key: "submissions",
+      label: "Memorial Submissions",
+      icon: <FileText className="h-4 w-4" />,
+      badge: `${pendingMemorials.length}`,
+    },
     {
       key: "obituaries",
       label: "Obituaries & Tributes",
@@ -744,9 +766,156 @@ function AdminCMSPage() {
               <CMSOverview
                 content={cms.content}
                 obituaryCount={obituaries.length}
+                pendingSubmissionCount={pendingMemorials.length}
                 onNavigate={setActiveTab}
                 onExport={handleExport}
               />
+            )}
+
+            {activeTab === "submissions" && (
+              <div className="space-y-6">
+                <CMSSectionCard
+                  title="Memorial submissions"
+                  description="Review family submissions, correct details, and approve them before they appear on the public site."
+                  icon={<FileText className="h-5 w-5" />}
+                  badge={`${pendingMemorials.length} Pending`}
+                >
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-xs text-slate-300">
+                        Only CMS administrators can see these submissions.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSubmissionError("");
+                          void getPendingMemorialSubmissions()
+                            .then(setPendingMemorials)
+                            .catch((error) =>
+                              setSubmissionError(
+                                error instanceof Error
+                                  ? error.message
+                                  : "Could not refresh submissions.",
+                              ),
+                            );
+                        }}
+                        className="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/10"
+                      >
+                        Refresh
+                      </button>
+                    </div>
+                    {submissionError && (
+                      <p role="alert" className="text-sm text-rose-300">
+                        {submissionError}
+                      </p>
+                    )}
+                    {pendingMemorials.length === 0 && !submissionError && (
+                      <p className="rounded-xl border border-white/10 bg-[#070D1F] p-5 text-sm text-slate-300">
+                        No memorial submissions are waiting for review.
+                      </p>
+                    )}
+                    {pendingMemorials.map((item) => (
+                      <div
+                        key={item.id}
+                        className="space-y-4 rounded-xl border border-white/10 bg-[#070D1F] p-5"
+                      >
+                        <div className="flex flex-wrap items-start justify-between gap-3">
+                          <div>
+                            <p className="text-lg font-semibold text-white">{item.full_name}</p>
+                            <p className="mt-1 text-xs text-slate-400">
+                              Submitted {new Date(item.created_at).toLocaleString("en-GB")} by{" "}
+                              {item.submitter_name} ({item.submitter_relationship})
+                            </p>
+                            <p className="mt-2 text-xs text-slate-300">
+                              <a
+                                className="hover:text-[#D4AF37] hover:underline"
+                                href={`mailto:${item.submitter_email}`}
+                              >
+                                {item.submitter_email}
+                              </a>
+                              <span className="mx-2 text-slate-500">·</span>
+                              <a
+                                className="hover:text-[#D4AF37] hover:underline"
+                                href={`tel:${item.submitter_phone}`}
+                              >
+                                {item.submitter_phone}
+                              </a>
+                            </p>
+                          </div>
+                          <div className="flex gap-2">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setSelectedSubmission(
+                                  selectedSubmission?.id === item.id ? null : item,
+                                )
+                              }
+                              className="rounded-lg bg-[#D4AF37] px-3 py-2 text-xs font-bold text-[#0A1128]"
+                            >
+                              {selectedSubmission?.id === item.id
+                                ? "Close review"
+                                : "Review details"}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (
+                                  !window.confirm(
+                                    `Decline the memorial submission for ${item.full_name}?`,
+                                  )
+                                )
+                                  return;
+                                void declineMemorialSubmission(item.id)
+                                  .then(() => {
+                                    setPendingMemorials((current) =>
+                                      current.filter((entry) => entry.id !== item.id),
+                                    );
+                                    if (selectedSubmission?.id === item.id)
+                                      setSelectedSubmission(null);
+                                  })
+                                  .catch((error) =>
+                                    setSubmissionError(
+                                      error instanceof Error
+                                        ? error.message
+                                        : "Could not decline submission.",
+                                    ),
+                                  );
+                              }}
+                              className="rounded-lg border border-rose-700/60 px-3 py-2 text-xs font-semibold text-rose-200 hover:bg-rose-950/40"
+                            >
+                              Decline
+                            </button>
+                          </div>
+                        </div>
+                        {selectedSubmission?.id === item.id && (
+                          <MemorialEditor
+                            key={item.id}
+                            memorial={submissionToObituary(item)}
+                            reviewingSubmission
+                            onCancel={() => setSelectedSubmission(null)}
+                            onSave={async (memorial) => {
+                              await publishMemorialSubmission(item, memorial);
+                              setPendingMemorials((current) =>
+                                current.filter((entry) => entry.id !== item.id),
+                              );
+                              setSelectedSubmission(null);
+                              try {
+                                setObituaries(await getStoredObituaries());
+                              } catch (error) {
+                                setSubmissionError(
+                                  error instanceof Error
+                                    ? `Published successfully, but could not refresh the memorial list: ${error.message}`
+                                    : "Published successfully, but could not refresh the memorial list.",
+                                );
+                              }
+                            }}
+                          />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </CMSSectionCard>
+              </div>
             )}
 
             {/* ========================================================================= */}

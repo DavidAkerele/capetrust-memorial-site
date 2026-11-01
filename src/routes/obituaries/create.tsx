@@ -1,24 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import {
-  Plus,
-  Trash2,
-  Calendar,
-  Clock,
-  MapPin,
-  Sparkles,
-  ArrowLeft,
-  CheckCircle2,
-  Mail,
-  Phone,
-  Send,
-  User,
-  ShieldCheck,
-} from "lucide-react";
+import { Plus, Trash2, ArrowLeft, CheckCircle2, Send, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Section, CTABand } from "@/components/site/Sections";
-import { site } from "@/lib/site";
-import { useCMS } from "@/lib/cms/cms-store";
+import { submitMemorialForReview } from "@/lib/obituaries-data";
 
 export interface SubmitServiceEvent {
   title: string;
@@ -56,7 +41,6 @@ export const Route = createFileRoute("/obituaries/create")({
 });
 
 function CreateObituaryPage() {
-  const { content } = useCMS();
   // Contact Submitter Details
   const [submitterName, setSubmitterName] = useState("");
   const [submitterRelationship, setSubmitterRelationship] = useState("");
@@ -85,6 +69,8 @@ function CreateObituaryPage() {
   ]);
 
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const addServiceEvent = () => {
     setServices([
@@ -111,53 +97,41 @@ function CreateObituaryPage() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!fullName.trim() || !submitterName.trim() || !submitterPhone.trim()) return;
-
-    // Prepare email subject and body for Capetrust administration
-    const emailSubject = `Obituary & Tribute Submission: ${fullName.trim()}`;
-    const servicesText = services
-      .filter((s) => s.title || s.location)
-      .map(
-        (s, i) =>
-          `Event ${i + 1}: ${s.title}\nDate/Time: ${s.date} ${s.time}\nLocation: ${s.location} (${s.address})`,
-      )
-      .join("\n\n");
-
-    const emailBody = `MEMORIAL TRIBUTE SUBMISSION DETAILS:
-----------------------------------------
-SUBMITTER DETAILS:
-Name: ${submitterName}
-Relationship to Deceased: ${submitterRelationship}
-Email: ${submitterEmail}
-Phone/WhatsApp: ${submitterPhone}
-
-DECEASED DETAILS:
-Full Name: ${fullName}
-Honorific Title: ${title || "N/A"}
-Date of Birth: ${dateOfBirth || "N/A"}
-Date of Passing: ${dateOfDeath}
-Age: ${age || "N/A"}
-Summary Quote: ${summaryQuote || "N/A"}
-
-BIOGRAPHY & LIFE STORY:
-${lifeStory}
-
-FAMILY APPRECIATION NOTE:
-${familyNote || "N/A"}
-
-SCHEDULED SERVICES:
-${servicesText || "None specified"}
-----------------------------------------`;
-
-    // Direct mailto link fallback
-    const mailtoUrl = `mailto:${content.settings.email || site.email}?subject=${encodeURIComponent(
-      emailSubject,
-    )}&body=${encodeURIComponent(emailBody)}`;
-
-    window.open(mailtoUrl, "_blank");
-    setSubmitted(true);
+    if (submitting || !fullName.trim() || !submitterName.trim() || !submitterPhone.trim()) return;
+    setSubmitting(true);
+    setSubmitError("");
+    try {
+      await submitMemorialForReview({
+        submitter_name: submitterName.trim(),
+        submitter_relationship: submitterRelationship.trim(),
+        submitter_email: submitterEmail.trim(),
+        submitter_phone: submitterPhone.trim(),
+        full_name: fullName.trim(),
+        title: title.trim(),
+        date_of_birth: dateOfBirth.trim(),
+        date_of_death: dateOfDeath.trim(),
+        age: age ? Number(age) : null,
+        summary_quote: summaryQuote.trim(),
+        life_story: lifeStory.trim(),
+        family_note: familyNote.trim(),
+        services: services.filter((service) =>
+          [service.date, service.time, service.location, service.address].some((value) =>
+            value.trim(),
+          ),
+        ),
+      });
+      setSubmitted(true);
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error
+          ? error.message
+          : "Could not submit your memorial. Please try again.",
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -177,8 +151,8 @@ ${servicesText || "None specified"}
               Submit a Memorial Tribute
             </h1>
             <p className="mt-2 max-w-2xl text-xs text-primary-foreground/80">
-              Complete the form to prepare an email for our team. Send the draft from your email app
-              so we can review it with your family.
+              Complete this form to send your memorial details to our team for review before
+              publication.
             </p>
           </div>
         </div>
@@ -191,15 +165,15 @@ ${servicesText || "None specified"}
               <CheckCircle2 className="size-8" />
             </div>
             <h2 className="mt-6 font-serif text-3xl font-bold text-foreground">
-              Your email draft is ready
+              Your memorial has been submitted
             </h2>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-              Thank you, <strong className="text-foreground">{submitterName}</strong>. Please send
-              the email draft for <strong className="text-foreground">{fullName}</strong> from your
-              email app. The form has not sent it automatically.
+              Thank you, <strong className="text-foreground">{submitterName}</strong>. The memorial
+              for <strong className="text-foreground">{fullName}</strong> is in our review queue.
+              Our team will check the details with your family before publication.
             </p>
             <p className="mt-2 text-xs text-muted-foreground">
-              Once our team receives your email, an advisor can contact you at{" "}
+              An advisor may contact you at{" "}
               <strong className="text-foreground">{submitterPhone}</strong> to confirm photos and
               publication.
             </p>
@@ -235,6 +209,8 @@ ${servicesText || "None specified"}
                   <input
                     type="text"
                     required
+                    minLength={2}
+                    maxLength={160}
                     value={submitterName}
                     onChange={(e) => setSubmitterName(e.target.value)}
                     placeholder="e.g. Adeola Adeleke"
@@ -249,6 +225,8 @@ ${servicesText || "None specified"}
                   <input
                     type="text"
                     required
+                    minLength={2}
+                    maxLength={120}
                     value={submitterRelationship}
                     onChange={(e) => setSubmitterRelationship(e.target.value)}
                     placeholder="e.g. Daughter, Son, Spouse, Family Representative"
@@ -263,6 +241,7 @@ ${servicesText || "None specified"}
                   <input
                     type="email"
                     required
+                    maxLength={254}
                     value={submitterEmail}
                     onChange={(e) => setSubmitterEmail(e.target.value)}
                     placeholder="e.g. adeola@example.com"
@@ -277,6 +256,8 @@ ${servicesText || "None specified"}
                   <input
                     type="tel"
                     required
+                    minLength={5}
+                    maxLength={40}
                     value={submitterPhone}
                     onChange={(e) => setSubmitterPhone(e.target.value)}
                     placeholder="e.g. +234 802 123 4567"
@@ -303,6 +284,8 @@ ${servicesText || "None specified"}
                   <input
                     type="text"
                     required
+                    minLength={2}
+                    maxLength={160}
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder="e.g. Chief (Dr.) Babatunde Olawale"
@@ -316,6 +299,7 @@ ${servicesText || "None specified"}
                   </label>
                   <input
                     type="text"
+                    maxLength={160}
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="e.g. Otunba of Agbowa, Beloved Matriarch"
@@ -329,6 +313,7 @@ ${servicesText || "None specified"}
                   </label>
                   <input
                     type="text"
+                    maxLength={80}
                     value={dateOfBirth}
                     onChange={(e) => setDateOfBirth(e.target.value)}
                     placeholder="e.g. March 14, 1944"
@@ -343,6 +328,8 @@ ${servicesText || "None specified"}
                   <input
                     type="text"
                     required
+                    minLength={2}
+                    maxLength={80}
                     value={dateOfDeath}
                     onChange={(e) => setDateOfDeath(e.target.value)}
                     placeholder="e.g. January 18, 2026"
@@ -356,6 +343,8 @@ ${servicesText || "None specified"}
                   </label>
                   <input
                     type="number"
+                    min="0"
+                    max="130"
                     value={age}
                     onChange={(e) => setAge(e.target.value)}
                     placeholder="e.g. 81"
@@ -369,6 +358,7 @@ ${servicesText || "None specified"}
                   </label>
                   <input
                     type="text"
+                    maxLength={300}
                     value={summaryQuote}
                     onChange={(e) => setSummaryQuote(e.target.value)}
                     placeholder="e.g. A life of selfless service and enduring faith."
@@ -393,6 +383,8 @@ ${servicesText || "None specified"}
                 </label>
                 <textarea
                   required
+                  minLength={2}
+                  maxLength={10000}
                   rows={6}
                   value={lifeStory}
                   onChange={(e) => setLifeStory(e.target.value)}
@@ -407,6 +399,7 @@ ${servicesText || "None specified"}
                 </label>
                 <textarea
                   rows={3}
+                  maxLength={3000}
                   value={familyNote}
                   onChange={(e) => setFamilyNote(e.target.value)}
                   placeholder="e.g. The family deeply appreciates the prayers, visits, and support received during this solemn celebration."
@@ -542,6 +535,14 @@ ${servicesText || "None specified"}
             </div>
 
             {/* Submit Action */}
+            {submitError && (
+              <p
+                role="alert"
+                className="rounded-lg border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive"
+              >
+                {submitError}
+              </p>
+            )}
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-end">
               <Button asChild variant="outlineDark" size="lg">
                 <Link to="/obituaries">Cancel</Link>
@@ -550,10 +551,11 @@ ${servicesText || "None specified"}
                 type="submit"
                 variant="gold"
                 size="xl"
+                disabled={submitting}
                 className="flex items-center justify-center gap-2"
               >
                 <Send className="size-4" />
-                Open Email Draft for Review
+                {submitting ? "Submitting…" : "Submit for Review"}
               </Button>
             </div>
           </form>

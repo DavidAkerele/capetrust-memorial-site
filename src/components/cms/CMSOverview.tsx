@@ -10,6 +10,7 @@ import {
   PhoneCall,
   Settings,
   TreePine,
+  Inbox,
 } from "lucide-react";
 import type { CMSContent } from "@/lib/cms/types";
 
@@ -26,16 +27,24 @@ type EditorKey =
   | "faq"
   | "contact"
   | "obituaries"
+  | "submissions"
   | "backup";
 
 interface CMSOverviewProps {
   content: CMSContent;
   obituaryCount: number;
+  pendingSubmissionCount: number;
   onNavigate: (key: EditorKey) => void;
   onExport: () => void;
 }
 
-export function CMSOverview({ content, obituaryCount, onNavigate, onExport }: CMSOverviewProps) {
+export function CMSOverview({
+  content,
+  obituaryCount,
+  pendingSubmissionCount,
+  onNavigate,
+  onExport,
+}: CMSOverviewProps) {
   const lastSaved = content.lastUpdated
     ? new Date(content.lastUpdated).toLocaleString("en-GB", {
         day: "numeric",
@@ -64,6 +73,12 @@ export function CMSOverview({ content, obituaryCount, onNavigate, onExport }: CM
       value: content.memorialProducts.collections.length,
       icon: Package,
       key: "memorialProducts",
+    },
+    {
+      label: "Pending submissions",
+      value: pendingSubmissionCount,
+      icon: Inbox,
+      key: "submissions",
     },
     { label: "Published memorials", value: obituaryCount, icon: FileText, key: "obituaries" },
   ] as const;
@@ -158,7 +173,7 @@ export function CMSOverview({ content, obituaryCount, onNavigate, onExport }: CM
           </div>
           <span className="text-xs text-slate-400">Last content update: {lastSaved}</span>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
           {metrics.map(({ label, value, icon: Icon, key }) => (
             <button
               key={label}

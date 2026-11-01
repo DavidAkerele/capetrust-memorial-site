@@ -6,11 +6,17 @@ interface MemorialEditorProps {
   memorial: Obituary | null;
   onSave: (memorial: Obituary) => Promise<void>;
   onCancel: () => void;
+  reviewingSubmission?: boolean;
 }
 
 const emptyService: ServiceEvent = { title: "", date: "", time: "", location: "", address: "" };
 
-export function MemorialEditor({ memorial, onSave, onCancel }: MemorialEditorProps) {
+export function MemorialEditor({
+  memorial,
+  onSave,
+  onCancel,
+  reviewingSubmission = false,
+}: MemorialEditorProps) {
   const [draft, setDraft] = useState<Obituary>(
     () =>
       memorial ?? {
@@ -85,7 +91,11 @@ export function MemorialEditor({ memorial, onSave, onCancel }: MemorialEditorPro
       <div className="flex items-center justify-between gap-3">
         <div>
           <h3 className="font-serif text-xl font-semibold text-white">
-            {memorial ? "Edit memorial" : "New memorial"}
+            {reviewingSubmission
+              ? "Review submission"
+              : memorial
+                ? "Edit memorial"
+                : "New memorial"}
           </h3>
           <p className="mt-1 text-xs text-slate-400">
             Review family details before publishing them publicly.
@@ -262,7 +272,13 @@ export function MemorialEditor({ memorial, onSave, onCancel }: MemorialEditorPro
         disabled={saving || !familyApproved}
         className="rounded-lg bg-[#e0bd65] px-5 py-2.5 text-sm font-bold text-[#102044] disabled:opacity-50"
       >
-        {saving ? "Publishing…" : memorial ? "Save memorial" : "Publish memorial"}
+        {saving
+          ? "Publishing…"
+          : reviewingSubmission
+            ? "Approve & publish"
+            : memorial
+              ? "Save memorial"
+              : "Publish memorial"}
       </button>
     </form>
   );

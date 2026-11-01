@@ -33,7 +33,132 @@ export interface Obituary {
   createdAt: string;
 }
 
+export interface MemorialSubmission {
+  id: string;
+  submitter_name: string;
+  submitter_relationship: string;
+  submitter_email: string;
+  submitter_phone: string;
+  full_name: string;
+  title: string;
+  date_of_birth: string;
+  date_of_death: string;
+  age: number | null;
+  summary_quote: string;
+  life_story: string;
+  family_note: string;
+  services: ServiceEvent[];
+  status: "pending" | "published" | "declined";
+  published_slug: string | null;
+  created_at: string;
+  reviewed_at: string | null;
+}
+
+export type NewMemorialSubmission = Pick<
+  MemorialSubmission,
+  | "submitter_name"
+  | "submitter_relationship"
+  | "submitter_email"
+  | "submitter_phone"
+  | "full_name"
+  | "title"
+  | "date_of_birth"
+  | "date_of_death"
+  | "age"
+  | "summary_quote"
+  | "life_story"
+  | "family_note"
+  | "services"
+>;
+
 import { getSupabaseClient } from "@/lib/supabase";
+
+export async function submitMemorialForReview(submission: NewMemorialSubmission): Promise<void> {
+  const client = getSupabaseClient();
+  if (!client)
+    throw new Error("Memorial submissions are temporarily unavailable. Please try again later.");
+  const { error } = await client.from("memorial_submissions").insert(submission);
+  if (error) throw error;
+}
+
+export async function getPendingMemorialSubmissions(): Promise<MemorialSubmission[]> {
+  const client = getSupabaseClient();
+  if (!client) throw new Error("The shared database is not configured.");
+  const { data, error } = await client
+    .from("memorial_submissions")
+    .select("*")
+    .eq("status", "pending")
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return (data || []) as MemorialSubmission[];
+}
+
+export function submissionToObituary(submission: MemorialSubmission): Obituary {
+  return {
+    id: submission.id,
+    slug: `${submission.full_name
+      .trim()
+      .toLowerCase()
+      .normalize("NFKD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "")}-${submission.id.slice(0, 8)}`,
+    fullName: submission.full_name,
+    title: submission.title,
+    dateOfBirth: submission.date_of_birth,
+    dateOfDeath: submission.date_of_death,
+    age: submission.age ?? 0,
+    featuredImage: "",
+    galleryImages: [],
+    lifeStory: submission.life_story,
+    summaryQuote: submission.summary_quote,
+    familyNote: submission.family_note,
+    services: submission.services,
+    candlesCount: 0,
+    condolences: [],
+    createdAt: submission.created_at,
+  };
+}
+
+export async function publishMemorialSubmission(
+  submission: MemorialSubmission,
+  memorial: Obituary,
+): Promise<void> {
+  const client = getSupabaseClient();
+  if (!client) throw new Error("The shared database is not configured.");
+  await saveObituary(memorial);
+  const { data, error } = await client
+    .from("memorial_submissions")
+    .update({
+      status: "published",
+      published_slug: memorial.slug,
+      reviewed_at: new Date().toISOString(),
+    })
+    .eq("id", submission.id)
+    .eq("status", "pending")
+    .select("id")
+    .single();
+  if (error || !data)
+    throw (
+      error ||
+      new Error(
+        "The memorial was saved, but its submission status could not be updated. Please retry.",
+      )
+    );
+}
+
+export async function declineMemorialSubmission(id: string): Promise<void> {
+  const client = getSupabaseClient();
+  if (!client) throw new Error("The shared database is not configured.");
+  const { data, error } = await client
+    .from("memorial_submissions")
+    .update({ status: "declined", reviewed_at: new Date().toISOString() })
+    .eq("id", id)
+    .eq("status", "pending")
+    .select("id")
+    .single();
+  if (error || !data) throw error || new Error("Could not decline this submission.");
+}
 
 export async function getStoredObituaries(): Promise<Obituary[]> {
   const client = getSupabaseClient();
